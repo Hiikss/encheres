@@ -1,0 +1,15 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    username: 'encheres'
+    password: 'encheres'
+    url: jdbc:postgresql://localhost:5432/encheres?charSet=UTF-8&prepareThreshold=0
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+
+server:
+  servlet:
+    context-path: /encheres/api
+  error:
+    include-message: always
