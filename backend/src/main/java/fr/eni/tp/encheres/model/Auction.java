@@ -9,7 +9,7 @@ import java.util.Date;
 public class Auction {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long auctionId;
 
     @Column(nullable = false)

@@ -10,9 +10,8 @@ import java.util.List;
 public class SoldItem {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long soldItemId;
-
 
     @Column(nullable = false, length = 30, columnDefinition = "text")
     private String itemName;
