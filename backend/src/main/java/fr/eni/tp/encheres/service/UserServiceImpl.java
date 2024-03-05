@@ -56,7 +56,7 @@ public class UserServiceImpl implements UserService {
         if (oUser.isPresent()) {
             throw new UserException(HttpStatus.BAD_REQUEST, "Email already exists");
         }
-
+        System.out.println(signUpDto.toString());
         User user = userMapper.signUpToUser(signUpDto);
 
         user.setPassword(passwordEncoder.encode(CharBuffer.wrap(signUpDto.getPassword())));

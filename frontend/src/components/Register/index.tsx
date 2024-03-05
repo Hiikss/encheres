@@ -1,33 +1,51 @@
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import {SignUp} from "../../types/User";
 import {register} from "../../services/UserService";
-
-const registerFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const user: SignUp = {
-        pseudo: e.currentTarget.pseudo.value,
-        lastname: e.currentTarget.lastname.value,
-        firstname: e.currentTarget.firstname.value,
-        email: e.currentTarget.email.value,
-        phoneNumber: e.currentTarget.phoneNumber.value,
-        street: e.currentTarget.street.value,
-        postalCode: e.currentTarget.postalCode.value,
-        city: e.currentTarget.city.value,
-        password: e.currentTarget.password.value,
-    };
-    try {
-        const res = await register(user);
-        console.log(res.status);
-    } catch (err) {
-        console.log("error occured while register")
-    }
-}
+import { message } from "antd";
 
 const Register = () => {
+
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
 
     useEffect(() => {
         document.title = 'Inscription';
     }, []);
+
+    const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setPassword(event.target.value);
+    };
+
+    const handleConfirmPasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setConfirmPassword(event.target.value);
+    };
+
+    const registerFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        if (password !== confirmPassword) {
+            message.error("Les mots de passe ne correspondent pas");
+            return;
+        }
+
+        const user: SignUp = {
+            pseudo: e.currentTarget.pseudo.value,
+            lastname: e.currentTarget.lastname.value,
+            firstname: e.currentTarget.firstname.value,
+            email: e.currentTarget.email.value,
+            phoneNumber: e.currentTarget.phoneNumber.value,
+            street: e.currentTarget.street.value,
+            postalCode: e.currentTarget.postalCode.value,
+            city: e.currentTarget.city.value,
+            password: e.currentTarget.password.value,
+        };
+        try {
+            const res = await register(user);
+            console.log(res.status);
+        } catch (err) {
+            console.log("error occured while register")
+        }
+    }
 
     return (
         <div>
@@ -36,58 +54,64 @@ const Register = () => {
                 <div>
                     <label>
                         Pseudo :{" "}
-                        <input type="text" name="pseudo"/>
+                        <input type="text" name="pseudo" />
                     </label>
                 </div>
                 <div>
                     <label>
                         Email :{" "}
-                        <input type="text" name="email"/>
+                        <input type="email" name="email" />
                     </label>
                 </div>
                 <div>
                     <label>
                         Prénom :{" "}
-                        <input type="text" name="firstname"/>
+                        <input type="text" name="firstname" />
                     </label>
                 </div>
                 <div>
                     <label>
                         Nom :{" "}
-                        <input type="text" name="lastname"/>
+                        <input type="text" name="lastname" />
                     </label>
                 </div>
                 <div>
                     <label>
                         Téléphone :{" "}
-                        <input type="text" name="phoneNumber"/>
+                        <input type="text" name="phoneNumber" />
                     </label>
                 </div>
                 <div>
                     <label>
                         Rue :{" "}
-                        <input type="text" name="street"/>
+                        <input type="text" name="street" />
                     </label>
                 </div>
                 <div>
                     <label>
                         Code postal :{" "}
-                        <input type="text" name="postalCode"/>
+                        <input type="text" name="postalCode" />
                     </label>
                 </div>
                 <div>
                     <label>
                         Ville :{" "}
-                        <input type="text" name="city"/>
+                        <input type="text" name="city" />
                     </label>
                 </div>
                 <div>
                     <label>
                         Mot de passe :{" "}
-                        <input type="password" name="password"/>
+                        <input type="password" value={password} name="password" onChange={handlePasswordChange} />
                     </label>
                 </div>
-                <input type="submit"/>
+                <div>
+                    <label>
+                        Confirmation :{" "}
+                        <input type="password" value={confirmPassword} onChange={handleConfirmPasswordChange} />
+                    </label>
+                </div>
+                <input type="submit" />
             </form>
         </div>
     );
