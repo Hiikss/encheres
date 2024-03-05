@@ -11,8 +11,8 @@ const Header = () => {
                     <Link to="/">ENI-Enchères</Link>
                 </h1>
                 <div className="links">
-                    <Link to="/">S'inscrire</Link>
-                    <Link to="/">Se connecter</Link>
+                    <Link to="/login">Se connecter</Link>
+                    <Link to="/register">S'inscrire</Link>
                 </div>
             </div>
         </header>

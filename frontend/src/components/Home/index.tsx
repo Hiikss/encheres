@@ -1,5 +1,4 @@
 import React, {useEffect} from 'react';
-import Layout from "../Layout";
 
 const Home = () => {
 
@@ -8,11 +7,9 @@ const Home = () => {
     }, []);
 
     return (
-        <body>
-        <Layout>
+        <div>
             Hello world
-        </Layout>
-        </body>
+        </div>
     );
 }
 

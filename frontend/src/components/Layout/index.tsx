@@ -1,22 +1,16 @@
 import Header from "../Header";
 import React from "react";
-import {BrowserRouter} from "react-router-dom";
+import {Outlet} from "react-router-dom";
 
-interface Props {
-    children: React.ReactNode
-}
-
-const Layout = (props: Props) => {
+const Layout = () => {
 
     return (
-        <BrowserRouter>
-            <body>
-            <Header/>
-            <main>
-                {props.children}
-            </main>
-            </body>
-        </BrowserRouter>
+        <body>
+        <Header/>
+        <main>
+            <Outlet/>
+        </main>
+        </body>
     );
 }
 
