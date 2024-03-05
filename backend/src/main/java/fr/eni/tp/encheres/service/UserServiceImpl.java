@@ -8,6 +8,8 @@ import fr.eni.tp.encheres.mapper.UserMapper;
 import fr.eni.tp.encheres.model.User;
 import fr.eni.tp.encheres.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,32 +21,48 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
+
     private final UserRepository userRepository;
+
     private final PasswordEncoder passwordEncoder;
+
     private final UserMapper userMapper;
 
     @Override
     public UserDto login(CredentialsDto credentialsDto) {
-        User user = userRepository.findByLogin(credentialsDto.username())
+        LOGGER.info("[Service] : attempting to login");
+
+        User user = userRepository.findByLogin(credentialsDto.login())
                 .orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "Unknown user"));
 
         if (passwordEncoder.matches(CharBuffer.wrap(credentialsDto.password()), user.getPassword())) {
             return userMapper.toUserDto(user);
         }
+
         throw new UserException(HttpStatus.BAD_REQUEST, "Credentials are invalid");
     }
 
     @Override
     public UserDto register(SignUpDto signUpDto) {
-        Optional<User> oUser = userRepository.findByLogin(signUpDto.pseudo());
+        Optional<User> oUser = userRepository.findByPseudo(signUpDto.getPseudo());
 
         if (oUser.isPresent()) {
             throw new UserException(HttpStatus.BAD_REQUEST, "Pseudo already exists");
         }
 
+        oUser = userRepository.findByEmail(signUpDto.getEmail());
+
+        if (oUser.isPresent()) {
+            throw new UserException(HttpStatus.BAD_REQUEST, "Email already exists");
+        }
+
         User user = userMapper.signUpToUser(signUpDto);
 
-        user.setPassword(passwordEncoder.encode(CharBuffer.wrap(signUpDto.password())));
+        user.setPassword(passwordEncoder.encode(CharBuffer.wrap(signUpDto.getPassword())));
+        user.setCredit(500);
+        user.setAdmin(false);
+
         User savedUser = userRepository.save(user);
 
         return userMapper.toUserDto(savedUser);

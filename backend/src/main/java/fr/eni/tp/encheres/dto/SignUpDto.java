@@ -1,4 +1,24 @@
 package fr.eni.tp.encheres.dto;
 
-public record SignUpDto(String pseudo, String lastname, String firstName, String phoneNumber, String street, String postalCode, String city, char[] password) {
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class SignUpDto {
+
+    private String pseudo;
+    private String lastname;
+    private String firstname;
+    private String email;
+    private String phoneNumber;
+    private String street;
+    private String postalCode;
+    private String city;
+    private char[] password;
+
 }
