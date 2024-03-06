@@ -23,7 +23,7 @@ const axiosInstance = () => {
 
     instance.interceptors.request.use(
         config => {
-            config.headers['Authorization'] = `Bearer`;
+            config.headers['Authorization'] = `Bearer ${getAuthToken()}`;
             return config;
         }
     )

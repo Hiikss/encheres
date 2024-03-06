@@ -1,5 +1,4 @@
-import Header from "../Header";
-import {Outlet, Route, Routes} from "react-router-dom";
+import {Route, Routes} from "react-router-dom";
 import React from "react";
 import Layout from "../Layout";
 import Home from "../Home";
