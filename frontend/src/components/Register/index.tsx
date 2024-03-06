@@ -1,7 +1,8 @@
 import React, {useEffect, useState} from "react";
 import {SignUp} from "../../types/User";
 import {register} from "../../services/UserService";
-import { message } from "antd";
+import {message} from "antd";
+import {setAuthHeader} from "../../services/AxiosInstance";
 
 const Register = () => {
 
@@ -39,12 +40,15 @@ const Register = () => {
             city: e.currentTarget.city.value,
             password: e.currentTarget.password.value,
         };
-        try {
-            const res = await register(user);
-            console.log(res.status);
-        } catch (err) {
-            console.log("error occured while register")
-        }
+
+        await register(user).then(
+            res => {
+                setAuthHeader(res.data.token);
+            }).catch(
+            err => {
+                setAuthHeader(null);
+            }
+        );
     }
 
     return (
@@ -54,64 +58,64 @@ const Register = () => {
                 <div>
                     <label>
                         Pseudo :{" "}
-                        <input type="text" name="pseudo" />
+                        <input type="text" name="pseudo"/>
                     </label>
                 </div>
                 <div>
                     <label>
                         Email :{" "}
-                        <input type="email" name="email" />
+                        <input type="email" name="email"/>
                     </label>
                 </div>
                 <div>
                     <label>
                         Prénom :{" "}
-                        <input type="text" name="firstname" />
+                        <input type="text" name="firstname"/>
                     </label>
                 </div>
                 <div>
                     <label>
                         Nom :{" "}
-                        <input type="text" name="lastname" />
+                        <input type="text" name="lastname"/>
                     </label>
                 </div>
                 <div>
                     <label>
                         Téléphone :{" "}
-                        <input type="text" name="phoneNumber" />
+                        <input type="text" name="phoneNumber"/>
                     </label>
                 </div>
                 <div>
                     <label>
                         Rue :{" "}
-                        <input type="text" name="street" />
+                        <input type="text" name="street"/>
                     </label>
                 </div>
                 <div>
                     <label>
                         Code postal :{" "}
-                        <input type="text" name="postalCode" />
+                        <input type="text" name="postalCode"/>
                     </label>
                 </div>
                 <div>
                     <label>
                         Ville :{" "}
-                        <input type="text" name="city" />
+                        <input type="text" name="city"/>
                     </label>
                 </div>
                 <div>
                     <label>
                         Mot de passe :{" "}
-                        <input type="password" value={password} name="password" onChange={handlePasswordChange} />
+                        <input type="password" value={password} name="password" onChange={handlePasswordChange}/>
                     </label>
                 </div>
                 <div>
                     <label>
                         Confirmation :{" "}
-                        <input type="password" value={confirmPassword} onChange={handleConfirmPasswordChange} />
+                        <input type="password" value={confirmPassword} onChange={handleConfirmPasswordChange}/>
                     </label>
                 </div>
-                <input type="submit" />
+                <input type="submit"/>
             </form>
         </div>
     );

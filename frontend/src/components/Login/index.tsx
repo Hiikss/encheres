@@ -2,6 +2,7 @@ import React, {useEffect} from "react";
 import {Credentials} from "../../types/User";
 import {login} from "../../services/UserService";
 import header from "../Header";
+import {setAuthHeader} from "../../services/AxiosInstance";
 
 const Login = () => {
 
@@ -15,12 +16,14 @@ const Login = () => {
             login: e.currentTarget.login.value,
             password: e.currentTarget.password.value
         };
-        try {
-            const res = await login(credentials);
-            console.log(res.status);
-        } catch (err) {
-            console.log("error occured while logging")
-        }
+        await login(credentials).then(
+            res => {
+                setAuthHeader(res.data.token);
+            }).catch(
+            err => {
+                setAuthHeader(null);
+            }
+        )
     }
 
     return (
