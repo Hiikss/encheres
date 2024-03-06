@@ -1,14 +1,16 @@
 import axios from "axios";
+import Cookies from 'js-cookie';
 
 export const getAuthToken = () => {
-    return window.localStorage.getItem('auth_token');
+    return Cookies.get('auth_token');
 };
 
 export const setAuthHeader = (token: any) => {
     if (token !== null) {
-        window.localStorage.setItem("auth_token", token);
+        console.log("cookie set")
+        Cookies.set("auth_token", token);
     } else {
-        window.localStorage.removeItem("auth_token");
+        Cookies.remove("auth_token");
     }
 };
 
@@ -21,12 +23,15 @@ const axiosInstance = () => {
         }
     });
 
-    instance.interceptors.request.use(
-        config => {
-            config.headers['Authorization'] = `Bearer ${getAuthToken()}`;
-            return config;
-        }
-    )
+    let token = getAuthToken();
+    if (token !== null && token !== undefined && token !== "null") {
+        instance.interceptors.request.use(
+            config => {
+                config.headers['Authorization'] = `Bearer ${token}`;
+                return config;
+            }
+        )
+    }
     return instance;
 }
 

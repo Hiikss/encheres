@@ -9,4 +9,6 @@ public interface UserService {
     UserDto login(CredentialsDto credentialsDto);
 
     UserDto register(SignUpDto signUpDto);
+
+    UserDto findByPseudo(String login);
 }

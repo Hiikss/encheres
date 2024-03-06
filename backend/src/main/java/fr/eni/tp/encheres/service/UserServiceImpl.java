@@ -34,13 +34,13 @@ public class UserServiceImpl implements UserService {
         LOGGER.info("[Service] : attempting to login");
 
         User user = userRepository.findByLogin(credentialsDto.login())
-                .orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "Unknown user"));
+                .orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "Bad credentials"));
 
         if (passwordEncoder.matches(CharBuffer.wrap(credentialsDto.password()), user.getPassword())) {
             return userMapper.toUserDto(user);
         }
 
-        throw new UserException(HttpStatus.BAD_REQUEST, "Credentials are invalid");
+        throw new UserException(HttpStatus.BAD_REQUEST, "Bad credentials");
     }
 
     @Override
@@ -56,7 +56,7 @@ public class UserServiceImpl implements UserService {
         if (oUser.isPresent()) {
             throw new UserException(HttpStatus.BAD_REQUEST, "Email already exists");
         }
-        System.out.println(signUpDto.toString());
+
         User user = userMapper.signUpToUser(signUpDto);
 
         user.setPassword(passwordEncoder.encode(CharBuffer.wrap(signUpDto.getPassword())));
@@ -66,5 +66,12 @@ public class UserServiceImpl implements UserService {
         User savedUser = userRepository.save(user);
 
         return userMapper.toUserDto(savedUser);
+    }
+
+    @Override
+    public UserDto findByPseudo(String login) {
+        User user = userRepository.findByLogin(login)
+                .orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "Unknown user"));
+        return userMapper.toUserDto(user);
     }
 }

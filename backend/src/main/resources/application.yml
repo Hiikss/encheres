@@ -13,3 +13,8 @@ server:
     context-path: /encheres/api
   error:
     include-message: always
+
+security:
+  jwt:
+    token:
+      secret-key: my-secret-key

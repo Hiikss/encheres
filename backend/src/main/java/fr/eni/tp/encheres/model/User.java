@@ -20,7 +20,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int userId;
 
-    @Column(nullable = false, length = 30)
+    @Column(nullable = false, length = 30, unique = true)
     private String pseudo;
 
     @Column(nullable = false, length = 30)
@@ -29,7 +29,7 @@ public class User {
     @Column(nullable = false, length = 30)
     private String firstname;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String email;
 
     @Column(nullable = false, length = 10)

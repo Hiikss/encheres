@@ -1,7 +1,6 @@
 import React, {useEffect} from "react";
 import {Credentials} from "../../types/User";
 import {login} from "../../services/UserService";
-import header from "../Header";
 import {setAuthHeader} from "../../services/AxiosInstance";
 
 const Login = () => {

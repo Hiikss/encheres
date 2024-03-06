@@ -20,7 +20,7 @@ public class UserDto {
     private String street;
     private String postalCode;
     private String city;
-    private String token;
     private int credit;
     private boolean admin;
+    private String token;
 }
