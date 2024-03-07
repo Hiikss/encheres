@@ -1,9 +1,9 @@
 package fr.eni.tp.encheres.controller;
 
-import fr.eni.tp.encheres.config.UserAuthProvider;
+import fr.eni.tp.encheres.config.security.UserAuthProvider;
 import fr.eni.tp.encheres.dto.CredentialsDto;
 import fr.eni.tp.encheres.dto.SignUpDto;
-import fr.eni.tp.encheres.dto.UserDto;
+import fr.eni.tp.encheres.dto.AuthenticatedUserDto;
 import fr.eni.tp.encheres.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -13,8 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.net.URI;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,18 +26,18 @@ public class AuthController {
     private final UserAuthProvider userAuthProvider;
 
     @PostMapping("/login")
-    public ResponseEntity<UserDto> login(@RequestBody CredentialsDto credentialsDto) {
+    public ResponseEntity<AuthenticatedUserDto> login(@RequestBody CredentialsDto credentialsDto) {
         LOGGER.info("[Controller] : attempting to login");
 
-        UserDto user = userService.login(credentialsDto);
+        AuthenticatedUserDto user = userService.login(credentialsDto);
         user.setToken(userAuthProvider.createToken(user));
         return ResponseEntity.ok(user);
     }
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<UserDto> register(@Valid @RequestBody SignUpDto signUpDto) {
-        UserDto user = userService.register(signUpDto);
+    public ResponseEntity<AuthenticatedUserDto> register(@Valid @RequestBody SignUpDto signUpDto) {
+        AuthenticatedUserDto user = userService.register(signUpDto);
         user.setToken(userAuthProvider.createToken(user));
         return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }

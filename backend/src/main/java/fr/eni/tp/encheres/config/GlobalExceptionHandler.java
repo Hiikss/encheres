@@ -19,7 +19,7 @@ import java.util.List;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(value = {UserException.class})
+    @ExceptionHandler(UserException.class)
     @ResponseBody
     public ResponseEntity<ErrorDto> handleUserException(UserException exception) {
         return ResponseEntity

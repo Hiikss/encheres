@@ -1,4 +1,4 @@
-package fr.eni.tp.encheres.config;
+package fr.eni.tp.encheres.config.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;

@@ -1,4 +1,4 @@
-package fr.eni.tp.encheres.config;
+package fr.eni.tp.encheres.config.security;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -48,11 +48,12 @@ public class SecurityConfig {
         http
                 .cors(customizer -> customizer.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
+                .exceptionHandling(customizer -> customizer.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
                 .addFilterBefore(new JwtAuthFilter(userAuthProvider), BasicAuthenticationFilter.class)
                 .sessionManagement(customizer -> customizer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(requests ->
                         requests.requestMatchers(HttpMethod.POST, "/auth/login", "/auth/register").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/solditems").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/solditems", "/users/{id}").permitAll()
                                 .anyRequest().authenticated()
                 );
         return http.build();

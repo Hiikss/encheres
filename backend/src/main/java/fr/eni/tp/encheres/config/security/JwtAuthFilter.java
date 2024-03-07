@@ -1,4 +1,4 @@
-package fr.eni.tp.encheres.config;
+package fr.eni.tp.encheres.config.security;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

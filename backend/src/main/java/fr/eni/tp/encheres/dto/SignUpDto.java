@@ -1,5 +1,6 @@
 package fr.eni.tp.encheres.dto;
 
+import fr.eni.tp.encheres.validation.Password;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,6 +14,7 @@ import lombok.NoArgsConstructor;
 public class SignUpDto {
 
     @NotBlank(message = "Pseudo can't be blank")
+    @Pattern(regexp = "^[a-zA-Z0-9]{4,}$", message = "Pseudo must contains only alphanumeric characters")
     private String pseudo;
 
     @NotBlank(message = "Lastname can't be blank")
@@ -37,7 +39,10 @@ public class SignUpDto {
     @NotBlank(message = "City can't be blank")
     private String city;
 
-    @Size(min = 8, message = "Password must have at least 8 characters")
+    @Password(message = "Password must have at least 8 characters including at least 1 lowercase letter, 1 uppercase letter, 1 digit and 1 special character")
     private char[] password;
+
+    @NotNull(message = "Credit can't be null")
+    private Integer credit;
 
 }

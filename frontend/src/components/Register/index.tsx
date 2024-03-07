@@ -107,6 +107,7 @@ const Register = () => {
                     <label>
                         Mot de passe :{" "}
                         <input type="password" value={password} name="password" onChange={handlePasswordChange}/>
+                        {/*"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"*/}
                     </label>
                 </div>
                 <div>
