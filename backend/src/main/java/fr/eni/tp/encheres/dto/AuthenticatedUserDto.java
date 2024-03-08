@@ -24,5 +24,6 @@ public class AuthenticatedUserDto {
     private String city;
     private int credit;
     private boolean admin;
+    private boolean active;
     private String token;
 }

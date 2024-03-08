@@ -6,8 +6,10 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import fr.eni.tp.encheres.config.AppProperties;
 import fr.eni.tp.encheres.dto.AuthenticatedUserDto;
+import fr.eni.tp.encheres.exception.UserException;
 import fr.eni.tp.encheres.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -43,6 +45,10 @@ public class UserAuthProvider {
         DecodedJWT decoded = verifier.verify(token);
 
         AuthenticatedUserDto user = userService.getAuthenticatedUser(UUID.fromString(decoded.getSubject()));
+
+        if (!user.isActive()) {
+            throw new UserException(HttpStatus.UNAUTHORIZED, "Inactive user");
+        }
 
         return new UsernamePasswordAuthenticationToken(user, null, Collections.emptyList());
     }

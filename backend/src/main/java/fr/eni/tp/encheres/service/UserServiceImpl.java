@@ -46,7 +46,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByLogin(credentialsDto.login())
                 .orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "Bad credentials"));
 
-        if (passwordEncoder.matches(CharBuffer.wrap(credentialsDto.password()), user.getPassword())) {
+        if (user.isActive() && passwordEncoder.matches(CharBuffer.wrap(credentialsDto.password()), user.getPassword())) {
             return userMapper.toAuthenticatedUserDto(user);
         }
 
@@ -72,6 +72,7 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(CharBuffer.wrap(signUpDto.getPassword())));
         user.setCredit(100);
         user.setAdmin(false);
+        user.setActive(true);
 
         User savedUser = userRepository.save(user);
 
@@ -94,24 +95,23 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public AuthenticatedUserDto updateUser(UUID userId, SignUpDto userDto, AuthenticatedUserDto authenticatedUser) {
-        // User can only update himself
-        if (authenticatedUser.getId().equals(userId)) {
-            // Check if there is an user except the authenticated user with the new pseudo
+        if (authenticatedUser.getId().equals(userId) || authenticatedUser.isAdmin()) {
+            // Check if there is an user with the new pseudo and it's not the user to update
             Optional<User> oUser = userRepository.findByPseudo(userDto.getPseudo());
 
-            if (oUser.isPresent() && !oUser.get().getPseudo().equals(authenticatedUser.getPseudo())) {
+            if (oUser.isPresent() && !oUser.get().getUserId().equals(userId)) {
                 throw new UserException(HttpStatus.BAD_REQUEST, "Pseudo already exists");
             }
 
-            // Check if there is an user except the authenticated user with the new email
+            // Check if there is an user with the new email and it's not the user to update
             oUser = userRepository.findByEmail(userDto.getEmail());
 
-            if (oUser.isPresent() && !oUser.get().getEmail().equals(authenticatedUser.getEmail())) {
+            if (oUser.isPresent() && !oUser.get().getUserId().equals(userId)) {
                 throw new UserException(HttpStatus.BAD_REQUEST, "Email already exists");
             }
 
             User updatedUser = userMapper.signUpToUser(userDto);
-            updatedUser.setUserId(authenticatedUser.getId());
+            updatedUser.setUserId(userId);
             updatedUser.setPassword(passwordEncoder.encode(CharBuffer.wrap(userDto.getPassword())));
 
             User savedUser = userRepository.save(updatedUser);
@@ -124,7 +124,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUser(UUID userId, AuthenticatedUserDto authenticatedUser) {
-        // A user can only delete his account except if he is admin
         if (authenticatedUser.isAdmin() || userId.equals(authenticatedUser.getId())) {
             userRepository.deleteById(userId);
             return;

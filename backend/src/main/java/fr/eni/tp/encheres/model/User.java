@@ -54,6 +54,9 @@ public class User {
     @Column(nullable = false)
     private boolean admin;
 
+    @Column(nullable = false)
+    private boolean active;
+
     @OneToMany(mappedBy = "user")
     private List<SoldItem> soldItems;
 
