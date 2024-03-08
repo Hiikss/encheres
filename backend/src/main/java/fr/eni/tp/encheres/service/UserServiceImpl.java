@@ -93,32 +93,25 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public AuthenticatedUserDto updateUser(UUID userId, SignUpDto userDto, String authorizationHeader) {
-        // User we want to update
-        User userToUpdate = userRepository.findById(userId)
-                .orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, USER_NOT_FOUND));
-
-        // User doing the request
-        User requestUser = getRequestUser(authorizationHeader);
-
+    public AuthenticatedUserDto updateUser(UUID userId, SignUpDto userDto, AuthenticatedUserDto authenticatedUser) {
         // User can only update himself
-        if (requestUser == userToUpdate) {
-            // Check if there is an user except us with the new pseudo
+        if (authenticatedUser.getId().equals(userId)) {
+            // Check if there is an user except the authenticated user with the new pseudo
             Optional<User> oUser = userRepository.findByPseudo(userDto.getPseudo());
 
-            if (oUser.isPresent() && !oUser.get().getPseudo().equals(userToUpdate.getPseudo())) {
+            if (oUser.isPresent() && !oUser.get().getPseudo().equals(authenticatedUser.getPseudo())) {
                 throw new UserException(HttpStatus.BAD_REQUEST, "Pseudo already exists");
             }
 
-            // Check if there is an user except us with the new email
+            // Check if there is an user except the authenticated user with the new email
             oUser = userRepository.findByEmail(userDto.getEmail());
 
-            if (oUser.isPresent() && !oUser.get().getEmail().equals(userToUpdate.getEmail())) {
+            if (oUser.isPresent() && !oUser.get().getEmail().equals(authenticatedUser.getEmail())) {
                 throw new UserException(HttpStatus.BAD_REQUEST, "Email already exists");
             }
 
             User updatedUser = userMapper.signUpToUser(userDto);
-            updatedUser.setUserId(userToUpdate.getUserId());
+            updatedUser.setUserId(authenticatedUser.getId());
             updatedUser.setPassword(passwordEncoder.encode(CharBuffer.wrap(userDto.getPassword())));
 
             User savedUser = userRepository.save(updatedUser);
@@ -130,13 +123,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteUser(UUID userId, String authorizationHeader) {
-        User userToDelete = userRepository.findById(userId)
-                .orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, USER_NOT_FOUND));
-
-        User requestUser = getRequestUser(authorizationHeader);
-
-        if (requestUser.isAdmin() || userToDelete == requestUser) {
+    public void deleteUser(UUID userId, AuthenticatedUserDto authenticatedUser) {
+        // A user can only delete his account except if he is admin
+        if (authenticatedUser.isAdmin() || userId.equals(authenticatedUser.getId())) {
             userRepository.deleteById(userId);
             return;
         }
@@ -144,22 +133,4 @@ public class UserServiceImpl implements UserService {
         throw new UserException(HttpStatus.FORBIDDEN, "Can't delete this user");
     }
 
-    private User getRequestUser(String authorizationHeader) {
-        if (authorizationHeader == null) {
-            throw new UserException(HttpStatus.FORBIDDEN, "Authorization header missing");
-        }
-
-        String[] authElements = authorizationHeader.split(" ");
-
-        if (authElements.length != 2 || !"Bearer".equals(authElements[0])) {
-            throw new UserException(HttpStatus.FORBIDDEN, "Invalid authorization header");
-        }
-
-        Algorithm algorithm = Algorithm.HMAC256(appProperties.getSecretKey());
-        JWTVerifier verifier = JWT.require(algorithm).build();
-        DecodedJWT decoded = verifier.verify(authElements[1]);
-
-        return userRepository.findByPseudo(decoded.getSubject())
-                .orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, USER_NOT_FOUND));
-    }
 }

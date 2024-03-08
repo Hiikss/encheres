@@ -17,7 +17,7 @@ public interface UserService {
 
     UserDto getUser(UUID userId);
 
-    AuthenticatedUserDto updateUser(UUID userId, SignUpDto userDto, String authorizationHeader);
+    AuthenticatedUserDto updateUser(UUID userId, SignUpDto userDto, AuthenticatedUserDto authenticatedUser);
 
-    void deleteUser(UUID userId, String authorizationHeader);
+    void deleteUser(UUID userId, AuthenticatedUserDto authenticatedUser);
 }
