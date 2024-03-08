@@ -3,14 +3,15 @@ package fr.eni.tp.encheres.model;
 import jakarta.persistence.*;
 
 import java.util.Date;
+import java.util.UUID;
 
 @Entity
 @Table(name = "auctions")
 public class Auction {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long auctionId;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID auctionId;
 
     @Column(nullable = false)
     private Date autionDate;

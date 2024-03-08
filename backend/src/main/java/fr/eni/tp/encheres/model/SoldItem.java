@@ -4,14 +4,15 @@ import jakarta.persistence.*;
 
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "sold_items")
 public class SoldItem {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long soldItemId;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID soldItemId;
 
     @Column(nullable = false, length = 30, columnDefinition = "text")
     private String itemName;

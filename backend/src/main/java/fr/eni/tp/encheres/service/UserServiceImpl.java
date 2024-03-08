@@ -4,7 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import fr.eni.tp.encheres.config.security.AppProperties;
+import fr.eni.tp.encheres.config.AppProperties;
 import fr.eni.tp.encheres.dto.AuthenticatedUserDto;
 import fr.eni.tp.encheres.dto.CredentialsDto;
 import fr.eni.tp.encheres.dto.SignUpDto;
@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.nio.CharBuffer;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -78,21 +79,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public AuthenticatedUserDto findByPseudo(String login) {
-        User user = userRepository.findByLogin(login)
+    public AuthenticatedUserDto getAuthenticatedUser(UUID userId) {
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, USER_NOT_FOUND));
         return userMapper.toAuthenticatedUserDto(user);
     }
 
     @Override
-    public UserDto getUser(Long userId) {
+    public UserDto getUser(UUID userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, USER_NOT_FOUND));
         return userMapper.toUserDto(user);
     }
 
     @Override
-    public AuthenticatedUserDto updateUser(Long userId, SignUpDto userDto, String authorizationHeader) {
+    public AuthenticatedUserDto updateUser(UUID userId, SignUpDto userDto, String authorizationHeader) {
         // User we want to update
         User userToUpdate = userRepository.findById(userId)
                 .orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, USER_NOT_FOUND));
@@ -129,7 +130,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteUser(Long userId, String authorizationHeader) {
+    public void deleteUser(UUID userId, String authorizationHeader) {
         User userToDelete = userRepository.findById(userId)
                 .orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, USER_NOT_FOUND));
 

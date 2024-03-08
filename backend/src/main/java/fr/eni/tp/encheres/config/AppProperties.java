@@ -1,4 +1,4 @@
-package fr.eni.tp.encheres.config.security;
+package fr.eni.tp.encheres.config;
 
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;

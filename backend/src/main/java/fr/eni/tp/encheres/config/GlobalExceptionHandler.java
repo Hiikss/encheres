@@ -1,5 +1,6 @@
 package fr.eni.tp.encheres.config;
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import fr.eni.tp.encheres.dto.ErrorDto;
 import fr.eni.tp.encheres.exception.UserException;
 import org.postgresql.util.PSQLException;
@@ -40,7 +41,9 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(PSQLException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public void handlePSQLException(PSQLException exception) {
+    public ResponseEntity<ErrorDto> handlePSQLException(PSQLException exception) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ErrorDto.builder().message("Constraints violation").build());
     }
 }

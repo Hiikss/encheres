@@ -5,13 +5,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class AuthenticatedUserDto {
 
-    private Long id;
+    private UUID id;
     private String pseudo;
     private String lastname;
     private String firstname;

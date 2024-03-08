@@ -5,17 +5,19 @@ import fr.eni.tp.encheres.dto.SignUpDto;
 import fr.eni.tp.encheres.dto.AuthenticatedUserDto;
 import fr.eni.tp.encheres.dto.UserDto;
 
+import java.util.UUID;
+
 public interface UserService {
 
     AuthenticatedUserDto login(CredentialsDto credentialsDto);
 
     AuthenticatedUserDto register(SignUpDto signUpDto);
 
-    AuthenticatedUserDto findByPseudo(String login);
+    AuthenticatedUserDto getAuthenticatedUser(UUID userId);
 
-    UserDto getUser(Long userId);
+    UserDto getUser(UUID userId);
 
-    AuthenticatedUserDto updateUser(Long userId, SignUpDto userDto, String authorizationHeader);
+    AuthenticatedUserDto updateUser(UUID userId, SignUpDto userDto, String authorizationHeader);
 
-    void deleteUser(Long userId, String authorizationHeader);
+    void deleteUser(UUID userId, String authorizationHeader);
 }

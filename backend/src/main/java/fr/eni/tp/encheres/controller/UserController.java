@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
@@ -22,19 +24,19 @@ public class UserController {
     private final UserAuthProvider userAuthProvider;
 
     @GetMapping("/{userId}")
-    public ResponseEntity<UserDto> getUser(@PathVariable Long userId) {
+    public ResponseEntity<UserDto> getUser(@PathVariable UUID userId) {
         return ResponseEntity.ok().body(userService.getUser(userId));
     }
 
     @PutMapping("/{userId}")
-    public ResponseEntity<AuthenticatedUserDto> updateUser(@PathVariable Long userId, @Valid @RequestBody SignUpDto user, @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader) {
+    public ResponseEntity<AuthenticatedUserDto> updateUser(@PathVariable UUID userId, @Valid @RequestBody SignUpDto user, @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader) {
         AuthenticatedUserDto userDto = userService.updateUser(userId, user, authorizationHeader);
         userDto.setToken(userAuthProvider.createToken(userDto));
         return ResponseEntity.ok().body(userDto);
     }
 
     @DeleteMapping("/{userId}")
-    public ResponseEntity<String> deleteUser(@PathVariable Long userId, @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader) {
+    public ResponseEntity<String> deleteUser(@PathVariable UUID userId, @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader) {
 
         userService.deleteUser(userId, authorizationHeader);
         return ResponseEntity.ok().body("User deleted");

@@ -7,9 +7,10 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.UUID;
 
 @Repository
-public interface SoldItemRepository extends JpaRepository<SoldItem, Long> {
+public interface SoldItemRepository extends JpaRepository<SoldItem, UUID> {
 
     @Query("SELECT s FROM SoldItem s WHERE (:name = '' OR s.itemName LIKE '%' || :name || '%') AND (:category = '' OR :category = s.category.label)")
     List<SoldItem> findSoldItemsByFilters(Pageable pageable, String name, String category);

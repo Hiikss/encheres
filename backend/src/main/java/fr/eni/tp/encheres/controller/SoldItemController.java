@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/solditems")
@@ -32,7 +33,7 @@ public class SoldItemController {
     }
 
     @GetMapping("/{id}")
-    public Optional<SoldItem> getSoldItem(@PathVariable Long id) {
+    public Optional<SoldItem> getSoldItem(@PathVariable UUID id) {
         LOGGER.info("[Controller] : Get sold item");
 
         return soldItemService.getSoldItem(id);
