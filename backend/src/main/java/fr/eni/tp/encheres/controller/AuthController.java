@@ -2,7 +2,7 @@ package fr.eni.tp.encheres.controller;
 
 import fr.eni.tp.encheres.config.security.UserAuthProvider;
 import fr.eni.tp.encheres.dto.CredentialsDto;
-import fr.eni.tp.encheres.dto.SignUpDto;
+import fr.eni.tp.encheres.dto.RequestUserDto;
 import fr.eni.tp.encheres.dto.AuthenticatedUserDto;
 import fr.eni.tp.encheres.service.UserService;
 import jakarta.validation.Valid;
@@ -36,8 +36,8 @@ public class AuthController {
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<AuthenticatedUserDto> register(@Valid @RequestBody SignUpDto signUpDto) {
-        AuthenticatedUserDto user = userService.register(signUpDto);
+    public ResponseEntity<AuthenticatedUserDto> register(@Valid @RequestBody RequestUserDto requestUserDto) {
+        AuthenticatedUserDto user = userService.register(requestUserDto);
         user.setToken(userAuthProvider.createToken(user));
         return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }

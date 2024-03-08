@@ -1,14 +1,9 @@
 package fr.eni.tp.encheres.service;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.interfaces.DecodedJWT;
-import fr.eni.tp.encheres.config.AppProperties;
 import fr.eni.tp.encheres.dto.AuthenticatedUserDto;
 import fr.eni.tp.encheres.dto.CredentialsDto;
-import fr.eni.tp.encheres.dto.SignUpDto;
-import fr.eni.tp.encheres.dto.UserDto;
+import fr.eni.tp.encheres.dto.RequestUserDto;
+import fr.eni.tp.encheres.dto.ResponseUserDto;
 import fr.eni.tp.encheres.exception.UserException;
 import fr.eni.tp.encheres.mapper.UserMapper;
 import fr.eni.tp.encheres.model.User;
@@ -37,8 +32,6 @@ public class UserServiceImpl implements UserService {
 
     private final UserMapper userMapper;
 
-    private final AppProperties appProperties;
-
     @Override
     public AuthenticatedUserDto login(CredentialsDto credentialsDto) {
         LOGGER.info("[Service] : attempting to login");
@@ -54,22 +47,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public AuthenticatedUserDto register(SignUpDto signUpDto) {
-        Optional<User> oUser = userRepository.findByPseudo(signUpDto.getPseudo());
+    public AuthenticatedUserDto register(RequestUserDto requestUserDto) {
+        Optional<User> oUser = userRepository.findByPseudo(requestUserDto.getPseudo());
 
         if (oUser.isPresent()) {
             throw new UserException(HttpStatus.BAD_REQUEST, "Pseudo already exists");
         }
 
-        oUser = userRepository.findByEmail(signUpDto.getEmail());
+        oUser = userRepository.findByEmail(requestUserDto.getEmail());
 
         if (oUser.isPresent()) {
             throw new UserException(HttpStatus.BAD_REQUEST, "Email already exists");
         }
 
-        User user = userMapper.signUpToUser(signUpDto);
+        User user = userMapper.toUser(requestUserDto);
 
-        user.setPassword(passwordEncoder.encode(CharBuffer.wrap(signUpDto.getPassword())));
+        user.setPassword(passwordEncoder.encode(CharBuffer.wrap(requestUserDto.getPassword())));
         user.setCredit(100);
         user.setAdmin(false);
         user.setActive(true);
@@ -87,14 +80,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto getUser(UUID userId) {
+    public ResponseUserDto getUser(UUID userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, USER_NOT_FOUND));
         return userMapper.toUserDto(user);
     }
 
     @Override
-    public AuthenticatedUserDto updateUser(UUID userId, SignUpDto userDto, AuthenticatedUserDto authenticatedUser) {
+    public ResponseUserDto updateUser(UUID userId, RequestUserDto userDto, AuthenticatedUserDto authenticatedUser) {
         if (authenticatedUser.getId().equals(userId) || authenticatedUser.isAdmin()) {
             // Check if there is an user with the new pseudo and it's not the user to update
             Optional<User> oUser = userRepository.findByPseudo(userDto.getPseudo());
@@ -110,13 +103,13 @@ public class UserServiceImpl implements UserService {
                 throw new UserException(HttpStatus.BAD_REQUEST, "Email already exists");
             }
 
-            User updatedUser = userMapper.signUpToUser(userDto);
+            User updatedUser = userMapper.toUser(userDto);
             updatedUser.setUserId(userId);
             updatedUser.setPassword(passwordEncoder.encode(CharBuffer.wrap(userDto.getPassword())));
 
             User savedUser = userRepository.save(updatedUser);
 
-            return userMapper.toAuthenticatedUserDto(savedUser);
+            return userMapper.toUserDto(savedUser);
         }
 
         throw new UserException(HttpStatus.FORBIDDEN, "Can't update this user");

@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class SignUpDto {
+public class RequestUserDto {
 
     @NotBlank(message = "Pseudo can't be blank")
     @Pattern(regexp = "^[a-zA-Z0-9]{4,}$", message = "Pseudo must contains only alphanumeric characters")

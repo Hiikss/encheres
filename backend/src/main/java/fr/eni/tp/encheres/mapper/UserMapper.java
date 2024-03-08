@@ -1,8 +1,8 @@
 package fr.eni.tp.encheres.mapper;
 
-import fr.eni.tp.encheres.dto.SignUpDto;
+import fr.eni.tp.encheres.dto.RequestUserDto;
 import fr.eni.tp.encheres.dto.AuthenticatedUserDto;
-import fr.eni.tp.encheres.dto.UserDto;
+import fr.eni.tp.encheres.dto.ResponseUserDto;
 import fr.eni.tp.encheres.model.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -14,7 +14,7 @@ public interface UserMapper {
     AuthenticatedUserDto toAuthenticatedUserDto(User user);
 
     @Mapping(target = "password", ignore = true)
-    User signUpToUser(SignUpDto signUpDto);
+    User toUser(RequestUserDto requestUserDto);
 
-    UserDto toUserDto(User user);
+    ResponseUserDto toUserDto(User user);
 }
