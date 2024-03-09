@@ -1,10 +1,7 @@
 package fr.eni.tp.encheres.dto;
 
 import fr.eni.tp.encheres.validation.Password;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -46,6 +43,7 @@ public class RequestUserDto {
     private char[] password;
 
     @NotNull(message = "Credit can't be null")
+    @Min(value = 0, message = "Credit must be equal to or greater than 0")
     private Integer credit;
 
     @NotNull(message = "Active can't be null")

@@ -19,9 +19,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final UserAuthProvider userAuthProvider;
     private final List<AntPathRequestMatcher> excludedMatchers = List.of(
-            new AntPathRequestMatcher("/users/{id}", HttpMethod.GET.toString()),
             new AntPathRequestMatcher("/auth/login", HttpMethod.POST.toString()),
-            new AntPathRequestMatcher("/auth/register", HttpMethod.POST.toString())
+            new AntPathRequestMatcher("/auth/register", HttpMethod.POST.toString()),
+            new AntPathRequestMatcher("/users/{id}", HttpMethod.GET.toString()),
+            new AntPathRequestMatcher("/solditems", HttpMethod.GET.toString())
     );
 
     @Override
@@ -41,7 +42,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(userAuthProvider.validateToken(authElements[1]));
                 } catch (RuntimeException e) {
                     SecurityContextHolder.clearContext();
-//                    throw e;
+                    throw e;
                 }
             }
         }

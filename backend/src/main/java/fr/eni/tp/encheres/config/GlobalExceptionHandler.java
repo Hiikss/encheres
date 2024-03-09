@@ -2,6 +2,7 @@ package fr.eni.tp.encheres.config;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import fr.eni.tp.encheres.dto.ErrorDto;
+import fr.eni.tp.encheres.exception.SoldItemException;
 import fr.eni.tp.encheres.exception.UserException;
 import org.postgresql.util.PSQLException;
 import org.springframework.http.HttpStatus;
@@ -23,6 +24,14 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UserException.class)
     @ResponseBody
     public ResponseEntity<ErrorDto> handleUserException(UserException exception) {
+        return ResponseEntity
+                .status(exception.getStatus())
+                .body(ErrorDto.builder().message(exception.getMessage()).build());
+    }
+
+    @ExceptionHandler(SoldItemException.class)
+    @ResponseBody
+    public ResponseEntity<ErrorDto> handleUserException(SoldItemException exception) {
         return ResponseEntity
                 .status(exception.getStatus())
                 .body(ErrorDto.builder().message(exception.getMessage()).build());

@@ -11,9 +11,14 @@ import org.mapstruct.Mapping;
 public interface UserMapper {
 
     @Mapping(target = "id", source = "userId")
+    @Mapping(target = "token", ignore = true)
     AuthenticatedUserDto toAuthenticatedUserDto(User user);
 
     @Mapping(target = "password", ignore = true)
+    @Mapping(target = "userId", ignore = true)
+    @Mapping(target = "admin", ignore = true)
+    @Mapping(target = "soldItems", ignore = true)
+    @Mapping(target = "auctions", ignore = true)
     User toUser(RequestUserDto requestUserDto);
 
     ResponseUserDto toUserDto(User user);

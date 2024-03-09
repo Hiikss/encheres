@@ -1,6 +1,10 @@
 package fr.eni.tp.encheres.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 import java.util.List;
@@ -8,6 +12,10 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "sold_items")
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class SoldItem {
 
     @Id
@@ -32,9 +40,17 @@ public class SoldItem {
     @Column(nullable = false)
     private int sellPrice;
 
-    @Enumerated(EnumType.STRING)
+    @Column(length = 100)
+    private String pickUpStreet;
+
+    @Column(length = 5)
+    private String pickUpPostalCode;
+
+    @Column(length = 60)
+    private String pickUpCity;
+
     @Column(nullable = false)
-    private SellState sellState;
+    private boolean pickUpDone;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
@@ -46,7 +62,4 @@ public class SoldItem {
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
-
-    @Embedded
-    private PickUp pickUp;
 }
