@@ -2,6 +2,7 @@ package fr.eni.tp.encheres.config;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import fr.eni.tp.encheres.dto.ErrorDto;
+import fr.eni.tp.encheres.exception.CategoryException;
 import fr.eni.tp.encheres.exception.SoldItemException;
 import fr.eni.tp.encheres.exception.UserException;
 import org.postgresql.util.PSQLException;
@@ -32,6 +33,14 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(SoldItemException.class)
     @ResponseBody
     public ResponseEntity<ErrorDto> handleUserException(SoldItemException exception) {
+        return ResponseEntity
+                .status(exception.getStatus())
+                .body(ErrorDto.builder().message(exception.getMessage()).build());
+    }
+
+    @ExceptionHandler(CategoryException.class)
+    @ResponseBody
+    public ResponseEntity<ErrorDto> handleCategoryException(CategoryException exception) {
         return ResponseEntity
                 .status(exception.getStatus())
                 .body(ErrorDto.builder().message(exception.getMessage()).build());

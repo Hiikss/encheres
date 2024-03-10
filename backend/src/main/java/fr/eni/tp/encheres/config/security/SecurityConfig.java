@@ -53,7 +53,7 @@ public class SecurityConfig {
                 .sessionManagement(customizer -> customizer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(requests ->
                         requests.requestMatchers(HttpMethod.POST, "/auth/login", "/auth/register").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/solditems", "/users/{id}", "/solditems/{id}").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/solditems", "/users/{id}").permitAll()
                                 .anyRequest().authenticated()
                 );
         return http.build();

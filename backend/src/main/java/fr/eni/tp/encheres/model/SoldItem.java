@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -29,10 +30,10 @@ public class SoldItem {
     private String description;
 
     @Column(nullable = false)
-    private Date auctionStartDate;
+    private LocalDate auctionStartDate;
 
     @Column(nullable = false)
-    private Date auctionEndDate;
+    private LocalDate auctionEndDate;
 
     @Column(nullable = false)
     private int startPrice;

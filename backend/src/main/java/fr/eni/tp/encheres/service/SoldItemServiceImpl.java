@@ -1,11 +1,17 @@
 package fr.eni.tp.encheres.service;
 
 import fr.eni.tp.encheres.dto.AuthenticatedUserDto;
-import fr.eni.tp.encheres.dto.SoldItemDto;
+import fr.eni.tp.encheres.dto.ResponseSoldItemDto;
+import fr.eni.tp.encheres.dto.RequestSoldItemDto;
 import fr.eni.tp.encheres.exception.SoldItemException;
+import fr.eni.tp.encheres.exception.UserException;
 import fr.eni.tp.encheres.mapper.SoldItemMapper;
+import fr.eni.tp.encheres.model.Category;
 import fr.eni.tp.encheres.model.SoldItem;
+import fr.eni.tp.encheres.model.User;
+import fr.eni.tp.encheres.repository.CategoryRepository;
 import fr.eni.tp.encheres.repository.SoldItemRepository;
+import fr.eni.tp.encheres.repository.UserRepository;
 import fr.eni.tp.encheres.validation.SoldItemValidator;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -30,50 +36,69 @@ public class SoldItemServiceImpl implements SoldItemService {
 
     private final SoldItemValidator soldItemValidator;
 
+    private final UserRepository userRepository;
+
+    private final CategoryRepository categoryRepository;
+
     @Override
-    public List<SoldItem> getSoldItems(int page, int size, String name, String category, boolean opened, boolean mine, boolean won, boolean inProgress, boolean notStarted, boolean over, AuthenticatedUserDto authenticatedUser) {
+    public List<ResponseSoldItemDto> getSoldItems(int page, int size, String itemName, String category, List<String> filters, AuthenticatedUserDto authenticatedUser) {
         LOGGER.info("[Service] : Get sold items");
 
         Pageable pageable = PageRequest.of(page-1, Math.min(size, 100));
-        return soldItemRepository.findSoldItemsByFilters(pageable, name, category);
+        List<SoldItem> soldItems = soldItemRepository.findSoldItemsByFilters(pageable, itemName, category, filters);
+        return soldItemMapper.toResponseSoldItemDtoList(soldItems);
     }
 
     @Override
-    public long countSoldItems(String name, String category, boolean opened, boolean mine, boolean won, boolean inProgress, boolean notStarted, boolean over, AuthenticatedUserDto authenticatedUser) {
+    public long countSoldItems(String itemName, String category, List<String> filters, AuthenticatedUserDto authenticatedUser) {
         LOGGER.info("[Service] : Count sold items");
 
-        return soldItemRepository.countByFilters(name, category);
+        return soldItemRepository.countByFilters(itemName, category);
     }
 
     @Override
-    public SoldItem getSoldItem(UUID id) {
+    public ResponseSoldItemDto getSoldItem(UUID id) {
         LOGGER.info("[Service] : Get sold item");
 
-        return soldItemRepository.findById(id)
+        SoldItem soldItem = soldItemRepository.findById(id)
                 .orElseThrow(() -> new SoldItemException(HttpStatus.NOT_FOUND, "Sold item not found"));
+        return soldItemMapper.toResponseSoldItemDto(soldItem);
     }
 
     @Override
-    public SoldItemDto createSell(SoldItemDto requestSoldItem) {
+    public ResponseSoldItemDto createSell(RequestSoldItemDto requestSoldItem, AuthenticatedUserDto authenticatedUser) {
         LOGGER.info("[Service] : Create sold item");
 
         soldItemValidator.validateSoldItem(requestSoldItem);
 
+        User user = userRepository.findById(authenticatedUser.getId())
+                .orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "User not found"));
+
+        Category category = categoryRepository.findByLabel(requestSoldItem.getCategoryLabel())
+                .orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "Category not found"));
+
         SoldItem soldItem = soldItemMapper.toSoldItem(requestSoldItem);
+        soldItem.setUser(user);
+        soldItem.setCategory(category);
+
         SoldItem savedSoldItem = soldItemRepository.save(soldItem);
-        return soldItemMapper.toSoldItemDto(savedSoldItem);
+        return soldItemMapper.toResponseSoldItemDto(savedSoldItem);
     }
 
     @Override
-    public SoldItemDto updateSell(UUID id, SoldItemDto requestSoldItem, AuthenticatedUserDto authenticatedUser) {
+    public ResponseSoldItemDto updateSell(UUID id, RequestSoldItemDto requestSoldItem, AuthenticatedUserDto authenticatedUser) {
         soldItemValidator.validateSoldItem(requestSoldItem);
 
         SoldItem soldItem = soldItemRepository.findById(id)
                 .orElseThrow(() -> new SoldItemException(HttpStatus.NOT_FOUND, "Sold item not found"));
 
         if (soldItem.getUser().getUserId() == authenticatedUser.getId()) {
+            Category category = categoryRepository.findByLabel(requestSoldItem.getCategoryLabel())
+                    .orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "Category not found"));
+
+            soldItem.setCategory(category);
             SoldItem savedSoldItem = soldItemRepository.save(soldItem);
-            return soldItemMapper.toSoldItemDto(savedSoldItem);
+            return soldItemMapper.toResponseSoldItemDto(savedSoldItem);
         } else {
             throw new SoldItemException(HttpStatus.FORBIDDEN, "Can't update this sell");
         }

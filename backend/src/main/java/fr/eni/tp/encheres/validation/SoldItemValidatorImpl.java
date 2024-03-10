@@ -1,6 +1,6 @@
 package fr.eni.tp.encheres.validation;
 
-import fr.eni.tp.encheres.dto.SoldItemDto;
+import fr.eni.tp.encheres.dto.RequestSoldItemDto;
 import fr.eni.tp.encheres.exception.SoldItemException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -10,7 +10,7 @@ import java.time.LocalDate;
 @Component
 public class SoldItemValidatorImpl implements SoldItemValidator {
 
-    public void validateSoldItem(SoldItemDto soldItem) {
+    public void validateSoldItem(RequestSoldItemDto soldItem) {
         if (soldItem.getAuctionStartDate().isBefore(LocalDate.now())) {
             throw new SoldItemException(HttpStatus.BAD_REQUEST, "Auction can't start before today");
         }

@@ -1,8 +1,8 @@
 package fr.eni.tp.encheres.controller;
 
 import fr.eni.tp.encheres.dto.AuthenticatedUserDto;
-import fr.eni.tp.encheres.dto.SoldItemDto;
-import fr.eni.tp.encheres.model.SoldItem;
+import fr.eni.tp.encheres.dto.ResponseSoldItemDto;
+import fr.eni.tp.encheres.dto.RequestSoldItemDto;
 import fr.eni.tp.encheres.service.SoldItemService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -29,45 +29,40 @@ public class SoldItemController {
     private final SoldItemService soldItemService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<SoldItem> getSoldItem(@PathVariable UUID id) {
+    public ResponseEntity<ResponseSoldItemDto> getSoldItem(@PathVariable UUID id) {
         LOGGER.info("[Controller] : Get sold item");
 
         return ResponseEntity.ok().body(soldItemService.getSoldItem(id));
     }
 
     @GetMapping
-    public ResponseEntity<List<SoldItem>> getSoldItems(@RequestParam(defaultValue = "1") int page,
-                                                       @RequestParam(defaultValue = "10") int size,
-                                                       @RequestParam(defaultValue = "") String name,
-                                                       @RequestParam(defaultValue = "") String category,
-                                                       @RequestParam(defaultValue = "true") boolean opened,
-                                                       @RequestParam(defaultValue = "false") boolean mine,
-                                                       @RequestParam(defaultValue = "false") boolean won,
-                                                       @RequestParam(defaultValue = "false") boolean inProgress,
-                                                       @RequestParam(defaultValue = "false") boolean notStarted,
-                                                       @RequestParam(defaultValue = "false") boolean over,
-                                                       Authentication authentication) {
+    public ResponseEntity<List<ResponseSoldItemDto>> getSoldItems(@RequestParam(defaultValue = "1") int page,
+                                                                  @RequestParam(defaultValue = "10") int size,
+                                                                  @RequestParam(defaultValue = "") String itemName,
+                                                                  @RequestParam(defaultValue = "") String category,
+                                                                  @RequestParam(defaultValue = "true") List<String> filters,
+                                                                  Authentication authentication) {
         LOGGER.info("[Controller] : Get sold items");
         AuthenticatedUserDto authenticatedUser = null;
         if (authentication != null) {
             authenticatedUser = (AuthenticatedUserDto) authentication.getPrincipal();
         }
         HttpHeaders headers = new HttpHeaders();
-        headers.add("X-Total-Count", Long.toString(soldItemService.countSoldItems(name, category, opened, mine, won, inProgress, notStarted, over, authenticatedUser)));
+        headers.add("X-Total-Count", Long.toString(soldItemService.countSoldItems(itemName, category, filters, authenticatedUser)));
         return ResponseEntity.status(HttpStatus.OK)
                 .headers(headers)
-                .body(soldItemService.getSoldItems(page, size, name, category, opened, mine, won, inProgress, notStarted, over, authenticatedUser));
+                .body(soldItemService.getSoldItems(page, size, itemName, category, filters, authenticatedUser));
     }
 
     @PostMapping
-    public ResponseEntity<SoldItemDto> createSell(@Valid @RequestBody SoldItemDto soldItem) {
+    public ResponseEntity<ResponseSoldItemDto> createSell(@Valid @RequestBody RequestSoldItemDto soldItem, Authentication authentication) {
         LOGGER.info("[Controller] : Create sold item");
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(soldItemService.createSell(soldItem));
+        return ResponseEntity.status(HttpStatus.CREATED).body(soldItemService.createSell(soldItem, (AuthenticatedUserDto) authentication.getPrincipal()));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<SoldItemDto> updateSell(@PathVariable UUID id, @Valid @RequestBody SoldItemDto soldItem, Authentication authentication) {
+    public ResponseEntity<ResponseSoldItemDto> updateSell(@PathVariable UUID id, @Valid @RequestBody RequestSoldItemDto soldItem, Authentication authentication) {
         LOGGER.info("[Controller] : Update sold item");
 
         return ResponseEntity.ok().body(soldItemService.updateSell(id, soldItem, (AuthenticatedUserDto) authentication.getPrincipal()));

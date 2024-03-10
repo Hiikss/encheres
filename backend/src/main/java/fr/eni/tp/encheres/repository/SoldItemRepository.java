@@ -12,9 +12,9 @@ import java.util.UUID;
 @Repository
 public interface SoldItemRepository extends JpaRepository<SoldItem, UUID> {
 
-    @Query("SELECT s FROM SoldItem s WHERE (:name = '' OR s.itemName LIKE '%' || :name || '%') AND (:category = '' OR :category = s.category.label)")
-    List<SoldItem> findSoldItemsByFilters(Pageable pageable, String name, String category);
+    @Query("SELECT s FROM SoldItem s WHERE (:itemName = '' OR s.itemName LIKE '%' || :itemName || '%') AND (:category = '' OR :category = s.category.label) AND ('opened' NOT IN :filters OR ('opened' IN :filters AND s.auctionStartDate <= CURRENT_DATE() AND s.auctionEndDate > CURRENT_DATE()))")
+    List<SoldItem> findSoldItemsByFilters(Pageable pageable, String itemName, String category, List<String> filters);
 
-    @Query("SELECT COUNT(s) FROM SoldItem s WHERE (:name = '' OR s.itemName LIKE '%' || :name || '%') AND (:category = '' OR :category = s.category.label)")
-    int countByFilters(String name, String category);
+    @Query("SELECT COUNT(s) FROM SoldItem s WHERE (:itemName = '' OR s.itemName LIKE '%' || :itemName || '%') AND (:category = '' OR :category = s.category.label)")
+    int countByFilters(String itemName, String category);
 }

@@ -15,7 +15,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class SoldItemDto {
+public class RequestSoldItemDto {
 
     @NotBlank(message = "Item name can't be null")
     private String itemName;
@@ -29,11 +29,11 @@ public class SoldItemDto {
     @NotNull
     private LocalDate auctionEndDate;
 
-    @NotBlank(message = "Start price can't be null")
+    @NotNull(message = "Start price can't be null")
     @Min(value = 1, message = "The start price must be greater than O")
     private Integer startPrice;
 
-    @NotBlank(message = "Sell price can't be null")
+    @NotNull(message = "Sell price can't be null")
     @Min(value = 1, message = "The sell price must be greater than O")
     private Integer sellPrice;
 
@@ -48,4 +48,7 @@ public class SoldItemDto {
 
     @NotNull(message = "PickUpDone can't be null")
     private Boolean pickUpDone;
+
+    @NotBlank(message = "Category can't be blank")
+    private String categoryLabel;
 }
