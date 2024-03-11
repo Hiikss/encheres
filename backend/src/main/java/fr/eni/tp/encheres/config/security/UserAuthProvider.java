@@ -28,7 +28,7 @@ public class UserAuthProvider {
 
     public String createToken(AuthenticatedUserDto user) {
         Date now = new Date();
-        Date validity = new Date(now.getTime() + 300_000);
+        Date validity = new Date(now.getTime() + 3_600_000);
 
         return JWT.create()
                 .withSubject(user.getPseudo())

@@ -45,8 +45,8 @@ public class SoldItemServiceImpl implements SoldItemService {
     public List<ResponseSoldItemDto> getSoldItems(int page, int size, String itemName, String category, List<String> filters, AuthenticatedUserDto authenticatedUser) {
         LOGGER.info("[Service] : Get sold items");
 
-        String userPseudo = null;
-        if(authenticatedUser!=null) {
+        String userPseudo = "";
+        if (authenticatedUser != null) {
             userPseudo = authenticatedUser.getPseudo();
         }
 
@@ -59,7 +59,12 @@ public class SoldItemServiceImpl implements SoldItemService {
     public long countSoldItems(String itemName, String category, List<String> filters, AuthenticatedUserDto authenticatedUser) {
         LOGGER.info("[Service] : Count sold items");
 
-        return soldItemRepository.countByFilters(itemName, category);
+        String userPseudo = "";
+        if (authenticatedUser != null) {
+            userPseudo = authenticatedUser.getPseudo();
+        }
+
+        return soldItemRepository.countByFilters(itemName, category, filters, userPseudo);
     }
 
     @Override

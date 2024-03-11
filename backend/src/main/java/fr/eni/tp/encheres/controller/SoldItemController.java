@@ -38,9 +38,9 @@ public class SoldItemController {
     @GetMapping
     public ResponseEntity<List<ResponseSoldItemDto>> getSoldItems(@RequestParam(defaultValue = "1") int page,
                                                                   @RequestParam(defaultValue = "10") int size,
-                                                                  String itemName,
-                                                                  String category,
-                                                                  List<String> filters,
+                                                                  @RequestParam(defaultValue = "") String itemName,
+                                                                  @RequestParam(defaultValue = "") String category,
+                                                                  @RequestParam(defaultValue = "") List<String> filters,
                                                                   Authentication authentication) {
         LOGGER.info("[Controller] : Get sold items");
         AuthenticatedUserDto authenticatedUser = null;

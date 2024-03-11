@@ -2,6 +2,7 @@ package fr.eni.tp.encheres.config;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import fr.eni.tp.encheres.dto.ErrorDto;
+import fr.eni.tp.encheres.exception.AuctionException;
 import fr.eni.tp.encheres.exception.CategoryException;
 import fr.eni.tp.encheres.exception.SoldItemException;
 import fr.eni.tp.encheres.exception.UserException;
@@ -46,6 +47,14 @@ public class GlobalExceptionHandler {
                 .body(ErrorDto.builder().message(exception.getMessage()).build());
     }
 
+    @ExceptionHandler(AuctionException.class)
+    @ResponseBody
+    public ResponseEntity<ErrorDto> handleAuctionException(AuctionException exception) {
+        return ResponseEntity
+                .status(exception.getStatus())
+                .body(ErrorDto.builder().message(exception.getMessage()).build());
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<String> handleValidationException(MethodArgumentNotValidException exception) {
         List<String> errorMessages = new ArrayList<>();
@@ -58,10 +67,10 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
     }
 
-    @ExceptionHandler(PSQLException.class)
-    public ResponseEntity<ErrorDto> handlePSQLException(PSQLException exception) {
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(ErrorDto.builder().message("Constraints violation").build());
-    }
+//    @ExceptionHandler(PSQLException.class)
+//    public ResponseEntity<ErrorDto> handlePSQLException(PSQLException exception) {
+//        return ResponseEntity
+//                .status(HttpStatus.BAD_REQUEST)
+//                .body(ErrorDto.builder().message("Constraints violation").build());
+//    }
 }

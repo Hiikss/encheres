@@ -21,8 +21,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private final List<AntPathRequestMatcher> excludedMatchers = List.of(
             new AntPathRequestMatcher("/auth/login", HttpMethod.POST.toString()),
             new AntPathRequestMatcher("/auth/register", HttpMethod.POST.toString()),
-            new AntPathRequestMatcher("/users/{userId}", HttpMethod.GET.toString()),
-            new AntPathRequestMatcher("/solditems", HttpMethod.GET.toString())
+            new AntPathRequestMatcher("/users/{userId}", HttpMethod.GET.toString())
     );
 
     @Override

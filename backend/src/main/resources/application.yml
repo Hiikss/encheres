@@ -6,7 +6,7 @@ spring:
     url: jdbc:postgresql://localhost:5432/encheres?charSet=UTF-8&prepareThreshold=0
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
 
 server:
   servlet:
