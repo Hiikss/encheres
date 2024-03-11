@@ -28,10 +28,10 @@ public class UserAuthProvider {
 
     public String createToken(AuthenticatedUserDto user) {
         Date now = new Date();
-        Date validity = new Date(now.getTime() + 3600000);
+        Date validity = new Date(now.getTime() + 300_000);
 
         return JWT.create()
-                .withSubject(user.getId().toString())
+                .withSubject(user.getPseudo())
                 .withIssuedAt(now)
                 .withExpiresAt(validity)
                 .sign(Algorithm.HMAC256(appProperties.getSecretKey()));
@@ -44,7 +44,7 @@ public class UserAuthProvider {
 
         DecodedJWT decoded = verifier.verify(token);
 
-        AuthenticatedUserDto user = userService.getAuthenticatedUser(UUID.fromString(decoded.getSubject()));
+        AuthenticatedUserDto user = userService.getAuthenticatedUser(decoded.getSubject());
 
         if (!user.isActive()) {
             throw new UserException(HttpStatus.UNAUTHORIZED, "Inactive user");

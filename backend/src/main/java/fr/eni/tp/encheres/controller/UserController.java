@@ -11,8 +11,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.UUID;
-
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
@@ -21,20 +19,20 @@ public class UserController {
 
     private final UserService userService;
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<ResponseUserDto> getUser(@PathVariable UUID userId) {
-        return ResponseEntity.ok().body(userService.getUser(userId));
+    @GetMapping("/{pseudo}")
+    public ResponseEntity<ResponseUserDto> getUser(@PathVariable String pseudo) {
+        return ResponseEntity.ok().body(userService.getUser(pseudo));
     }
 
-    @PutMapping("/{userId}")
-    public ResponseEntity<ResponseUserDto> updateUser(@PathVariable UUID userId, @Valid @RequestBody RequestUserDto user, Authentication authentication) {
-        return ResponseEntity.ok().body(userService.updateUser(userId, user, (AuthenticatedUserDto) authentication.getPrincipal()));
+    @PutMapping("/{pseudo}")
+    public ResponseEntity<ResponseUserDto> updateUser(@PathVariable String pseudo, @Valid @RequestBody RequestUserDto user, Authentication authentication) {
+        return ResponseEntity.ok().body(userService.updateUser(pseudo, user, (AuthenticatedUserDto) authentication.getPrincipal()));
     }
 
-    @DeleteMapping("/{userId}")
-    public ResponseEntity<String> deleteUser(@PathVariable UUID userId, Authentication authentication) {
+    @DeleteMapping("/{pseudo}")
+    public ResponseEntity<String> deleteUser(@PathVariable String pseudo, Authentication authentication) {
 
-        userService.deleteUser(userId, (AuthenticatedUserDto) authentication.getPrincipal());
+        userService.deleteUser(pseudo, (AuthenticatedUserDto) authentication.getPrincipal());
         return ResponseEntity.ok().body("User deleted");
     }
 }

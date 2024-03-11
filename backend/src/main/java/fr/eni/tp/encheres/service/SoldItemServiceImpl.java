@@ -21,6 +21,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -44,8 +45,13 @@ public class SoldItemServiceImpl implements SoldItemService {
     public List<ResponseSoldItemDto> getSoldItems(int page, int size, String itemName, String category, List<String> filters, AuthenticatedUserDto authenticatedUser) {
         LOGGER.info("[Service] : Get sold items");
 
-        Pageable pageable = PageRequest.of(page-1, Math.min(size, 100));
-        List<SoldItem> soldItems = soldItemRepository.findSoldItemsByFilters(pageable, itemName, category, filters);
+        String userPseudo = null;
+        if(authenticatedUser!=null) {
+            userPseudo = authenticatedUser.getPseudo();
+        }
+
+        Pageable pageable = PageRequest.of(page - 1, Math.min(size, 100));
+        List<SoldItem> soldItems = soldItemRepository.findSoldItemsByFilters(pageable, itemName, category, filters, userPseudo);
         return soldItemMapper.toResponseSoldItemDtoList(soldItems);
     }
 
@@ -57,10 +63,10 @@ public class SoldItemServiceImpl implements SoldItemService {
     }
 
     @Override
-    public ResponseSoldItemDto getSoldItem(UUID id) {
+    public ResponseSoldItemDto getSoldItem(UUID soldItemId) {
         LOGGER.info("[Service] : Get sold item");
 
-        SoldItem soldItem = soldItemRepository.findById(id)
+        SoldItem soldItem = soldItemRepository.findById(soldItemId)
                 .orElseThrow(() -> new SoldItemException(HttpStatus.NOT_FOUND, "Sold item not found"));
         return soldItemMapper.toResponseSoldItemDto(soldItem);
     }
@@ -71,7 +77,7 @@ public class SoldItemServiceImpl implements SoldItemService {
 
         soldItemValidator.validateSoldItem(requestSoldItem);
 
-        User user = userRepository.findById(authenticatedUser.getId())
+        User user = userRepository.findByPseudo(authenticatedUser.getPseudo())
                 .orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "User not found"));
 
         Category category = categoryRepository.findByLabel(requestSoldItem.getCategoryLabel())
@@ -86,13 +92,13 @@ public class SoldItemServiceImpl implements SoldItemService {
     }
 
     @Override
-    public ResponseSoldItemDto updateSell(UUID id, RequestSoldItemDto requestSoldItem, AuthenticatedUserDto authenticatedUser) {
+    public ResponseSoldItemDto updateSell(UUID soldItemId, RequestSoldItemDto requestSoldItem, AuthenticatedUserDto authenticatedUser) {
         soldItemValidator.validateSoldItem(requestSoldItem);
 
-        SoldItem soldItem = soldItemRepository.findById(id)
+        SoldItem soldItem = soldItemRepository.findById(soldItemId)
                 .orElseThrow(() -> new SoldItemException(HttpStatus.NOT_FOUND, "Sold item not found"));
 
-        if (soldItem.getUser().getUserId() == authenticatedUser.getId()) {
+        if (soldItem.getUser().getPseudo().equals(authenticatedUser.getPseudo()) && soldItem.getAuctionStartDate().isBefore(LocalDate.now()) && soldItem.getAuctionStartDate().isEqual(LocalDate.now())) {
             Category category = categoryRepository.findByLabel(requestSoldItem.getCategoryLabel())
                     .orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "Category not found"));
 
@@ -101,6 +107,19 @@ public class SoldItemServiceImpl implements SoldItemService {
             return soldItemMapper.toResponseSoldItemDto(savedSoldItem);
         } else {
             throw new SoldItemException(HttpStatus.FORBIDDEN, "Can't update this sell");
+        }
+    }
+
+    @Override
+    public void deleteSell(UUID soldItemId, AuthenticatedUserDto authenticatedUser) {
+        SoldItem soldItem = soldItemRepository.findById(soldItemId)
+                .orElseThrow(() -> new SoldItemException(HttpStatus.NOT_FOUND, "Sold item not found"));
+
+        if (soldItem.getUser().getPseudo().equals(authenticatedUser.getPseudo()) && soldItem.getAuctionStartDate().isBefore(LocalDate.now()) && soldItem.getAuctionStartDate().isEqual(LocalDate.now())) {
+
+            soldItemRepository.deleteById(soldItemId);
+        } else {
+            throw new SoldItemException(HttpStatus.FORBIDDEN, "Can't delete this sell");
         }
     }
 }

@@ -28,19 +28,19 @@ public class SoldItemController {
 
     private final SoldItemService soldItemService;
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ResponseSoldItemDto> getSoldItem(@PathVariable UUID id) {
+    @GetMapping("/{soldItemId}")
+    public ResponseEntity<ResponseSoldItemDto> getSoldItem(@PathVariable UUID soldItemId) {
         LOGGER.info("[Controller] : Get sold item");
 
-        return ResponseEntity.ok().body(soldItemService.getSoldItem(id));
+        return ResponseEntity.ok().body(soldItemService.getSoldItem(soldItemId));
     }
 
     @GetMapping
     public ResponseEntity<List<ResponseSoldItemDto>> getSoldItems(@RequestParam(defaultValue = "1") int page,
                                                                   @RequestParam(defaultValue = "10") int size,
-                                                                  @RequestParam(defaultValue = "") String itemName,
-                                                                  @RequestParam(defaultValue = "") String category,
-                                                                  @RequestParam(defaultValue = "true") List<String> filters,
+                                                                  String itemName,
+                                                                  String category,
+                                                                  List<String> filters,
                                                                   Authentication authentication) {
         LOGGER.info("[Controller] : Get sold items");
         AuthenticatedUserDto authenticatedUser = null;
@@ -61,17 +61,18 @@ public class SoldItemController {
         return ResponseEntity.status(HttpStatus.CREATED).body(soldItemService.createSell(soldItem, (AuthenticatedUserDto) authentication.getPrincipal()));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<ResponseSoldItemDto> updateSell(@PathVariable UUID id, @Valid @RequestBody RequestSoldItemDto soldItem, Authentication authentication) {
+    @PutMapping("/{soldItemId}")
+    public ResponseEntity<ResponseSoldItemDto> updateSell(@PathVariable UUID soldItemId, @Valid @RequestBody RequestSoldItemDto soldItem, Authentication authentication) {
         LOGGER.info("[Controller] : Update sold item");
 
-        return ResponseEntity.ok().body(soldItemService.updateSell(id, soldItem, (AuthenticatedUserDto) authentication.getPrincipal()));
+        return ResponseEntity.ok().body(soldItemService.updateSell(soldItemId, soldItem, (AuthenticatedUserDto) authentication.getPrincipal()));
     }
 
-    @DeleteMapping("/{id}")
-    public void deleteSell(@PathVariable UUID id) {
+    @DeleteMapping("/{soldItemId}")
+    public ResponseEntity<String> deleteSell(@PathVariable UUID soldItemId, Authentication authentication) {
         LOGGER.info("[Controller] : Delete sold item");
 
-//        soldItemService.deleteSell(id);
+        soldItemService.deleteSell(soldItemId, (AuthenticatedUserDto) authentication.getPrincipal());
+        return ResponseEntity.ok().body("Sold item deleted");
     }
 }

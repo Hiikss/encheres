@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public interface SoldItemService {
 
-    ResponseSoldItemDto getSoldItem(UUID id);
+    ResponseSoldItemDto getSoldItem(UUID soldItemId);
 
     List<ResponseSoldItemDto> getSoldItems(int page, int size, String itemName, String category, List<String> filters, AuthenticatedUserDto authenticatedUser);
 
@@ -17,5 +17,8 @@ public interface SoldItemService {
 
     ResponseSoldItemDto createSell(RequestSoldItemDto soldItem, AuthenticatedUserDto authenticatedUser);
 
-    ResponseSoldItemDto updateSell(UUID id, RequestSoldItemDto soldItem, AuthenticatedUserDto authenticatedUser);
+    ResponseSoldItemDto updateSell(UUID soldItemId, RequestSoldItemDto soldItem, AuthenticatedUserDto authenticatedUser);
+
+    void deleteSell(UUID soldItemId, AuthenticatedUserDto authenticatedUser);
+
 }

@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 
 import java.nio.CharBuffer;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -73,38 +72,37 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public AuthenticatedUserDto getAuthenticatedUser(UUID userId) {
-        User user = userRepository.findById(userId)
+    public AuthenticatedUserDto getAuthenticatedUser(String userPseudo) {
+        User user = userRepository.findByPseudo(userPseudo)
                 .orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, USER_NOT_FOUND));
         return userMapper.toAuthenticatedUserDto(user);
     }
 
     @Override
-    public ResponseUserDto getUser(UUID userId) {
-        User user = userRepository.findById(userId)
+    public ResponseUserDto getUser(String pseudo) {
+        User user = userRepository.findByPseudo(pseudo)
                 .orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, USER_NOT_FOUND));
         return userMapper.toUserDto(user);
     }
 
     @Override
-    public ResponseUserDto updateUser(UUID userId, RequestUserDto userDto, AuthenticatedUserDto authenticatedUser) {
-        if (authenticatedUser.getId().equals(userId) || authenticatedUser.isAdmin()) {
-            // Check if there is an user with the new pseudo and it's not the user to update
-            Optional<User> oUser = userRepository.findByPseudo(userDto.getPseudo());
+    public ResponseUserDto updateUser(String pseudo, RequestUserDto userDto, AuthenticatedUserDto authenticatedUser) {
+        if (authenticatedUser.getPseudo().equals(pseudo) || authenticatedUser.isAdmin()) {
+            User userToUpdate = userRepository.findByPseudo(pseudo)
+                    .orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, USER_NOT_FOUND));
 
-            if (oUser.isPresent() && !oUser.get().getUserId().equals(userId)) {
-                throw new UserException(HttpStatus.BAD_REQUEST, "Pseudo already exists");
+            if(!userToUpdate.getPseudo().equals(userDto.getPseudo())) {
+                throw new UserException(HttpStatus.BAD_REQUEST, "Pseudo can't be changed");
             }
 
-            // Check if there is an user with the new email and it's not the user to update
-            oUser = userRepository.findByEmail(userDto.getEmail());
+            Optional<User> oUser = userRepository.findByEmail(userDto.getEmail());
 
-            if (oUser.isPresent() && !oUser.get().getUserId().equals(userId)) {
+            if (oUser.isPresent() && !oUser.get().getPseudo().equals(userToUpdate.getPseudo())) {
                 throw new UserException(HttpStatus.BAD_REQUEST, "Email already exists");
             }
 
             User updatedUser = userMapper.toUser(userDto);
-            updatedUser.setUserId(userId);
+            updatedUser.setUserId(userToUpdate.getUserId());
             updatedUser.setPassword(passwordEncoder.encode(CharBuffer.wrap(userDto.getPassword())));
 
             User savedUser = userRepository.save(updatedUser);
@@ -116,9 +114,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteUser(UUID userId, AuthenticatedUserDto authenticatedUser) {
-        if (authenticatedUser.isAdmin() || userId.equals(authenticatedUser.getId())) {
-            userRepository.deleteById(userId);
+    public void deleteUser(String pseudo, AuthenticatedUserDto authenticatedUser) {
+        if (authenticatedUser.isAdmin() || authenticatedUser.getPseudo().equals(pseudo)) {
+            userRepository.deleteByPseudo(pseudo);
             return;
         }
 

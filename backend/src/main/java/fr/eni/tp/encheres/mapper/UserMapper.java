@@ -10,7 +10,6 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface UserMapper {
 
-    @Mapping(target = "id", source = "userId")
     @Mapping(target = "token", ignore = true)
     AuthenticatedUserDto toAuthenticatedUserDto(User user);
 

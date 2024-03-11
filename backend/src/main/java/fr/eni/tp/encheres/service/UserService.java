@@ -1,11 +1,9 @@
 package fr.eni.tp.encheres.service;
 
+import fr.eni.tp.encheres.dto.AuthenticatedUserDto;
 import fr.eni.tp.encheres.dto.CredentialsDto;
 import fr.eni.tp.encheres.dto.RequestUserDto;
-import fr.eni.tp.encheres.dto.AuthenticatedUserDto;
 import fr.eni.tp.encheres.dto.ResponseUserDto;
-
-import java.util.UUID;
 
 public interface UserService {
 
@@ -13,11 +11,11 @@ public interface UserService {
 
     AuthenticatedUserDto register(RequestUserDto requestUserDto);
 
-    AuthenticatedUserDto getAuthenticatedUser(UUID userId);
+    AuthenticatedUserDto getAuthenticatedUser(String pseudo);
 
-    ResponseUserDto getUser(UUID userId);
+    ResponseUserDto getUser(String pseudo);
 
-    ResponseUserDto updateUser(UUID userId, RequestUserDto userDto, AuthenticatedUserDto authenticatedUser);
+    ResponseUserDto updateUser(String pseudo, RequestUserDto userDto, AuthenticatedUserDto authenticatedUser);
 
-    void deleteUser(UUID userId, AuthenticatedUserDto authenticatedUser);
+    void deleteUser(String pseudo, AuthenticatedUserDto authenticatedUser);
 }

@@ -13,7 +13,6 @@ import java.util.UUID;
 @Builder
 public class AuthenticatedUserDto {
 
-    private UUID id;
     private String pseudo;
     private String lastname;
     private String firstname;
