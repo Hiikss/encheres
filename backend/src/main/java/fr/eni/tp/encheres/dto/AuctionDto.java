@@ -8,8 +8,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.UUID;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,6 +18,6 @@ public class AuctionDto {
     @Min(value = 1, message = "The start price must be greater than O")
     private Integer auctionPrice;
 
-    @NotBlank(message = "Sold item id can't be blank")
-    private UUID soldItemId;
+    @NotBlank(message = "UUID can't be blank")
+    private String soldItemId;
 }

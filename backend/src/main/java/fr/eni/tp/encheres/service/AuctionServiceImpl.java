@@ -18,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 import static java.util.Comparator.comparingInt;
 
@@ -37,8 +38,14 @@ public class AuctionServiceImpl implements AuctionService {
 
     @Override
     public void createAuction(AuctionDto requestAuction, AuthenticatedUserDto authenticatedUser) {
-        SoldItem soldItem = soldItemRepository.findById(requestAuction.getSoldItemId())
-                .orElseThrow(() -> new SoldItemException(HttpStatus.NOT_FOUND, "Sold item not found"));
+        SoldItem soldItem;
+
+        try {
+            soldItem = soldItemRepository.findById(UUID.fromString(requestAuction.getSoldItemId()))
+                    .orElseThrow(() -> new SoldItemException(HttpStatus.NOT_FOUND, "Sold item not found"));
+        } catch (IllegalArgumentException e) {
+            throw new SoldItemException(HttpStatus.NOT_FOUND, "Sold item not found");
+        }
 
         User user = userRepository.findByPseudo(authenticatedUser.getPseudo())
                 .orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "User not found"));

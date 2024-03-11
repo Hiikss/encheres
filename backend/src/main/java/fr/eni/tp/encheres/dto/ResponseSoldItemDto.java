@@ -1,6 +1,7 @@
 package fr.eni.tp.encheres.dto;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
-public record ResponseSoldItemDto(String itemName, String description, LocalDate auctionStartDate, LocalDate auctionEndDate, int startPrice, int sellPrice, String pickUpStreet, String pickUpPostalCode, String pickUpCity, boolean pickUpDone, String category, String lastBidder, String seller) {
+public record ResponseSoldItemDto(UUID id, String itemName, String description, LocalDate auctionStartDate, LocalDate auctionEndDate, int startPrice, int sellPrice, String pickUpStreet, String pickUpPostalCode, String pickUpCity, boolean pickUpDone, String category, String lastBidder, String seller) {
 }
