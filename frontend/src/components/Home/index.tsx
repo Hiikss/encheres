@@ -1,4 +1,5 @@
 import React, {useEffect} from 'react';
+import {Button} from "antd";
 
 const Home = () => {
 
@@ -9,6 +10,7 @@ const Home = () => {
     return (
         <div>
             Hello world
+            <Button type="primary">Hello</Button>
         </div>
     );
 }

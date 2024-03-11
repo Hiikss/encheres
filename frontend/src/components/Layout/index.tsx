@@ -1,17 +1,19 @@
-import Header from "../Header";
+import AppHeader from "../Header";
 import React from "react";
 import {Outlet} from "react-router-dom";
+import {Layout} from "antd";
+import {Content} from "antd/lib/layout/layout";
 
-const Layout = () => {
+const AppLayout = () => {
 
     return (
-        <body>
-        <Header/>
-        <main>
-            <Outlet/>
-        </main>
-        </body>
+        <Layout style={{height: "100vh"}}>
+            <AppHeader/>
+            <Content>
+                <Outlet/>
+            </Content>
+        </Layout>
     );
 }
 
-export default Layout;
+export default AppLayout;
