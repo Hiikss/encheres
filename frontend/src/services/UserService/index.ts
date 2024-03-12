@@ -1,11 +1,11 @@
 import axiosInstance from "../AxiosInstance";
-import {SignUp, Credentials} from "../../types/User";
+import {RequestUser, Credentials} from "../../types/User";
 
 export const login = (credentials: Credentials) => {
     return axiosInstance().post('/auth/login', credentials);
 }
 
-export const register = (user: SignUp) => {
+export const register = (user: RequestUser) => {
     return axiosInstance().post('/auth/register', user)
 }
 

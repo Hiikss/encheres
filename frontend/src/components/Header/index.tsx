@@ -1,41 +1,155 @@
-import React, {useState} from 'react';
-import {Link} from "react-router-dom";
-import {Header} from "antd/lib/layout/layout";
-import {Flex, Menu, MenuProps} from "antd";
+import React, { useState } from 'react'
+import { Link } from 'react-router-dom'
+import { Header } from 'antd/lib/layout/layout'
+import { Drawer, Flex, Menu, MenuProps } from 'antd'
+import {
+    CloseOutlined,
+    EuroCircleOutlined,
+    HomeOutlined,
+    LoginOutlined,
+    LogoutOutlined,
+    MenuOutlined,
+    UserAddOutlined,
+    UserOutlined,
+} from '@ant-design/icons'
+import './index.css'
 
-const items: MenuProps['items'] = [
+const notLoggedInItems: MenuProps['items'] = [
     {
         label: <Link to="/">Accueil</Link>,
-        key: 'home',
+        key: '/',
+        icon: <HomeOutlined />,
     },
     {
         label: <Link to="/login">Se connecter</Link>,
-        key: 'login',
+        key: '/login',
+        icon: <LoginOutlined />,
     },
     {
         label: <Link to="/register">S'inscrire</Link>,
-        key: 'register',
-
+        key: '/register',
+        icon: <UserAddOutlined />,
     },
-];
+]
 
-const AppHeader = () => {
-    const [current, setCurrent] = useState('home');
+const loggedInItems: MenuProps['items'] = [
+    {
+        label: 'Accueil',
+        key: '/',
+        icon: <HomeOutlined />,
+    },
+    {
+        label: 'Vendre un article',
+        key: '/sell',
+        icon: <EuroCircleOutlined />,
+    },
+    {
+        label: 'Profil',
+        key: '/profile',
+        icon: <UserOutlined />,
+    },
+    {
+        label: 'Déconnexion',
+        key: '/logout',
+        icon: <LogoutOutlined />,
+        danger: true,
+    },
+]
 
+const AppMenu = ({
+    isInline = false,
+    current,
+    setCurrent,
+    setOpenMenu,
+}: {
+    isInline?: boolean
+    current: string
+    setCurrent: React.Dispatch<React.SetStateAction<string>>
+    setOpenMenu?: React.Dispatch<React.SetStateAction<boolean>>
+}) => {
     const onClick: MenuProps['onClick'] = (e) => {
-        setCurrent(e.key);
-    };
+        setCurrent(e.key)
+    }
 
     return (
-        <Header style={{background: "white", boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.03),0 1px 6px -1px rgba(0, 0, 0, 0.02),0 2px 4px 0 rgba(0, 0, 0, 0.02)"}}>
-            <Flex justify="space-between" align="center" style={{height: '100%'}}>
+        <Menu
+            onClick={(e) => {
+                onClick(e)
+                setOpenMenu !== undefined && setOpenMenu(false)
+            }}
+            defaultSelectedKeys={[window.location.pathname]}
+            selectedKeys={[current]}
+            mode={isInline ? 'inline' : 'horizontal'}
+            items={notLoggedInItems}
+            style={{ border: 'none' }}
+        />
+    )
+}
+
+const AppHeader = () => {
+    const [current, setCurrent] = useState<string>(window.location.pathname)
+    const [openMenu, setOpenMenu] = useState(false)
+
+    return (
+        <Header
+            style={{
+                background: 'white',
+                boxShadow:
+                    '0 1px 2px 0 rgba(0, 0, 0, 0.03),0 1px 6px -1px rgba(0, 0, 0, 0.02),0 2px 4px 0 rgba(0, 0, 0, 0.02)',
+            }}
+        >
+            <Flex
+                justify="space-between"
+                align="center"
+                style={{ height: '100%' }}
+            >
                 <h1>
-                    <Link to="/" style={{color:"#0e7490"}} onClick={()=>setCurrent("home")}>ENI-Enchères</Link>
+                    <Link
+                        to="/"
+                        style={{ color: '#0e7490' }}
+                        onClick={() => setCurrent('/')}
+                    >
+                        ENI-Enchères
+                    </Link>
                 </h1>
-                <Menu onClick={onClick} selectedKeys={[current]} mode="horizontal" items={items}/>
+                <div className="headerMenu">
+                    <AppMenu current={current} setCurrent={setCurrent} />
+                </div>
+                <MenuOutlined
+                    className="drawerMenu"
+                    onClick={() => setOpenMenu(true)}
+                    style={{ color: '#0e7490', fontSize: 30 }}
+                />
             </Flex>
+            <Drawer
+                size="large"
+                className="drawerMenu"
+                placement="left"
+                open={openMenu}
+                onClose={() => setOpenMenu(false)}
+                closable={false}
+            >
+                <div
+                    style={{
+                        height: '64px',
+                        display: 'flex',
+                        justifyContent: 'flex-end',
+                    }}
+                >
+                    <CloseOutlined
+                        onClick={() => setOpenMenu(false)}
+                        style={{ color: '#0e7490', fontSize: 30 }}
+                    />
+                </div>
+                <AppMenu
+                    current={current}
+                    setCurrent={setCurrent}
+                    setOpenMenu={setOpenMenu}
+                    isInline
+                />
+            </Drawer>
         </Header>
     )
 }
 
-export default AppHeader;
+export default AppHeader

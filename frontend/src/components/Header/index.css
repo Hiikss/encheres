@@ -1,21 +1,28 @@
-header div {
-    width: 96%;
-    margin: auto;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
+.ant-drawer-body {
+    padding-top: 0 !important;
 }
 
-a {
-    text-decoration: none;
+@media (max-width: 700px) {
+    header {
+        padding: 0 20px !important;
+    }
+
+    .headerMenu {
+        display: none;
+    }
 }
 
-h1 {
-    white-space: nowrap;
-}
+@media (min-width: 700px) {
+    .drawerMenu {
+        display: none;
+    }
 
-.links {
-    display: flex;
-    justify-content: flex-end;
-    gap: 14px;
+    .headerMenu {
+        flex: 1;
+    }
+
+    .headerMenu ul {
+        justify-content: flex-end;
+    }
+
 }
