@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import React, { useEffect, useState } from 'react'
+import { Link, useLocation } from 'react-router-dom'
 import { Header } from 'antd/lib/layout/layout'
 import { Drawer, Flex, Menu, MenuProps } from 'antd'
 import {
@@ -13,48 +13,7 @@ import {
     UserOutlined,
 } from '@ant-design/icons'
 import './index.css'
-
-const notLoggedInItems: MenuProps['items'] = [
-    {
-        label: <Link to="/">Accueil</Link>,
-        key: '/',
-        icon: <HomeOutlined />,
-    },
-    {
-        label: <Link to="/login">Se connecter</Link>,
-        key: '/login',
-        icon: <LoginOutlined />,
-    },
-    {
-        label: <Link to="/register">S'inscrire</Link>,
-        key: '/register',
-        icon: <UserAddOutlined />,
-    },
-]
-
-const loggedInItems: MenuProps['items'] = [
-    {
-        label: 'Accueil',
-        key: '/',
-        icon: <HomeOutlined />,
-    },
-    {
-        label: 'Vendre un article',
-        key: '/sell',
-        icon: <EuroCircleOutlined />,
-    },
-    {
-        label: 'Profil',
-        key: '/profile',
-        icon: <UserOutlined />,
-    },
-    {
-        label: 'Déconnexion',
-        key: '/logout',
-        icon: <LogoutOutlined />,
-        danger: true,
-    },
-]
+import { useAuth } from '../AuthProvider'
 
 const AppMenu = ({
     isInline = false,
@@ -67,6 +26,50 @@ const AppMenu = ({
     setCurrent: React.Dispatch<React.SetStateAction<string>>
     setOpenMenu?: React.Dispatch<React.SetStateAction<boolean>>
 }) => {
+    const auth = useAuth();
+    const notLoggedInItems: MenuProps['items'] = [
+        {
+            label: <Link to="/">Accueil</Link>,
+            key: '/',
+            icon: <HomeOutlined />,
+        },
+        {
+            label: <Link to="/login">Se connecter</Link>,
+            key: '/login',
+            icon: <LoginOutlined />,
+        },
+        {
+            label: <Link to="/register">S'inscrire</Link>,
+            key: '/register',
+            icon: <UserAddOutlined />,
+        },
+    ]
+
+    const loggedInItems: MenuProps['items'] = [
+        {
+            label: <Link to="/">Accueil</Link>,
+            key: '/',
+            icon: <HomeOutlined />,
+        },
+        {
+            label: <Link to="/sell">Vendre un article</Link>,
+            key: '/sell',
+            icon: <EuroCircleOutlined />,
+        },
+        {
+            label: <Link to="/profile">Profil</Link>,
+            key: '/profile',
+            icon: <UserOutlined />,
+        },
+        {
+            label: 'Déconnexion',
+            key: '/logout',
+            icon: <LogoutOutlined />,
+            danger: true,
+            onClick: () => auth.logOut()
+        },
+    ]
+
     const onClick: MenuProps['onClick'] = (e) => {
         setCurrent(e.key)
     }
@@ -77,18 +80,23 @@ const AppMenu = ({
                 onClick(e)
                 setOpenMenu !== undefined && setOpenMenu(false)
             }}
-            defaultSelectedKeys={[window.location.pathname]}
             selectedKeys={[current]}
             mode={isInline ? 'inline' : 'horizontal'}
-            items={notLoggedInItems}
+            items={auth.user ? loggedInItems : notLoggedInItems}
             style={{ border: 'none' }}
         />
     )
 }
 
 const AppHeader = () => {
-    const [current, setCurrent] = useState<string>(window.location.pathname)
+    const location = useLocation()
+    const [current, setCurrent] = useState<string>(location.pathname)
     const [openMenu, setOpenMenu] = useState(false)
+
+    useEffect(()=> {
+        setCurrent(location.pathname)
+    }, [location])
+
 
     return (
         <Header

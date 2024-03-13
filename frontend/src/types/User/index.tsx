@@ -1,4 +1,4 @@
-export interface AuthenticatedUser {
+export type AuthUser = {
     pseudo: string
     lastname: string
     firstname: string
@@ -7,12 +7,12 @@ export interface AuthenticatedUser {
     street: string
     postalCode: string
     city: string
-    password: string
     credit: number
+    admin: boolean
     token: string
 }
 
-export interface RequestUser {
+export type RequestUser = {
     pseudo: string
     lastname: string
     firstname: string
@@ -24,7 +24,7 @@ export interface RequestUser {
     password: string
 }
 
-export interface Credentials {
+export type Credentials = {
     login: string
     password: string
 }

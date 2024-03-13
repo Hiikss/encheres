@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,10 +36,15 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<AuthenticatedUserDto> register(@Valid @RequestBody RequestUserDto requestUserDto) {
         AuthenticatedUserDto user = userService.register(requestUserDto);
         user.setToken(userAuthProvider.createToken(user));
         return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
+
+    @GetMapping
+    public ResponseEntity<AuthenticatedUserDto> register(Authentication authentication) {
+        return ResponseEntity.ok().body((AuthenticatedUserDto) authentication.getPrincipal());
+    }
+
 }

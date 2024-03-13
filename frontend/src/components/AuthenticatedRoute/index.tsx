@@ -1,9 +1,10 @@
-import { Outlet, Navigate } from 'react-router-dom'
+import { Navigate, Outlet } from 'react-router-dom'
+import { useAuth } from '../AuthProvider'
 
 const AuthenticatedRoute = () => {
-    let auth = { token: false }
+    const auth = useAuth()
 
-    return auth.token ? <Outlet /> : <Navigate to="/login" />
+    return auth.user ? <Outlet /> : <Navigate to="/login" />
 }
 
 export default AuthenticatedRoute

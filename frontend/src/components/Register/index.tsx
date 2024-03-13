@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { RequestUser } from '../../types/User'
 import { register } from '../../services/UserService'
 import { message } from 'antd'
-import { setAuthHeader } from '../../services/AxiosInstance'
 import { useNavigate } from 'react-router-dom'
+import { setAuthToken } from '../AuthProvider'
 
 const Register = () => {
     const [password, setPassword] = useState('')
@@ -48,11 +48,11 @@ const Register = () => {
 
         await register(user)
             .then((res) => {
-                setAuthHeader(res.data.token)
+                setAuthToken(res.data.token)
                 navigate('/')
             })
             .catch((err) => {
-                setAuthHeader(null)
+                setAuthToken(null)
             })
     }
 

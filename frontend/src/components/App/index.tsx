@@ -6,6 +6,7 @@ import Login from '../Login'
 import Register from '../Register'
 import Profile from '../Profile'
 import AuthenticatedRoute from '../AuthenticatedRoute'
+import Sell from '../Sell'
 
 const App = () => {
     return (
@@ -15,7 +16,8 @@ const App = () => {
                 <Route path="login" element={<Login />} />
                 <Route path="register" element={<Register />} />
                 <Route element={<AuthenticatedRoute />}>
-                    <Route path="profile" element={<Profile />}/>
+                    <Route path="profile" element={<Profile />} />
+                    <Route path="sell" element={<Sell />} />
                 </Route>
             </Route>
         </Routes>
