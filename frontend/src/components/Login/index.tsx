@@ -5,6 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { setAuthToken, useAuth } from '../AuthProvider';
 import { Button, Checkbox, Flex, Form, Input, message, Typography } from 'antd';
 import styles from './Login.module.css';
+import { LockOutlined, UserOutlined } from '@ant-design/icons';
 
 type FieldType = {
     login: string;
@@ -86,7 +87,12 @@ const Login = () => {
                                     },
                                 ]}
                             >
-                                <Input placeholder="Pseudo ou email" />
+                                <Input
+                                    prefix={
+                                        <UserOutlined className="site-form-item-icon" />
+                                    }
+                                    placeholder="Pseudo ou email"
+                                />
                             </Form.Item>
                             <Form.Item<FieldType>
                                 label="Mot de passe"
@@ -99,7 +105,12 @@ const Login = () => {
                                     },
                                 ]}
                             >
-                                <Input.Password placeholder="Mot de passe" />
+                                <Input.Password
+                                    prefix={
+                                        <LockOutlined className="site-form-item-icon" />
+                                    }
+                                    placeholder="Mot de passe"
+                                />
                             </Form.Item>
                             <Form.Item<FieldType>
                                 name="remember"

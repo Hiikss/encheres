@@ -16,6 +16,7 @@ type FieldType = {
     postalCode: string;
     city: string;
     password: string;
+    confirm: string;
 };
 
 const Register = () => {
@@ -236,12 +237,31 @@ const Register = () => {
                                 </Form.Item>
                                 <Form.Item<FieldType>
                                     label="Confirmation mot de passe"
+                                    name="confirm"
+                                    dependencies={['password']}
                                     rules={[
                                         {
                                             required: true,
                                             message:
-                                                'Veuillez renseigner votre mot de passe',
+                                                'Veuillez confirmer votre mot de passe',
                                         },
+                                        ({ getFieldValue }) => ({
+                                            validator(_, value) {
+                                                if (
+                                                    !value ||
+                                                    getFieldValue(
+                                                        'password'
+                                                    ) === value
+                                                ) {
+                                                    return Promise.resolve();
+                                                }
+                                                return Promise.reject(
+                                                    new Error(
+                                                        'Les mots de passe ne correspondent pas'
+                                                    )
+                                                );
+                                            },
+                                        }),
                                     ]}
                                 >
                                     <Input.Password placeholder="Mot de passe" />
@@ -252,7 +272,7 @@ const Register = () => {
                                     type="primary"
                                     htmlType="submit"
                                     size="large"
-                                    style={{marginTop: '20px'}}
+                                    style={{ marginTop: '20px' }}
                                     block
                                 >
                                     S'inscrire
