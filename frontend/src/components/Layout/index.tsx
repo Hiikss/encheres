@@ -7,7 +7,7 @@ import {Content} from "antd/lib/layout/layout";
 const AppLayout = () => {
 
     return (
-        <Layout style={{height: "100vh"}}>
+        <Layout>
             <AppHeader/>
             <Content>
                 <Outlet/>

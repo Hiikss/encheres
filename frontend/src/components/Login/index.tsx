@@ -1,71 +1,65 @@
-import React, { useEffect, useState } from 'react'
-import { Credentials } from '../../types/User'
-import { login } from '../../services/UserService'
-import { Link, useNavigate } from 'react-router-dom'
-import { setAuthToken, useAuth } from '../AuthProvider'
-import {
-    Button,
-    Checkbox,
-    Col,
-    Flex,
-    Form,
-    Input,
-    message,
-    Row,
-    Tag, Typography,
-} from 'antd'
-import './index.css'
-import { InfoCircleOutlined } from '@ant-design/icons'
+import React, { useEffect } from 'react';
+import { Credentials } from '../../types/User';
+import { login } from '../../services/UserService';
+import { Link, useNavigate } from 'react-router-dom';
+import { setAuthToken, useAuth } from '../AuthProvider';
+import { Button, Checkbox, Flex, Form, Input, message, Typography } from 'antd';
+import styles from './Login.module.css';
 
 type FieldType = {
-    login: string
-    password: string
-    remember?: string
-}
+    login: string;
+    password: string;
+    remember?: string;
+};
 
 const Login = () => {
-    const [messageApi, contextHolder] = message.useMessage()
-    const navigate = useNavigate()
-    const auth = useAuth()
+    const [messageApi, contextHolder] = message.useMessage();
+    const navigate = useNavigate();
+    const auth = useAuth();
 
     useEffect(() => {
         if (auth.user) {
-            navigate('/')
+            navigate('/');
         }
-    })
+    });
 
     useEffect(() => {
-        document.title = 'Connexion'
-    }, [])
+        document.title = 'Connexion';
+    }, []);
 
     const loginFormSubmit = async (values: FieldType) => {
         const credentials: Credentials = {
             login: values.login,
             password: values.password,
-        }
+        };
         await login(credentials)
             .then((res) => {
-                setAuthToken(res.data.token)
-                auth.setUser(res.data)
-                navigate('/')
+                setAuthToken(res.data.token);
+                auth.setUser(res.data);
+                navigate('/');
             })
             .catch((err) => {
+                setAuthToken(null);
                 if (err.response.status === 400) {
                     messageApi.open({
                         type: 'error',
-                        content: 'Identifiant ou mot de passe incorrect',
-                    })
+                        content: 'Des champs sont invalides',
+                    });
+                } else {
+                    messageApi.open({
+                        type: 'error',
+                        content: 'Une erreur est survenue',
+                    });
                 }
-                setAuthToken(null)
-            })
-    }
+            });
+    };
 
     return (
         <>
             {contextHolder}
             {!auth.user && (
                 <Flex justify="center">
-                    <div className="form">
+                    <div className={styles.form}>
                         <h3
                             style={{
                                 textAlign: 'center',
@@ -75,7 +69,7 @@ const Login = () => {
                         >
                             Se connecter
                         </h3>
-                        <hr style={{ color: '#6b7280', width: '30%' }} />
+                        <hr style={{ color: '#6b7280', width: '110px' }} />
                         <Form
                             onFinish={loginFormSubmit}
                             layout="vertical"
@@ -111,9 +105,7 @@ const Login = () => {
                                 name="remember"
                                 valuePropName="checked"
                             >
-                                <Checkbox>
-                                    Se souvenir de moi
-                                </Checkbox>
+                                <Checkbox>Se souvenir de moi</Checkbox>
                             </Form.Item>
                             <Form.Item>
                                 <Button
@@ -136,14 +128,13 @@ const Login = () => {
                             Pas de compte ?{' '}
                             <Link to="/register" style={{ fontWeight: 600 }}>
                                 <Typography.Link>S'inscrire</Typography.Link>
-                            </Link>{' '}
-                            dès maintenant
+                            </Link>
                         </div>
                     </div>
                 </Flex>
             )}
         </>
-    )
-}
+    );
+};
 
-export default Login
+export default Login;
