@@ -1,7 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { RequestUser } from '../../types/User';
 import { register } from '../../services/UserService';
-import { Button, Flex, Form, Input, message, Typography } from 'antd';
+import {
+    Button,
+    Flex,
+    Form,
+    Input,
+    message,
+    notification,
+    Typography,
+} from 'antd';
 import { Link, useNavigate } from 'react-router-dom';
 import { setAuthToken, useAuth } from '../AuthProvider';
 import styles from './Register.module.css';
@@ -20,9 +28,8 @@ type FieldType = {
 };
 
 const Register = () => {
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
     const [messageApi, contextHolder] = message.useMessage();
+    const [formSubmitted, setFormSubmitted] = useState(false);
     const navigate = useNavigate();
     const auth = useAuth();
 
@@ -36,36 +43,18 @@ const Register = () => {
         document.title = 'Inscription';
     }, []);
 
-    const handlePasswordChange = (
-        event: React.ChangeEvent<HTMLInputElement>
-    ) => {
-        setPassword(event.target.value);
-    };
-
-    const handleConfirmPasswordChange = (
-        event: React.ChangeEvent<HTMLInputElement>
-    ) => {
-        setConfirmPassword(event.target.value);
-    };
-
-    const registerFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-
-        if (password !== confirmPassword) {
-            message.error('Les mots de passe ne correspondent pas');
-            return;
-        }
-
+    const registerFormSubmit = async (values: FieldType) => {
+        setFormSubmitted(true);
         const user: RequestUser = {
-            pseudo: e.currentTarget.pseudo.value,
-            lastname: e.currentTarget.lastname.value,
-            firstname: e.currentTarget.firstname.value,
-            email: e.currentTarget.email.value,
-            phoneNumber: e.currentTarget.phoneNumber.value,
-            street: e.currentTarget.street.value,
-            postalCode: e.currentTarget.postalCode.value,
-            city: e.currentTarget.city.value,
-            password: e.currentTarget.password.value,
+            pseudo: values.pseudo,
+            lastname: values.lastname,
+            firstname: values.firstname,
+            email: values.email,
+            phoneNumber: values.phoneNumber,
+            street: values.street,
+            postalCode: values.postalCode,
+            city: values.city,
+            password: values.password,
             credit: 100,
             active: true,
         };
@@ -74,14 +63,27 @@ const Register = () => {
             .then((res) => {
                 setAuthToken(res.data.token);
                 auth.setUser(res.data);
+                notification.success({
+                    message: 'Inscription réussie',
+                    description: 'Votre compte a bien été créé',
+                    duration: 2,
+                });
                 navigate('/');
             })
             .catch((err) => {
                 setAuthToken(null);
-                if (err.response.status === 400) {
+                if (
+                    err.response.status === 400 &&
+                    (err.response.data.message
+                        .toLowerCase()
+                        .includes('pseudo') ||
+                        err.response.data.message
+                            .toLowerCase()
+                            .includes('email'))
+                ) {
                     messageApi.open({
                         type: 'error',
-                        content: 'Identifiant ou mot de passe incorrect',
+                        content: `${err.response.data.message.toLowerCase().includes('pseudo') ? 'Ce pseudo' : 'Cet email'} est déjà utilisé`,
                     });
                 } else {
                     messageApi.open({
@@ -90,6 +92,7 @@ const Register = () => {
                     });
                 }
             });
+        setFormSubmitted(false);
     };
 
     return (
@@ -108,16 +111,17 @@ const Register = () => {
                             S'inscrire
                         </h3>
                         <hr style={{ color: '#6b7280', width: '110px' }} />
-                        <Form layout="vertical">
+                        <Form layout="vertical" onFinish={registerFormSubmit}>
                             <div className={styles.row}>
                                 <Form.Item<FieldType>
                                     label="Pseudo"
                                     name="pseudo"
                                     rules={[
                                         {
+                                            pattern: /^[a-zA-Z0-9]{4,}/,
                                             required: true,
                                             message:
-                                                'Veuillez renseigner votre pseudo',
+                                                'Le pseudo doit avoir minimum 4 caractères et doit contenir uniquement des caractères alphanumériques',
                                         },
                                     ]}
                                 >
@@ -128,6 +132,7 @@ const Register = () => {
                                     name="email"
                                     rules={[
                                         {
+                                            type: 'email',
                                             required: true,
                                             message:
                                                 'Veuillez renseigner votre email',
@@ -171,9 +176,11 @@ const Register = () => {
                                     name="phoneNumber"
                                     rules={[
                                         {
+                                            pattern: /\b\d{10}\b/g,
+                                            max: 10,
                                             required: true,
                                             message:
-                                                'Veuillez renseigner votre numéro de téléphone',
+                                                'Le numéro de téléphone doit contenir 10 chiffres',
                                         },
                                     ]}
                                 >
@@ -199,9 +206,10 @@ const Register = () => {
                                     name="postalCode"
                                     rules={[
                                         {
+                                            pattern: /\b\d{5}\b/g,
                                             required: true,
                                             message:
-                                                'Veuillez renseigner votre code postal',
+                                                'Le code postal doit contenir 5 chiffres',
                                         },
                                     ]}
                                 >
@@ -227,9 +235,11 @@ const Register = () => {
                                     name="password"
                                     rules={[
                                         {
+                                            pattern:
+                                                /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d#?!@$%^&*-]{8,}$/,
                                             required: true,
                                             message:
-                                                'Veuillez renseigner votre mot de passe',
+                                                'Le mot de passe doit doit faire au moins 8 caractères et doit contenir au moins une minuscule, une majuscule et un caractère spécial',
                                         },
                                     ]}
                                 >
@@ -273,6 +283,7 @@ const Register = () => {
                                     htmlType="submit"
                                     size="large"
                                     style={{ marginTop: '20px' }}
+                                    disabled={formSubmitted}
                                     block
                                 >
                                     S'inscrire

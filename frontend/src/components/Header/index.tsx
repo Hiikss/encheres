@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react'
-import { Link, useLocation } from 'react-router-dom'
-import { Header } from 'antd/lib/layout/layout'
-import { Drawer, Flex, Menu, MenuProps } from 'antd'
+import React, { useEffect, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { Header } from 'antd/lib/layout/layout';
+import { Drawer, Flex, Menu, MenuProps } from 'antd';
 import {
     CloseOutlined,
     EuroCircleOutlined,
@@ -11,9 +11,9 @@ import {
     MenuOutlined,
     UserAddOutlined,
     UserOutlined,
-} from '@ant-design/icons'
-import './index.css'
-import { useAuth } from '../AuthProvider'
+} from '@ant-design/icons';
+import './index.css';
+import { useAuth } from '../AuthProvider';
 
 const AppMenu = ({
     isInline = false,
@@ -21,10 +21,10 @@ const AppMenu = ({
     setCurrent,
     setOpenMenu,
 }: {
-    isInline?: boolean
-    current: string
-    setCurrent: React.Dispatch<React.SetStateAction<string>>
-    setOpenMenu?: React.Dispatch<React.SetStateAction<boolean>>
+    isInline?: boolean;
+    current: string;
+    setCurrent: React.Dispatch<React.SetStateAction<string>>;
+    setOpenMenu?: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
     const auth = useAuth();
     const notLoggedInItems: MenuProps['items'] = [
@@ -43,7 +43,7 @@ const AppMenu = ({
             key: '/register',
             icon: <UserAddOutlined />,
         },
-    ]
+    ];
 
     const loggedInItems: MenuProps['items'] = [
         {
@@ -66,37 +66,36 @@ const AppMenu = ({
             key: '/logout',
             icon: <LogoutOutlined />,
             danger: true,
-            onClick: () => auth.logOut()
+            onClick: () => auth.logOut(),
         },
-    ]
+    ];
 
     const onClick: MenuProps['onClick'] = (e) => {
-        setCurrent(e.key)
-    }
+        setCurrent(e.key);
+    };
 
     return (
         <Menu
             onClick={(e) => {
-                onClick(e)
-                setOpenMenu !== undefined && setOpenMenu(false)
+                onClick(e);
+                setOpenMenu !== undefined && setOpenMenu(false);
             }}
             selectedKeys={[current]}
             mode={isInline ? 'inline' : 'horizontal'}
             items={auth.user ? loggedInItems : notLoggedInItems}
             style={{ border: 'none' }}
         />
-    )
-}
+    );
+};
 
 const AppHeader = () => {
-    const location = useLocation()
-    const [current, setCurrent] = useState<string>(location.pathname)
-    const [openMenu, setOpenMenu] = useState(false)
+    const location = useLocation();
+    const [current, setCurrent] = useState<string>(location.pathname);
+    const [openMenu, setOpenMenu] = useState(false);
 
-    useEffect(()=> {
-        setCurrent(location.pathname)
-    }, [location])
-
+    useEffect(() => {
+        setCurrent(location.pathname);
+    }, [location]);
 
     return (
         <Header
@@ -112,11 +111,7 @@ const AppHeader = () => {
                 style={{ height: '100%' }}
             >
                 <h1>
-                    <Link
-                        to="/"
-                        style={{ color: '#0e7490' }}
-                        onClick={() => setCurrent('/')}
-                    >
+                    <Link to="/" style={{ color: '#0e7490' }}>
                         ENI-Enchères
                     </Link>
                 </h1>
@@ -157,7 +152,7 @@ const AppHeader = () => {
                 />
             </Drawer>
         </Header>
-    )
-}
+    );
+};
 
-export default AppHeader
+export default AppHeader;

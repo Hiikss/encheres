@@ -1,9 +1,18 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Credentials } from '../../types/User';
 import { login } from '../../services/UserService';
 import { Link, useNavigate } from 'react-router-dom';
 import { setAuthToken, useAuth } from '../AuthProvider';
-import { Button, Checkbox, Flex, Form, Input, message, Typography } from 'antd';
+import {
+    Button,
+    Checkbox,
+    Flex,
+    Form,
+    Input,
+    message,
+    notification,
+    Typography,
+} from 'antd';
 import styles from './Login.module.css';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 
@@ -15,6 +24,7 @@ type FieldType = {
 
 const Login = () => {
     const [messageApi, contextHolder] = message.useMessage();
+    const [formSubmitted, setFormSubmitted] = useState(false);
     const navigate = useNavigate();
     const auth = useAuth();
 
@@ -29,6 +39,7 @@ const Login = () => {
     }, []);
 
     const loginFormSubmit = async (values: FieldType) => {
+        setFormSubmitted(true);
         const credentials: Credentials = {
             login: values.login,
             password: values.password,
@@ -37,6 +48,10 @@ const Login = () => {
             .then((res) => {
                 setAuthToken(res.data.token);
                 auth.setUser(res.data);
+                notification.success({
+                    message: 'Connexion réussie',
+                    duration: 2,
+                });
                 navigate('/');
             })
             .catch((err) => {
@@ -53,6 +68,7 @@ const Login = () => {
                     });
                 }
             });
+        setFormSubmitted(false);
     };
 
     return (
@@ -123,6 +139,7 @@ const Login = () => {
                                     type="primary"
                                     htmlType="submit"
                                     size="large"
+                                    disabled={formSubmitted}
                                     block
                                 >
                                     Se connecter
