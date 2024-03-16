@@ -34,6 +34,7 @@ public class SecurityConfig {
         configuration.setAllowedMethods(Arrays.asList(
                 HttpMethod.GET.name(),
                 HttpMethod.POST.name(),
+                HttpMethod.PUT.name(),
                 HttpMethod.OPTIONS.name()));
         configuration.setAllowedHeaders(Arrays.asList(
                 HttpHeaders.AUTHORIZATION,
@@ -53,7 +54,7 @@ public class SecurityConfig {
                 .sessionManagement(customizer -> customizer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(requests ->
                         requests.requestMatchers(HttpMethod.POST, "/auth/login", "/auth/register").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/solditems", "/users/{userId}").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/solditems", "/users/{userId}", "/categories").permitAll()
                                 .anyRequest().authenticated()
                 );
         return http.build();

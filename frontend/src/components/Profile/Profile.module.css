@@ -1,22 +1,30 @@
+.profileForm {
+    padding: 10px 30px 30px 30px;
+    width: 600px;
+}
+
 .profile {
-    background: white;
     padding: 10px 40px 40px 40px;
     width: 440px;
+}
+
+.profile, .profileForm {
+    background: white;
     box-shadow: rgba(149, 157, 165, 0.2) 0 8px 24px;
     border-radius: 10px;
     margin-top: 50px;
     margin-bottom: 20px;
 }
 
-.row {
+.profileRow {
     display: flex;
     margin-top: 10px;
 }
 
-.row div:first-child {
+.profileRow div:first-child {
     width: 100px;
 }
-.row div:last-child {
+.profileRow div:last-child {
     color: #374151;
 }
 
@@ -25,7 +33,13 @@
         width: 90%;
     }
 
-    .row {
+    .profileForm {
+        width: 90%;
+    }
+}
+
+@media (max-width: 400px) {
+    .profileRow {
         flex-direction: column;
     }
 }

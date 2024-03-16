@@ -93,9 +93,14 @@ const AppHeader = () => {
     const location = useLocation();
     const [current, setCurrent] = useState<string>(location.pathname);
     const [openMenu, setOpenMenu] = useState(false);
+    const auth = useAuth();
 
     useEffect(() => {
-        setCurrent(location.pathname);
+        if (location.pathname === `/profile/${auth.user?.pseudo}`) {
+            setCurrent('/profile');
+        } else {
+            setCurrent(location.pathname);
+        }
     }, [location]);
 
     return (

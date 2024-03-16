@@ -3,7 +3,7 @@ import { AuthUser } from '../../types/User';
 import { getAuthUser } from '../../services/UserService';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
-import { Flex, Spin } from 'antd';
+import { Flex, notification, Spin } from 'antd';
 
 export type UserContextType = {
     user: any;
@@ -31,6 +31,13 @@ const AuthProvider = ({ children }: UserContextProviderType) => {
                 })
                 .catch((err) => {
                     setAuthToken(null);
+                    setUser(null);
+                    notification.error({
+                        message: 'Une erreur est survenue',
+                        description: 'Vous avez été déconnecté',
+                        duration: 2,
+                        placement: 'top',
+                    });
                     navigate('/');
                 })
                 .finally(() => {

@@ -9,7 +9,6 @@ export type AuthUser = {
     city: string;
     credit: number;
     admin: boolean;
-    token: string;
 };
 
 export type RequestUser = {
@@ -40,4 +39,5 @@ export type ResponseUser = {
     street: string;
     postalCode: string;
     city: string;
+    credit: number;
 };

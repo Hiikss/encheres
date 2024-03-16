@@ -20,8 +20,9 @@ export const getUser = async (pseudo: string) => {
         return res;
     })
 }
-// export const getExample = (user: User) => {
-//     return axiosInstance().get<User>('/encheres/api/auth/register').then(response => {
-//         return response;
-//     })
-// }
+
+export const updateUser = async (pseudo: string, user: RequestUser) => {
+    return axiosInstance().put<ResponseUser>(`/users/${pseudo}`, user).then(res => {
+        return res;
+    })
+}

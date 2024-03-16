@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Credentials } from '../../types/User';
 import { login } from '../../services/UserService';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { setAuthToken, useAuth } from '../AuthProvider';
 import {
     Button,
@@ -47,10 +47,22 @@ const Login = () => {
         await login(credentials)
             .then((res) => {
                 setAuthToken(res.data.token);
-                auth.setUser(res.data);
+                auth.setUser({
+                    pseudo: res.data.pseudo,
+                    lastname: res.data.lastname,
+                    firstname: res.data.firstname,
+                    email: res.data.email,
+                    phoneNumber: res.data.phoneNumber,
+                    street: res.data.street,
+                    postalCode: res.data.postalCode,
+                    city: res.data.city,
+                    credit: res.data.credit,
+                    admin: res.data.admin,
+                });
                 notification.success({
                     message: 'Connexion réussie',
-                    duration: 1,
+                    duration: 2,
+                    placement: 'top',
                 });
                 navigate('/');
             })
@@ -59,7 +71,8 @@ const Login = () => {
                 if (err.response.status === 400) {
                     messageApi.open({
                         type: 'error',
-                        content: 'L\'identifiant ou le mot de passe est incorrect',
+                        content:
+                            "L'identifiant ou le mot de passe est incorrect",
                     });
                 } else {
                     messageApi.open({
@@ -154,9 +167,12 @@ const Login = () => {
                             }}
                         >
                             Pas de compte ?{' '}
-                            <Link to="/register" style={{ fontWeight: 600 }}>
-                                <Typography.Link>S'inscrire</Typography.Link>
-                            </Link>
+                            <Typography.Link
+                                onClick={() => navigate('/register')}
+                                style={{ fontWeight: 600 }}
+                            >
+                                S'inscrire
+                            </Typography.Link>
                         </div>
                     </div>
                 </Flex>
