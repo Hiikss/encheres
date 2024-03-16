@@ -47,8 +47,10 @@ public class SoldItemController {
         if (authentication != null) {
             authenticatedUser = (AuthenticatedUserDto) authentication.getPrincipal();
         }
+
         HttpHeaders headers = new HttpHeaders();
         headers.add("X-Total-Count", Long.toString(soldItemService.countSoldItems(itemName, category, filters, authenticatedUser)));
+        headers.setAccessControlExposeHeaders(List.of("X-Total-Count"));
         return ResponseEntity.status(HttpStatus.OK)
                 .headers(headers)
                 .body(soldItemService.getSoldItems(page, size, itemName, category, filters, authenticatedUser));

@@ -3,6 +3,7 @@ import {
     Button,
     Card,
     Checkbox,
+    Empty,
     Form,
     Input,
     message,
@@ -31,6 +32,7 @@ const Home = () => {
     const [categories, setCategories] = useState<Category[]>([]);
     const [page, setPage] = useState<number>(1);
     const [size, setSize] = useState<number>(10);
+    const [totalCount, setTotalCount] = useState<number>(0);
     const [itemName, setItemName] = useState<string>('');
     const [category, setCategory] = useState<string>('');
     const [filters, setFilters] = useState<string[]>([]);
@@ -60,6 +62,7 @@ const Home = () => {
         getSoldItems(page, size, itemName, category, filters)
             .then((res) => {
                 setSoldItems(res.data);
+                setTotalCount(+res.headers['x-total-count'])
             })
             .catch((err) => {
                 messageApi.open({
@@ -77,9 +80,9 @@ const Home = () => {
     };
 
     return (
-        <div>
+        <div className={styles.page}>
             <h2 style={{ textAlign: 'center' }}>Liste des enchères</h2>
-            <div>
+            <div className={styles.itemsForm}>
                 <Form onFinish={onFormSubmit}>
                     <Form.Item<FieldType> name="itemName" initialValue="">
                         <Input
@@ -106,89 +109,109 @@ const Home = () => {
                         </Select>
                     </Form.Item>
                     {auth.user && (
-                        <Radio.Group defaultValue="achats">
-                            <Radio
-                                value="achats"
-                                onClick={() => setFirstRadio(true)}
-                            >
-                                Achats
-                            </Radio>
-                            <Form.Item<FieldType>
-                                name="auctions"
-                                initialValue={['opened']}
-                            >
-                                <Checkbox.Group disabled={!firstRadio}>
-                                    <Checkbox value="opened">
-                                        Enchères ouvertes
-                                    </Checkbox>
-                                    <Checkbox value="mine">
-                                        Mes enchères
-                                    </Checkbox>
-                                    <Checkbox value="won">
-                                        Mes enchères remportées
-                                    </Checkbox>
-                                </Checkbox.Group>
-                            </Form.Item>
-                            <Radio
-                                value="ventes"
-                                onClick={() => setFirstRadio(false)}
-                            >
-                                Mes ventes
-                            </Radio>
-                            <Form.Item<FieldType>
-                                name="sells"
-                                initialValue={[]}
-                            >
-                                <Checkbox.Group disabled={firstRadio}>
-                                    <Checkbox value="inProgress">
-                                        Mes ventes en cours
-                                    </Checkbox>
-                                    <Checkbox value="notStarted">
-                                        Ventes non débutées
-                                    </Checkbox>
-                                    <Checkbox value="over">
-                                        Ventes terminées
-                                    </Checkbox>
-                                </Checkbox.Group>
-                            </Form.Item>
+                        <Radio.Group
+                            defaultValue="achats"
+                            className={styles.radioGroup}
+                        >
+                            <div>
+                                <Radio
+                                    value="achats"
+                                    onClick={() => setFirstRadio(true)}
+                                >
+                                    Achats
+                                </Radio>
+                                <Form.Item<FieldType>
+                                    name="auctions"
+                                    initialValue={['opened']}
+                                >
+                                    <Checkbox.Group
+                                        disabled={!firstRadio}
+                                        className={styles.checkboxGroup}
+                                    >
+                                        <Checkbox value="opened">
+                                            Enchères ouvertes
+                                        </Checkbox>
+                                        <Checkbox value="mine">
+                                            Mes enchères
+                                        </Checkbox>
+                                        <Checkbox value="won">
+                                            Mes enchères remportées
+                                        </Checkbox>
+                                    </Checkbox.Group>
+                                </Form.Item>
+                            </div>
+                            <div>
+                                <Radio
+                                    value="ventes"
+                                    onClick={() => setFirstRadio(false)}
+                                >
+                                    Mes ventes
+                                </Radio>
+                                <Form.Item<FieldType>
+                                    name="sells"
+                                    initialValue={[]}
+                                >
+                                    <Checkbox.Group
+                                        disabled={firstRadio}
+                                        className={styles.checkboxGroup}
+                                    >
+                                        <Checkbox value="inProgress">
+                                            Ventes en cours
+                                        </Checkbox>
+                                        <Checkbox value="notStarted">
+                                            Ventes non débutées
+                                        </Checkbox>
+                                        <Checkbox value="over">
+                                            Ventes terminées
+                                        </Checkbox>
+                                    </Checkbox.Group>
+                                </Form.Item>
+                            </div>
                         </Radio.Group>
                     )}
                     <Form.Item>
-                        <Button type="primary" htmlType="submit" size="large">
+                        <Button type="primary" htmlType="submit" size="large" block>
                             Rechercher
                         </Button>
                     </Form.Item>
                 </Form>
             </div>
-            <div
-                style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(4, 1fr)',
-                    columnGap: '20px',
-                }}
-                className={styles.itemList}
-            >
-                {soldItems.map((soldItem) => (
-                    <Card
-                        title={soldItem.itemName}
-                        key={soldItem.id}
-                        onClick={() => navigate(`/solditem/${soldItem.id}`)}
-                        bordered={false}
-                        hoverable
-                    >
-                        <div>
-                            <div>Prix : {soldItem.sellPrice}</div>
+            {soldItems.length > 0 ? (
+                <div
+                    style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(4, 1fr)',
+                        columnGap: '20px',
+                    }}
+                    className={styles.itemList}
+                >
+                    {soldItems.map((soldItem) => (
+                        <Card
+                            title={soldItem.itemName}
+                            key={soldItem.id}
+                            onClick={() => navigate(`/solditem/${soldItem.id}`)}
+                            bordered={false}
+                            hoverable
+                        >
                             <div>
-                                Fin de l'enchère :{' '}
-                                {new Date(
-                                    soldItem.auctionEndDate
-                                ).toLocaleDateString()}
+                                <div>Prix : {soldItem.sellPrice}</div>
+                                <div>
+                                    Fin de l'enchère :{' '}
+                                    {new Date(
+                                        soldItem.auctionEndDate
+                                    ).toLocaleDateString()}
+                                </div>
+                                <div>Vender : {soldItem.seller}</div>
                             </div>
-                            <div>Vender : {soldItem.seller}</div>
-                        </div>
-                    </Card>
-                ))}
-            </div>
+                        </Card>
+                    ))}
+                </div>
+            ) : (
+                <Empty
+                    image={Empty.PRESENTED_IMAGE_DEFAULT}
+                    description="Aucun article trouvé"
+                />
+            )}
         </div>
     );
 };

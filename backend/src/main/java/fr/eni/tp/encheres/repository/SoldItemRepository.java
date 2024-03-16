@@ -23,7 +23,8 @@ public interface SoldItemRepository extends JpaRepository<SoldItem, UUID> {
             "OR ('over' IN :filters AND s.user.pseudo = :pseudo AND s.auctionEndDate <= CURRENT_DATE()))")
     List<SoldItem> findSoldItemsByFilters(Pageable pageable, String itemName, String category, List<String> filters, String pseudo);
 
-    @Query("SELECT COUNT(s) FROM SoldItem s, Auction a " +
+    @Query("SELECT COUNT(s) FROM SoldItem s, Auction a" +
+            " " +
             "WHERE (:itemName = '' OR s.itemName LIKE '%' || :itemName || '%') " +
             "AND (:category = '' OR :category = s.category.label) " +
             "AND (('opened' IN :filters AND s.auctionStartDate <= CURRENT_DATE() AND s.auctionEndDate > CURRENT_DATE()) " +
