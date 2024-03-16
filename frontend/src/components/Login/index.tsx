@@ -50,7 +50,7 @@ const Login = () => {
                 auth.setUser(res.data);
                 notification.success({
                     message: 'Connexion réussie',
-                    duration: 2,
+                    duration: 1,
                 });
                 navigate('/');
             })
@@ -59,7 +59,7 @@ const Login = () => {
                 if (err.response.status === 400) {
                     messageApi.open({
                         type: 'error',
-                        content: 'Des champs sont invalides',
+                        content: 'L\'identifiant ou le mot de passe est incorrect',
                     });
                 } else {
                     messageApi.open({

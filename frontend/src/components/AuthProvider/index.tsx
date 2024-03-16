@@ -1,76 +1,85 @@
-import React, { createContext, useContext, useEffect, useState } from 'react'
-import { AuthUser } from '../../types/User'
-import { getAuthUser } from '../../services/UserService'
-import { useNavigate } from 'react-router-dom'
-import Cookies from 'js-cookie'
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { AuthUser } from '../../types/User';
+import { getAuthUser } from '../../services/UserService';
+import { useNavigate } from 'react-router-dom';
+import Cookies from 'js-cookie';
+import { Flex, Spin } from 'antd';
 
 export type UserContextType = {
-    user: any
-    setUser: any
-    loading: boolean
-    logOut: () => void
-}
+    user: any;
+    setUser: any;
+    loading: boolean;
+    logOut: () => void;
+};
 
 type UserContextProviderType = {
-    children: React.ReactNode
-}
+    children: React.ReactNode;
+};
 
-export const AuthContext = createContext({} as UserContextType)
+export const AuthContext = createContext({} as UserContextType);
 
 const AuthProvider = ({ children }: UserContextProviderType) => {
-    const [user, setUser] = useState<AuthUser | null>(null)
-    const [loading, setLoading] = useState(true)
-    const navigate = useNavigate()
+    const [user, setUser] = useState<AuthUser | null>(null);
+    const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (getAuthToken() !== undefined) {
             getAuthUser()
                 .then((res) => {
-                    setUser(res.data)
+                    setUser(res.data);
                 })
                 .catch((err) => {
-                    setAuthToken(null)
-                    navigate('/')
+                    setAuthToken(null);
+                    navigate('/');
                 })
                 .finally(() => {
-                    setLoading(false)
-                })
+                    setLoading(false);
+                });
         } else {
-            setLoading(false)
+            setLoading(false);
         }
-    }, [])
+    }, []);
 
     const logOut = () => {
-        setUser(null)
-        setAuthToken(null)
-        navigate('/')
-    }
+        setUser(null);
+        setAuthToken(null);
+        navigate('/');
+    };
 
     if (loading) {
-        return <div>Loading...</div>
+        return (
+            <Flex
+                justify="center"
+                align="center"
+                style={{ marginTop: '200px' }}
+            >
+                <Spin size="large" />
+            </Flex>
+        );
     }
 
     return (
         <AuthContext.Provider value={{ user, setUser, loading, logOut }}>
             {children}
         </AuthContext.Provider>
-    )
-}
+    );
+};
 
-export default AuthProvider
+export default AuthProvider;
 
 export const getAuthToken = () => {
-    return Cookies.get('auth_token')
-}
+    return Cookies.get('auth_token');
+};
 
 export const setAuthToken = (token: any) => {
     if (token !== null) {
-        Cookies.set('auth_token', token)
+        Cookies.set('auth_token', token);
     } else {
-        Cookies.remove('auth_token')
+        Cookies.remove('auth_token');
     }
-}
+};
 
 export const useAuth = () => {
-    return useContext(AuthContext)
-}
+    return useContext(AuthContext);
+};

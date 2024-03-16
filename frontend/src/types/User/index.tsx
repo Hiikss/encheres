@@ -30,3 +30,14 @@ export type Credentials = {
     login: string;
     password: string;
 };
+
+export type ResponseUser = {
+    pseudo: string;
+    lastname: string;
+    firstname: string;
+    email: string;
+    phoneNumber: string;
+    street: string;
+    postalCode: string;
+    city: string;
+};

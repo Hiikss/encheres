@@ -27,6 +27,7 @@ const AppMenu = ({
     setOpenMenu?: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
     const auth = useAuth();
+
     const notLoggedInItems: MenuProps['items'] = [
         {
             label: <Link to="/">Accueil</Link>,

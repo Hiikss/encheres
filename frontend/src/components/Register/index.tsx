@@ -66,7 +66,7 @@ const Register = () => {
                 notification.success({
                     message: 'Inscription réussie',
                     description: 'Votre compte a bien été créé',
-                    duration: 2,
+                    duration: 1,
                 });
                 navigate('/');
             })

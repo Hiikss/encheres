@@ -1,5 +1,5 @@
 import axiosInstance from "../AxiosInstance";
-import { RequestUser, Credentials, AuthUser } from '../../types/User'
+import { RequestUser, Credentials, AuthUser, ResponseUser } from '../../types/User';
 
 export const login = (credentials: Credentials) => {
     return axiosInstance().post('/auth/login', credentials);
@@ -15,6 +15,11 @@ export const getAuthUser = async () => {
     })
 }
 
+export const getUser = async (pseudo: string) => {
+    return axiosInstance().get<ResponseUser>(`/users/${pseudo}`).then(res => {
+        return res;
+    })
+}
 // export const getExample = (user: User) => {
 //     return axiosInstance().get<User>('/encheres/api/auth/register').then(response => {
 //         return response;

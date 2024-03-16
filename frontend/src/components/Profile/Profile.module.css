@@ -1,0 +1,31 @@
+.profile {
+    background: white;
+    padding: 10px 40px 40px 40px;
+    width: 440px;
+    box-shadow: rgba(149, 157, 165, 0.2) 0 8px 24px;
+    border-radius: 10px;
+    margin-top: 50px;
+    margin-bottom: 20px;
+}
+
+.row {
+    display: flex;
+    margin-top: 10px;
+}
+
+.row div:first-child {
+    width: 100px;
+}
+.row div:last-child {
+    color: #374151;
+}
+
+@media (max-width: 640px) {
+    .profile {
+        width: 90%;
+    }
+
+    .row {
+        flex-direction: column;
+    }
+}
