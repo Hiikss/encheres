@@ -18,6 +18,7 @@ import { getCategories } from '../../services/CategoryService';
 import { useNavigate } from 'react-router-dom';
 import styles from './Home.module.css';
 import { SearchOutlined } from '@ant-design/icons';
+import { set } from 'js-cookie';
 
 type FieldType = {
     itemName: string;
@@ -35,7 +36,7 @@ const Home = () => {
     const [totalCount, setTotalCount] = useState<number>(0);
     const [itemName, setItemName] = useState<string>('');
     const [category, setCategory] = useState<string>('');
-    const [filters, setFilters] = useState<string[]>([]);
+    const [filters, setFilters] = useState<string[]>(['opened']);
     const [firstRadio, setFirstRadio] = useState(true);
     const [formSubmitted, setFormSubmitted] = useState(0);
     const navigate = useNavigate();
@@ -62,7 +63,7 @@ const Home = () => {
         getSoldItems(page, size, itemName, category, filters)
             .then((res) => {
                 setSoldItems(res.data);
-                setTotalCount(+res.headers['x-total-count'])
+                setTotalCount(+res.headers['x-total-count']);
             })
             .catch((err) => {
                 messageApi.open({
@@ -75,7 +76,11 @@ const Home = () => {
     const onFormSubmit = (values: FieldType) => {
         setItemName(values.itemName);
         setCategory(values.category);
-        setFilters(firstRadio ? values.auctions : values.sells);
+        if (auth.user) {
+            setFilters(firstRadio ? values.auctions : values.sells);
+        } else {
+            setFilters(['opened']);
+        }
         setFormSubmitted(formSubmitted + 1);
     };
 
@@ -95,7 +100,7 @@ const Home = () => {
                         name="category"
                         initialValue=""
                     >
-                        <Select>
+                        <Select style={{ width: '160px' }}>
                             <Select.Option value="">Toutes</Select.Option>
                             {categories.map((category) => (
                                 <Select.Option
@@ -170,7 +175,12 @@ const Home = () => {
                         </Radio.Group>
                     )}
                     <Form.Item>
-                        <Button type="primary" htmlType="submit" size="large" block>
+                        <Button
+                            type="primary"
+                            htmlType="submit"
+                            size="large"
+                            block
+                        >
                             Rechercher
                         </Button>
                     </Form.Item>
