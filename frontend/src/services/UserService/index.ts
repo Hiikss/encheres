@@ -26,3 +26,9 @@ export const updateUser = async (pseudo: string, user: RequestUser) => {
         return res;
     })
 }
+
+export const deleteUser = async (pseudo: string) => {
+    return axiosInstance().delete(`/users/${pseudo}`).then(res => {
+        return res;
+    })
+}

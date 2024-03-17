@@ -1,19 +1,58 @@
-import { Button, Flex } from 'antd';
+import { Button, Flex, Modal, ModalFuncProps, notification } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { ResponseUser } from '../../types/User';
-import { getUser } from '../../services/UserService';
+import { deleteUser, getUser } from '../../services/UserService';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useAuth } from '../AuthProvider';
+import { setAuthToken, useAuth } from '../AuthProvider';
 import styles from './Profile.module.css';
 import UserForm from '../UserForm';
-import { LeftOutlined } from '@ant-design/icons';
+import { ExclamationCircleFilled, LeftOutlined } from '@ant-design/icons';
 
 const Profile = () => {
     const { pseudo } = useParams();
     const [user, setUser] = useState<ResponseUser>();
     const [modify, setModify] = useState(false);
+    const [modal, contextHolder] = Modal.useModal();
     const navigate = useNavigate();
     const auth = useAuth();
+
+    const onModalOk = async () => {
+        if (auth.user.pseudo) {
+            await deleteUser(auth.user.pseudo).then((res) => {
+                notification.success({
+                    message: 'Votre compte a bien été supprimé',
+                    description: "Vous avez été redirigé vers l'accueil",
+                    duration: 2,
+                    placement: 'top',
+                });
+                auth.setUser(null);
+                setAuthToken(null);
+                navigate('/');
+            }).catch((err) => {
+                notification.error({
+                    message: 'Une erreur est survenue',
+                    duration: 2,
+                    placement: 'top',
+                });
+            });
+        }
+    };
+
+    const deleteAccountModal: ModalFuncProps = {
+        title: 'Voulez-vous supprimer votre compte ?',
+        icon: <ExclamationCircleFilled />,
+        okText: 'Confirmer',
+        okButtonProps: {
+            danger: true,
+        },
+        onOk: onModalOk,
+        cancelText: 'Annuler',
+        content: (
+            <div style={{ fontSize: '16px', marginBottom: '20px' }}>
+                Attention, cette action est irréversible
+            </div>
+        ),
+    };
 
     useEffect(() => {
         document.title =
@@ -55,6 +94,18 @@ const Profile = () => {
                     </h3>
                     <hr style={{ color: '#6b7280', width: '110px' }} />
                     <UserForm type="modify" />
+                    <Button
+                        onClick={async () =>
+                            await modal.confirm(deleteAccountModal)
+                        }
+                        size="large"
+                        style={{ marginTop: '10px' }}
+                        block
+                        danger
+                    >
+                        Supprimer le compte
+                    </Button>
+                    {contextHolder}
                 </div>
             ) : (
                 <div className={styles.profile}>
@@ -102,6 +153,12 @@ const Profile = () => {
                             {user?.street}, {user?.postalCode} {user?.city}
                         </div>
                     </div>
+                    {auth.user.pseudo === user?.pseudo && (
+                        <div className={styles.profileRow}>
+                            <div>Crédit :</div>
+                            <div>{user?.credit}</div>
+                        </div>
+                    )}
                     {auth.user.pseudo === user?.pseudo && (
                         <Button
                             onClick={() => setModify(true)}

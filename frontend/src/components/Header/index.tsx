@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Header } from 'antd/lib/layout/layout';
 import { Drawer, Flex, Menu, MenuProps } from 'antd';
 import {
-    CloseOutlined,
+    CloseOutlined, ControlOutlined,
     EuroCircleOutlined,
     HomeOutlined,
     LoginOutlined,
@@ -70,6 +70,14 @@ const AppMenu = ({
             onClick: () => auth.logOut(),
         },
     ];
+
+    if (auth.user?.admin) {
+        loggedInItems.splice(loggedInItems.length-1, 0,{
+            label: 'Admin',
+            key: '/admin',
+            icon: <ControlOutlined />
+        });
+    }
 
     const onClick: MenuProps['onClick'] = (e) => {
         setCurrent(e.key);

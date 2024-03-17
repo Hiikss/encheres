@@ -1,8 +1,7 @@
 package fr.eni.tp.encheres.service;
 
-import fr.eni.tp.encheres.dto.AuthenticatedUserDto;
 import fr.eni.tp.encheres.dto.AuctionDto;
-import fr.eni.tp.encheres.exception.AuctionException;
+import fr.eni.tp.encheres.dto.AuthenticatedUserDto;
 import fr.eni.tp.encheres.exception.SoldItemException;
 import fr.eni.tp.encheres.exception.UserException;
 import fr.eni.tp.encheres.mapper.AuctionMapper;
