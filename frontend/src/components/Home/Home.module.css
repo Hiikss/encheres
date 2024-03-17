@@ -1,10 +1,20 @@
 .page {
-    max-width: 900px;
-    width: 90%;
-    margin: auto;
-}
-.itemsForm {
     display: flex;
+    height: 100%;
+}
+
+.page > div:first-child {
+    background-color: white;
+}
+
+.desktopFilters {
+    display: flex;
+    padding: 20px;
+}
+
+.desktopFilters form {
+    max-width: 300px;
+    min-width: 300px;
 }
 
 .radioGroup {
@@ -19,11 +29,52 @@
     margin-top: 4px;
 }
 
+.mobileFilters form {
+    margin-top: 20px !important;
+}
+
 @media (min-width: 1024px) {
-    .itemsForm form {
-        display: flex;
-        align-items: center;
-        width: 100%;
-        gap: 30px;
+    /*.desktopFilters form {*/
+    /*    display: flex;*/
+    /*    align-items: center;*/
+    /*    width: 100%;*/
+    /*    gap: 30px;*/
+    /*}*/
+    .desktopFilters form {
+        max-width: inherit !important;
+    }
+
+    .itemList {
+        margin-right: 40px !important;
+        margin-left: 40px !important;
+    }
+}
+
+@media (max-width: 760px) {
+    .desktopFilters {
+        display: none;
+    }
+
+    .checkboxGroup {
+        margin-left: 20px;
+    }
+
+    .itemList {
+        width: 90%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
+@media (min-width: 760px) {
+    .mobileFilters {
+        display: none;
+    }
+
+    .itemList {
+        flex: 1;
+        margin-right: 20px;
+        margin-left: 20px;
+        margin-bottom: 20px;
     }
 }

@@ -1,10 +1,22 @@
-import { Navigate, Outlet } from 'react-router-dom'
-import { useAuth } from '../AuthProvider'
+import { Navigate, Outlet } from 'react-router-dom';
+import { useAuth } from '../AuthProvider';
+import { notification } from 'antd';
+import { useEffect } from 'react';
 
 const AuthenticatedRoute = () => {
-    const auth = useAuth()
+    const auth = useAuth();
 
-    return auth.user ? <Outlet /> : <Navigate to="/login" />
-}
+    useEffect(() => {
+        if (!auth.user) {
+            notification.info({
+                message: 'Vous devez être connecté pour accéder à ce contenu',
+                duration: 2,
+                placement: 'top',
+            });
+        }
+    }, []);
 
-export default AuthenticatedRoute
+    return auth.user ? <Outlet /> : <Navigate to="/login" />;
+};
+
+export default AuthenticatedRoute;

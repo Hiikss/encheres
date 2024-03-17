@@ -15,6 +15,7 @@ import {
 } from 'antd';
 import styles from './Login.module.css';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
+import Cookies from 'js-cookie';
 
 type FieldType = {
     login: string;
@@ -27,6 +28,7 @@ const Login = () => {
     const [formSubmitted, setFormSubmitted] = useState(false);
     const navigate = useNavigate();
     const auth = useAuth();
+    const rememberMe = Cookies.get('remember_me');
 
     useEffect(() => {
         if (auth.user) {
@@ -39,6 +41,7 @@ const Login = () => {
     }, []);
 
     const loginFormSubmit = async (values: FieldType) => {
+        console.log(values);
         setFormSubmitted(true);
         const credentials: Credentials = {
             login: values.login,
@@ -46,6 +49,12 @@ const Login = () => {
         };
         await login(credentials)
             .then((res) => {
+                if (values.remember) {
+                    Cookies.set('remember_me', values.login, { expires: 30 });
+                } else {
+                    Cookies.remove('remember_me');
+                }
+
                 setAuthToken(res.data.token);
                 auth.setUser({
                     pseudo: res.data.pseudo,
@@ -108,6 +117,7 @@ const Login = () => {
                             <Form.Item<FieldType>
                                 label="Identifiant"
                                 name="login"
+                                initialValue={rememberMe}
                                 rules={[
                                     {
                                         required: true,
@@ -144,6 +154,7 @@ const Login = () => {
                             <Form.Item<FieldType>
                                 name="remember"
                                 valuePropName="checked"
+                                initialValue={rememberMe}
                             >
                                 <Checkbox>Se souvenir de moi</Checkbox>
                             </Form.Item>
