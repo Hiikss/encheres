@@ -23,10 +23,10 @@ public class SoldItem {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID soldItemId;
 
-    @Column(nullable = false, length = 30, columnDefinition = "text")
+    @Column(nullable = false, length = 30)
     private String itemName;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "text")
     private String description;
 
     @Column(nullable = false)
