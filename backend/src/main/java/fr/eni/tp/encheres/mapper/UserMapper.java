@@ -7,6 +7,8 @@ import fr.eni.tp.encheres.model.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 public interface UserMapper {
 
@@ -21,4 +23,6 @@ public interface UserMapper {
     User toUser(RequestUserDto requestUserDto);
 
     ResponseUserDto toUserDto(User user);
+
+    List<ResponseUserDto> toResponseUserDtoList(List<User> uers);
 }

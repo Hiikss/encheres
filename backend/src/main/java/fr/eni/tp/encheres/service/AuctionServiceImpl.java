@@ -48,25 +48,29 @@ public class AuctionServiceImpl implements AuctionService {
             throw new SoldItemException(HttpStatus.NOT_FOUND, "Sold item not found");
         }
 
-        User user = userRepository.findByPseudo(authenticatedUser.getPseudo())
+        User currentBidder = userRepository.findByPseudo(authenticatedUser.getPseudo())
                 .orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "User not found"));
 
         User lastBidder = soldItem.getAuctions().stream().max(comparingInt(Auction::getAuctionPrice)).map(Auction::getUser).orElse(null);
+        User seller = soldItem.getUser();
 
-        auctionValidator.validateAuction(requestAuction, soldItem, user);
+        auctionValidator.validateAuction(requestAuction, soldItem, currentBidder);
 
         // Last bidder get his money back
         if (lastBidder != null) {
-            if (lastBidder.getUserId().equals(user.getUserId())) {
-                user.setCredit(user.getCredit() + soldItem.getSellPrice());
+            if (lastBidder.getUserId().equals(currentBidder.getUserId())) {
+                currentBidder.setCredit(currentBidder.getCredit() + soldItem.getSellPrice());
             } else {
                 lastBidder.setCredit(lastBidder.getCredit() + soldItem.getSellPrice());
                 userRepository.save(lastBidder);
             }
         }
 
-        user.setCredit(user.getCredit() - requestAuction.getAuctionPrice());
-        userRepository.save(user);
+        currentBidder.setCredit(currentBidder.getCredit() - requestAuction.getAuctionPrice());
+        userRepository.save(currentBidder);
+        
+        seller.setCredit(seller.getCredit() + requestAuction.getAuctionPrice());
+        userRepository.save(seller);
 
         soldItem.setSellPrice(requestAuction.getAuctionPrice());
         soldItemRepository.save(soldItem);
@@ -74,7 +78,7 @@ public class AuctionServiceImpl implements AuctionService {
         Auction auction = auctionMapper.toAuction(requestAuction);
         auction.setAuctionDate(LocalDate.now());
         auction.setSoldItem(soldItem);
-        auction.setUser(user);
+        auction.setUser(currentBidder);
         auctionRepository.save(auction);
     }
 }

@@ -1,12 +1,14 @@
 package fr.eni.tp.encheres.validation;
 
-import jakarta.validation.ConstraintValidator;
-import jakarta.validation.ConstraintValidatorContext;
+import jakarta.validation.Constraint;
+import jakarta.validation.Payload;
 
-public class PasswordValidator implements ConstraintValidator<Password, char[]> {
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-    @Override
-    public boolean isValid(char[] chars, ConstraintValidatorContext constraintValidatorContext) {
-        return chars != null && String.valueOf(chars).matches("^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[#?!@$%^&*-])(?=\\S+$).{8,}$");
-    }
+public interface PasswordValidator {
+
+    void validatePassword(char[] password);
 }

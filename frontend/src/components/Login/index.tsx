@@ -41,10 +41,9 @@ const Login = () => {
     }, []);
 
     const loginFormSubmit = async (values: FieldType) => {
-        console.log(values);
         setFormSubmitted(true);
         const credentials: Credentials = {
-            login: values.login,
+            login: values.login.trim(),
             password: values.password,
         };
         await login(credentials)
@@ -77,7 +76,7 @@ const Login = () => {
             })
             .catch((err) => {
                 setAuthToken(null);
-                if (err.response.status === 400) {
+                if (err.response.status === 400 || err.response.status === 404) {
                     messageApi.open({
                         type: 'error',
                         content:

@@ -1,10 +1,11 @@
-import { Navigate, Outlet } from 'react-router-dom'
-import { useAuth } from '../AuthProvider'
+import { Outlet } from 'react-router-dom';
+import { useAuth } from '../AuthProvider';
+import NotFound from '../NotFound';
 
 const AdminRoute = () => {
-    const auth = useAuth()
+    const auth = useAuth();
 
-    return auth.user?.admin ? <Outlet /> : <Navigate to="/" />
-}
+    return auth.user?.admin ? <Outlet /> : <NotFound />;
+};
 
 export default AdminRoute

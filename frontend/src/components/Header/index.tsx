@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Header } from 'antd/lib/layout/layout';
 import { Drawer, Flex, Menu, MenuProps } from 'antd';
 import {
-    CloseOutlined, ControlOutlined,
+    CloseOutlined,
     EuroCircleOutlined,
     HomeOutlined,
     LoginOutlined,
@@ -12,8 +12,9 @@ import {
     UserAddOutlined,
     UserOutlined,
 } from '@ant-design/icons';
-import './index.css';
+import styles from './Header.module.css';
 import { useAuth } from '../AuthProvider';
+import { MixerVerticalIcon } from '@radix-ui/react-icons';
 
 const AppMenu = ({
     isInline = false,
@@ -72,10 +73,10 @@ const AppMenu = ({
     ];
 
     if (auth.user?.admin) {
-        loggedInItems.splice(loggedInItems.length-1, 0,{
-            label: 'Admin',
+        loggedInItems.splice(loggedInItems.length - 1, 0, {
+            label: <Link to="/admin">Admin</Link>,
             key: '/admin',
-            icon: <ControlOutlined />
+            icon: <MixerVerticalIcon />,
         });
     }
 
@@ -130,18 +131,18 @@ const AppHeader = () => {
                         ENI-Enchères
                     </Link>
                 </h1>
-                <div className="headerMenu">
+                <div className={styles.headerMenu}>
                     <AppMenu current={current} setCurrent={setCurrent} />
                 </div>
                 <MenuOutlined
-                    className="drawerMenu"
+                    className={styles.drawerMenu}
                     onClick={() => setOpenMenu(true)}
                     style={{ color: '#0e7490', fontSize: 30 }}
                 />
             </Flex>
             <Drawer
                 size="large"
-                className="drawerMenu"
+                className={styles.drawerMenu}
                 placement="left"
                 open={openMenu}
                 onClose={() => setOpenMenu(false)}

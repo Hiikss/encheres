@@ -8,15 +8,20 @@ import fr.eni.tp.encheres.exception.UserException;
 import fr.eni.tp.encheres.mapper.UserMapper;
 import fr.eni.tp.encheres.model.User;
 import fr.eni.tp.encheres.repository.UserRepository;
+import fr.eni.tp.encheres.validation.PasswordValidator;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.CharBuffer;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -31,6 +36,8 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
 
     private final UserMapper userMapper;
+
+    private final PasswordValidator passwordValidator;
 
     @Override
     public AuthenticatedUserDto login(CredentialsDto credentialsDto) {
@@ -60,6 +67,8 @@ public class UserServiceImpl implements UserService {
             throw new UserException(HttpStatus.BAD_REQUEST, "Email already exists");
         }
 
+        passwordValidator.validatePassword(requestUserDto.getPassword());
+
         User user = userMapper.toUser(requestUserDto);
 
         user.setPassword(passwordEncoder.encode(CharBuffer.wrap(requestUserDto.getPassword())));
@@ -77,6 +86,18 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByPseudo(userPseudo)
                 .orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, USER_NOT_FOUND));
         return userMapper.toAuthenticatedUserDto(user);
+    }
+
+    @Override
+    public List<ResponseUserDto> getUsers(int page, int size, String searchFilter) {
+        Pageable pageable = PageRequest.of(page - 1, Math.min(size, 100));
+        List<User> users = userRepository.findUsersByFilters(pageable, searchFilter);
+        return userMapper.toResponseUserDtoList(users);
+    }
+
+    @Override
+    public long countUsers(String searchFilter) {
+        return userRepository.countUserByFilters(searchFilter);
     }
 
     @Override
@@ -104,7 +125,13 @@ public class UserServiceImpl implements UserService {
 
             User updatedUser = userMapper.toUser(userDto);
             updatedUser.setUserId(userToUpdate.getUserId());
-            updatedUser.setPassword(passwordEncoder.encode(CharBuffer.wrap(userDto.getPassword())));
+            if(authenticatedUser.isAdmin() && userDto.getPassword().length==0) {
+                updatedUser.setPassword(userToUpdate.getPassword());
+            } else {
+                passwordValidator.validatePassword(userDto.getPassword());
+                updatedUser.setPassword(passwordEncoder.encode(CharBuffer.wrap(userDto.getPassword())));
+
+            }
 
             User savedUser = userRepository.save(updatedUser);
 

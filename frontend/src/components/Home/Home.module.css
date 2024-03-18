@@ -1,6 +1,8 @@
 .page {
     display: flex;
     height: 100%;
+    /*max-width: 1280px;*/
+    /*margin: auto;*/
 }
 
 .page > div:first-child {

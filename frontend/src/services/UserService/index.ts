@@ -15,6 +15,13 @@ export const getAuthUser = async () => {
     })
 }
 
+export const getUsers = async (page: number, size: number, searchFilter: string) => {
+    const params: string = `?page=${page}&size=${size}&searchFilter=${searchFilter}`;
+    return axiosInstance().get<ResponseUser[]>(`/users${params}`).then(res => {
+        return res;
+    })
+}
+
 export const getUser = async (pseudo: string) => {
     return axiosInstance().get<ResponseUser>(`/users/${pseudo}`).then(res => {
         return res;

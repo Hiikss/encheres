@@ -28,14 +28,14 @@ const UserForm = ({ type }: { type: 'register' | 'modify' }) => {
     const onFormSubmit = async (values: FieldType) => {
         setFormSubmitted(true);
         const user: RequestUser = {
-            pseudo: type === 'register' ? values.pseudo : auth.user.pseudo,
-            lastname: values.lastname,
-            firstname: values.firstname,
-            email: values.email,
-            phoneNumber: values.phoneNumber,
-            street: values.street,
-            postalCode: values.postalCode,
-            city: values.city,
+            pseudo: type === 'register' ? values.pseudo.trim() : auth.user.pseudo,
+            lastname: values.lastname.trim(),
+            firstname: values.firstname.trim(),
+            email: values.email.trim(),
+            phoneNumber: values.phoneNumber.trim(),
+            street: values.street.trim(),
+            postalCode: values.postalCode.trim(),
+            city: values.city.trim(),
             password: values.password,
             credit: type === 'register' ? 100 : auth.user.credit,
             active: true,

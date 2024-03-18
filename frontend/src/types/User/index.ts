@@ -40,4 +40,5 @@ export type ResponseUser = {
     postalCode: string;
     city: string;
     credit: number;
+    active: boolean;
 };

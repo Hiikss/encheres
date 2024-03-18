@@ -3,13 +3,18 @@ package fr.eni.tp.encheres.controller;
 import fr.eni.tp.encheres.dto.AuthenticatedUserDto;
 import fr.eni.tp.encheres.dto.RequestUserDto;
 import fr.eni.tp.encheres.dto.ResponseUserDto;
+import fr.eni.tp.encheres.exception.UserException;
 import fr.eni.tp.encheres.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/users")
@@ -18,6 +23,21 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserService userService;
+
+    @GetMapping
+    public ResponseEntity<List<ResponseUserDto>> getUsers(@RequestParam(defaultValue = "1") int page,
+                                                          @RequestParam(defaultValue = "10") int size,
+                                                          @RequestParam(defaultValue = "") String searchFilter,
+                                                          Authentication authentication) {
+        AuthenticatedUserDto user = (AuthenticatedUserDto) authentication.getPrincipal();
+        if (!user.isAdmin()) {
+            throw new UserException(HttpStatus.FORBIDDEN, "Can't get users");
+        }
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("X-Total-Count", Long.toString(userService.countUsers(searchFilter)));
+        headers.setAccessControlExposeHeaders(List.of("X-Total-Count"));
+        return ResponseEntity.ok().headers(headers).body(userService.getUsers(page, size, searchFilter));
+    }
 
     @GetMapping("/{pseudo}")
     public ResponseEntity<ResponseUserDto> getUser(@PathVariable String pseudo) {
