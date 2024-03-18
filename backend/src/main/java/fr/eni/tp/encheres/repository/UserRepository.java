@@ -15,7 +15,8 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     @Query("SELECT u FROM User u " +
             "WHERE :searchFilter = '' OR u.pseudo LIKE '%' || :searchFilter || '%' " +
-            "OR u.email LIKE '%' || :searchFilter || '%'")
+            "OR u.email LIKE '%' || :searchFilter || '%'" +
+            "ORDER BY u.pseudo")
     List<User> findUsersByFilters(Pageable pageable, String searchFilter);
 
     @Query("SELECT COUNT(u) FROM User u " +

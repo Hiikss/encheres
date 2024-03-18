@@ -3,12 +3,14 @@ import { Link, useLocation } from 'react-router-dom';
 import { Header } from 'antd/lib/layout/layout';
 import { Drawer, Flex, Menu, MenuProps } from 'antd';
 import {
+    BookOutlined,
     CloseOutlined,
     EuroCircleOutlined,
     HomeOutlined,
     LoginOutlined,
     LogoutOutlined,
     MenuOutlined,
+    TeamOutlined,
     UserAddOutlined,
     UserOutlined,
 } from '@ant-design/icons';
@@ -74,9 +76,21 @@ const AppMenu = ({
 
     if (auth.user?.admin) {
         loggedInItems.splice(loggedInItems.length - 1, 0, {
-            label: <Link to="/admin">Admin</Link>,
+            label: 'Admin',
             key: '/admin',
             icon: <MixerVerticalIcon />,
+            children: [
+                {
+                    label: <Link to="/admin/users">Utilisateurs</Link>,
+                    key: '/admin/users',
+                    icon: <TeamOutlined />,
+                },
+                {
+                    label: <Link to="/admin/categories">Catégories</Link>,
+                    key: '/admin/categories',
+                    icon: <BookOutlined />,
+                },
+            ],
         });
     }
 

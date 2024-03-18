@@ -10,7 +10,8 @@ import Sell from '../Sell';
 import NotFound from '../NotFound';
 import SoldItem from '../SoldItem';
 import AdminRoute from '../AdminRoute';
-import Admin from '../Admin';
+import AdminUsers from '../Admin/Users';
+import AdminCategories from '../Admin/Categories';
 
 const App = () => {
     return (
@@ -27,7 +28,8 @@ const App = () => {
                     <Route path="solditem/:soldItemId" element={<SoldItem />} />
                 </Route>
                 <Route element={<AdminRoute />}>
-                    <Route path="admin" element={<Admin />} />
+                    <Route path="admin/users" element={<AdminUsers />} />
+                    <Route path="admin/categories" element={<AdminCategories />} />
                 </Route>
             </Route>
         </Routes>

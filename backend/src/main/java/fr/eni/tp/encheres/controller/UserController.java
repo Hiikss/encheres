@@ -29,8 +29,7 @@ public class UserController {
                                                           @RequestParam(defaultValue = "10") int size,
                                                           @RequestParam(defaultValue = "") String searchFilter,
                                                           Authentication authentication) {
-        AuthenticatedUserDto user = (AuthenticatedUserDto) authentication.getPrincipal();
-        if (!user.isAdmin()) {
+        if (!((AuthenticatedUserDto) authentication.getPrincipal()).isAdmin()) {
             throw new UserException(HttpStatus.FORBIDDEN, "Can't get users");
         }
         HttpHeaders headers = new HttpHeaders();

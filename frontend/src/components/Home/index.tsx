@@ -9,6 +9,7 @@ import {
     Form,
     Input,
     message,
+    Pagination,
     Radio,
     Select,
 } from 'antd';
@@ -74,7 +75,7 @@ const Home = () => {
                     content: 'Une erreur est survenue',
                 });
             });
-    }, [formSubmitted]);
+    }, [formSubmitted, page, size]);
 
     const onFormSubmit = (values: FieldType) => {
         setFilterMenuOpen(false);
@@ -90,6 +91,7 @@ const Home = () => {
 
     return (
         <div className={styles.page}>
+            {contextHolder}
             <div className={styles.desktopFilters}>
                 <Filters
                     onFormSubmit={onFormSubmit}
@@ -129,31 +131,48 @@ const Home = () => {
                 </Button>
                 <div style={{ marginTop: '30px' }}>
                     {soldItems.length > 0 ? (
-                        <Flex wrap="wrap" gap={30}>
-                            {soldItems.map((soldItem) => (
-                                <Card
-                                    title={soldItem.itemName}
-                                    key={soldItem.id}
-                                    onClick={() =>
-                                        navigate(`/solditem/${soldItem.id}`)
-                                    }
-                                    bordered={false}
-                                    style={{ flex: 1, minWidth: '230px' }}
-                                    hoverable
-                                >
-                                    <div>
-                                        <div>Prix : {soldItem.sellPrice}</div>
+                        <>
+                            <Flex wrap="wrap" gap={30}>
+                                {soldItems.map((soldItem) => (
+                                    <Card
+                                        title={soldItem.itemName}
+                                        key={soldItem.id}
+                                        onClick={() =>
+                                            navigate(`/solditem/${soldItem.id}`)
+                                        }
+                                        bordered={false}
+                                        style={{ flex: 1, minWidth: '230px' }}
+                                        hoverable
+                                    >
                                         <div>
-                                            Fin de l'enchère :{' '}
-                                            {new Date(
-                                                soldItem.auctionEndDate
-                                            ).toLocaleDateString()}
+                                            <div>
+                                                Prix : {soldItem.sellPrice}
+                                            </div>
+                                            <div>
+                                                Fin de l'enchère :{' '}
+                                                {new Date(
+                                                    soldItem.auctionEndDate
+                                                ).toLocaleDateString()}
+                                            </div>
+                                            <div>
+                                                Vender : {soldItem.seller}
+                                            </div>
                                         </div>
-                                        <div>Vender : {soldItem.seller}</div>
-                                    </div>
-                                </Card>
-                            ))}
-                        </Flex>
+                                    </Card>
+                                ))}
+                            </Flex>
+                            <Pagination
+                                current={page}
+                                pageSize={size}
+                                total={totalCount}
+                                onChange={(page, pageSize) => {
+                                    setPage(page);
+                                    setSize(pageSize);
+                                }}
+                                showSizeChanger
+                                style={{marginTop:'20px', marginBottom:'20px', textAlign:'end'}}
+                            />
+                        </>
                     ) : (
                         <Empty
                             image={Empty.PRESENTED_IMAGE_DEFAULT}

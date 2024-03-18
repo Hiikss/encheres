@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { RequestUser, ResponseUser } from '../../types/User';
-import { deleteUser, getUsers, updateUser } from '../../services/UserService';
+import { RequestUser, ResponseUser } from '../../../types/User';
+import {
+    deleteUser,
+    getUsers,
+    updateUser,
+} from '../../../services/UserService';
 import {
     Button,
     Input,
@@ -10,12 +14,18 @@ import {
     Space,
     Table,
 } from 'antd';
-import styles from './Admin.module.css';
-import { ExclamationCircleFilled } from '@ant-design/icons';
+import styles from '../Admin.module.css';
+import {
+    CheckOutlined,
+    CloseOutlined,
+    DeleteOutlined,
+    ExclamationCircleFilled,
+} from '@ant-design/icons';
 
-const Admin = () => {
+const AdminUsers = () => {
     const [messageApi, messageContextHolder] = message.useMessage();
     const [modal, modalContextHolder] = Modal.useModal();
+    const [notificationApi, notificationContextHolder] = notification.useNotification();
     const [users, setUsers] = useState<ResponseUser[]>([]);
     const [page, setPage] = useState(1);
     const [size, setSize] = useState(10);
@@ -39,38 +49,39 @@ const Admin = () => {
         };
         await updateUser(user.pseudo, userToUpdate)
             .then((res) => {
-                notification.success({
+                notificationApi.success({
                     message: `L'utilisateur ${user.pseudo} a bien été ${active ? 'activé' : 'désactivé'}`,
                     duration: 2,
                     placement: 'top',
                 });
-                setRefresh(refresh + 1);
             })
             .catch((err) => {
-                notification.error({
+                notificationApi.error({
                     message: 'Une erreur est survenue',
                     duration: 2,
                     placement: 'top',
                 });
             });
+        setRefresh(refresh + 1);
     };
 
     const onModalOk = async (pseudo: string) => {
         await deleteUser(pseudo)
             .then((res) => {
-                notification.success({
+                notificationApi.success({
                     message: `L'utilisateur ${pseudo} a bien été supprimé`,
                     duration: 2,
                     placement: 'top',
                 });
             })
             .catch((err) => {
-                notification.error({
+                notificationApi.error({
                     message: 'Une erreur est survenue',
                     duration: 2,
                     placement: 'top',
                 });
             });
+        setRefresh(refresh + 1);
     };
 
     const deleteAccountModal = (pseudo: string) => {
@@ -105,6 +116,7 @@ const Admin = () => {
         {
             title: 'Action',
             key: 'action',
+            width: '30%',
             render: (record: ResponseUser) => (
                 <Space size="middle">
                     {record.active ? (
@@ -112,10 +124,12 @@ const Admin = () => {
                             onClick={() => updateActiveUser(record, false)}
                             danger
                         >
+                            <CloseOutlined />
                             Désactiver
                         </Button>
                     ) : (
                         <Button onClick={() => updateActiveUser(record, true)}>
+                            <CheckOutlined />
                             Activer
                         </Button>
                     )}
@@ -124,6 +138,7 @@ const Admin = () => {
                         type="primary"
                         danger
                     >
+                        <DeleteOutlined />
                         Supprimer
                     </Button>
                 </Space>
@@ -132,7 +147,7 @@ const Admin = () => {
     ];
 
     useEffect(() => {
-        document.title = 'Admin';
+        document.title = 'Gestion des utilisateurs';
     }, []);
 
     useEffect(() => {
@@ -151,17 +166,24 @@ const Admin = () => {
     }, [page, size, search, refresh]);
 
     return (
-        <div className={styles.page}>
+        <div className={`${styles.page} ${styles.users}`}>
+            {messageContextHolder}
+            {notificationContextHolder}
             <h2 style={{ textAlign: 'center' }}>Gestion des utilisateurs</h2>
             <Input
                 placeholder="Rechercher par pseudo ou email"
-                style={{ marginBottom: '20px', maxWidth: '400px' }}
+                style={{
+                    marginTop: '20px',
+                    marginBottom: '20px',
+                    maxWidth: '400px',
+                }}
                 onChange={(e) => setSearch(e.target.value)}
             />
             <Table
                 rowKey="pseudo"
                 dataSource={users}
                 columns={columns}
+                scroll={{ x: true }}
                 pagination={{
                     current: page,
                     pageSize: size,
@@ -174,10 +196,9 @@ const Admin = () => {
                 }}
                 bordered
             />
-            {messageContextHolder}
             {modalContextHolder}
         </div>
     );
 };
 
-export default Admin;
+export default AdminUsers;

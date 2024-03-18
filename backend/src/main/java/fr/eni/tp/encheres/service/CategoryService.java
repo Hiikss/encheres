@@ -9,5 +9,9 @@ public interface CategoryService {
 
     List<CategoryDto> getCategories();
 
-    CategoryDto createCategory(CategoryDto categoryDto, AuthenticatedUserDto authenticatedUser);
+    void createCategory(CategoryDto categoryDto);
+
+    void updateCategory(String label, CategoryDto categoryDto);
+
+    void deleteCategory(String label);
 }
