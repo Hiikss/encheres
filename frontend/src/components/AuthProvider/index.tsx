@@ -10,6 +10,7 @@ export type UserContextType = {
     setUser: any;
     loading: boolean;
     logOut: () => void;
+    refreshUser: () => void;
 };
 
 type UserContextProviderType = {
@@ -48,6 +49,23 @@ const AuthProvider = ({ children }: UserContextProviderType) => {
         }
     }, []);
 
+    const refreshUser = () => {
+        getAuthUser()
+            .then((res) => {
+                setUser(res.data);
+            })
+            .catch((err) => {
+                setAuthToken(null);
+                setUser(null);
+                notification.error({
+                    message: 'Une erreur est survenue',
+                    description: 'Vous avez été déconnecté',
+                    duration: 2,
+                    placement: 'top',
+                });
+            });
+    };
+
     const logOut = () => {
         setUser(null);
         setAuthToken(null);
@@ -67,7 +85,9 @@ const AuthProvider = ({ children }: UserContextProviderType) => {
     }
 
     return (
-        <AuthContext.Provider value={{ user, setUser, loading, logOut }}>
+        <AuthContext.Provider
+            value={{ user, setUser, loading, logOut, refreshUser }}
+        >
             {children}
         </AuthContext.Provider>
     );

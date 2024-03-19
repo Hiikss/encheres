@@ -2,6 +2,7 @@ package fr.eni.tp.encheres.service;
 
 import fr.eni.tp.encheres.dto.AuctionDto;
 import fr.eni.tp.encheres.dto.AuthenticatedUserDto;
+import fr.eni.tp.encheres.exception.AuctionException;
 import fr.eni.tp.encheres.exception.SoldItemException;
 import fr.eni.tp.encheres.exception.UserException;
 import fr.eni.tp.encheres.mapper.AuctionMapper;
@@ -51,25 +52,28 @@ public class AuctionServiceImpl implements AuctionService {
         User currentBidder = userRepository.findByPseudo(authenticatedUser.getPseudo())
                 .orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "User not found"));
 
-        User lastBidder = soldItem.getAuctions().stream().max(comparingInt(Auction::getAuctionPrice)).map(Auction::getUser).orElse(null);
+        Auction lastAuction = soldItem.getAuctions().stream().max(comparingInt(Auction::getAuctionPrice)).orElse(null);
         User seller = soldItem.getUser();
 
         auctionValidator.validateAuction(requestAuction, soldItem, currentBidder);
 
         // Last bidder get his money back
-        if (lastBidder != null) {
-            if (lastBidder.getUserId().equals(currentBidder.getUserId())) {
-                currentBidder.setCredit(currentBidder.getCredit() + soldItem.getSellPrice());
+        if (lastAuction != null) {
+            if (lastAuction.getUser().getUserId().equals(currentBidder.getUserId())) {
+                throw new AuctionException(HttpStatus.BAD_REQUEST, "Can't bid sell");
             } else {
-                lastBidder.setCredit(lastBidder.getCredit() + soldItem.getSellPrice());
-                userRepository.save(lastBidder);
+                lastAuction.getUser().setCredit(lastAuction.getUser().getCredit() + soldItem.getSellPrice());
+                userRepository.save(lastAuction.getUser());
+
+                seller.setCredit(seller.getCredit() + requestAuction.getAuctionPrice() - lastAuction.getAuctionPrice());
             }
+        } else {
+            seller.setCredit(seller.getCredit() + requestAuction.getAuctionPrice());
         }
 
         currentBidder.setCredit(currentBidder.getCredit() - requestAuction.getAuctionPrice());
         userRepository.save(currentBidder);
-        
-        seller.setCredit(seller.getCredit() + requestAuction.getAuctionPrice());
+
         userRepository.save(seller);
 
         soldItem.setSellPrice(requestAuction.getAuctionPrice());

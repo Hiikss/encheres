@@ -6,7 +6,10 @@ import fr.eni.tp.encheres.dto.RequestUserDto;
 import fr.eni.tp.encheres.dto.ResponseUserDto;
 import fr.eni.tp.encheres.exception.UserException;
 import fr.eni.tp.encheres.mapper.UserMapper;
+import fr.eni.tp.encheres.model.Auction;
+import fr.eni.tp.encheres.model.SoldItem;
 import fr.eni.tp.encheres.model.User;
+import fr.eni.tp.encheres.repository.AuctionRepository;
 import fr.eni.tp.encheres.repository.UserRepository;
 import fr.eni.tp.encheres.validation.PasswordValidator;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +41,8 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
 
     private final PasswordValidator passwordValidator;
+
+    private final AuctionRepository auctionRepository;
 
     @Override
     public AuthenticatedUserDto login(CredentialsDto credentialsDto) {
@@ -113,7 +118,7 @@ public class UserServiceImpl implements UserService {
             User userToUpdate = userRepository.findByPseudo(pseudo)
                     .orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, USER_NOT_FOUND));
 
-            if(!userToUpdate.getPseudo().equals(userDto.getPseudo())) {
+            if (!userToUpdate.getPseudo().equals(userDto.getPseudo())) {
                 throw new UserException(HttpStatus.BAD_REQUEST, "Pseudo can't be changed");
             }
 
@@ -125,7 +130,7 @@ public class UserServiceImpl implements UserService {
 
             User updatedUser = userMapper.toUser(userDto);
             updatedUser.setUserId(userToUpdate.getUserId());
-            if(authenticatedUser.isAdmin() && userDto.getPassword().length==0) {
+            if (authenticatedUser.isAdmin() && userDto.getPassword().length == 0) {
                 updatedUser.setPassword(userToUpdate.getPassword());
             } else {
                 passwordValidator.validatePassword(userDto.getPassword());
@@ -145,6 +150,10 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void deleteUser(String pseudo, AuthenticatedUserDto authenticatedUser) {
         if (authenticatedUser.isAdmin() || authenticatedUser.getPseudo().equals(pseudo)) {
+
+            User user = userRepository.findByPseudo(pseudo)
+                    .orElseThrow(() -> new UserException(HttpStatus.FORBIDDEN, "Can't delete this user"));
+
             userRepository.deleteByPseudo(pseudo);
             return;
         }

@@ -132,7 +132,7 @@ const Home = () => {
                 <div style={{ marginTop: '30px' }}>
                     {soldItems.length > 0 ? (
                         <>
-                            <Flex wrap="wrap" gap={30}>
+                            <div className={styles.cardList}>
                                 {soldItems.map((soldItem) => (
                                     <Card
                                         title={soldItem.itemName}
@@ -155,12 +155,12 @@ const Home = () => {
                                                 ).toLocaleDateString()}
                                             </div>
                                             <div>
-                                                Vender : {soldItem.seller}
+                                                Vendeur : {soldItem.seller}
                                             </div>
                                         </div>
                                     </Card>
                                 ))}
-                            </Flex>
+                            </div>
                             <Pagination
                                 current={page}
                                 pageSize={size}

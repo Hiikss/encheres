@@ -22,24 +22,32 @@
 }
 
 .profileRow div:first-child {
-    flex-basis: 100px;
-}
-.profileRow div:last-child {
     color: #374151;
-    flex: 1;
+    font-weight: 600;
+    font-size: 15px;
+}
+
+
+@media (min-width: 640px) {
+    .profileRow div:first-child {
+        flex-basis: 100px;
+    }
+
+    .profileRow div:last-child {
+        flex: 1;
+    }
 }
 
 @media (max-width: 640px) {
     .profile {
         width: 90%;
+        padding: 10px 30px 30px 30px;
     }
 
     .profileForm {
         width: 90%;
     }
-}
 
-@media (max-width: 400px) {
     .profileRow {
         flex-direction: column;
     }

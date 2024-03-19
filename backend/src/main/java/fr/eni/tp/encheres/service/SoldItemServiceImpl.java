@@ -100,12 +100,14 @@ public class SoldItemServiceImpl implements SoldItemService {
     public ResponseSoldItemDto updateSell(UUID soldItemId, RequestSoldItemDto requestSoldItem, AuthenticatedUserDto authenticatedUser) {
         LOGGER.info("[Service] : Update sold item");
 
-        soldItemValidator.validateSoldItem(requestSoldItem);
+        if (Boolean.FALSE.equals(requestSoldItem.getPickUpDone())) {
+            soldItemValidator.validateSoldItem(requestSoldItem);
+        }
 
         SoldItem soldItem = soldItemRepository.findById(soldItemId)
                 .orElseThrow(() -> new SoldItemException(HttpStatus.NOT_FOUND, "Sold item not found"));
 
-        if (soldItem.getUser().getPseudo().equals(authenticatedUser.getPseudo()) && soldItem.getAuctionStartDate().isAfter(LocalDate.now())) {
+        if (soldItem.getUser().getPseudo().equals(authenticatedUser.getPseudo()) && (soldItem.getAuctionStartDate().isAfter(LocalDate.now()) || Boolean.TRUE.equals(requestSoldItem.getPickUpDone()))) {
             Category category = categoryRepository.findByLabel(requestSoldItem.getCategoryLabel())
                     .orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "Category not found"));
 

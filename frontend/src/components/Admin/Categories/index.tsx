@@ -92,7 +92,7 @@ const AdminCategories = () => {
 
     const deleteCategoryModal = (label: string) => {
         modal.confirm({
-            title: `Voulez-vous supprimer la catégorie '${label}' ?`,
+            title: `Voulez-vous vraiment supprimer la catégorie '${label}' ?`,
             icon: <ExclamationCircleFilled />,
             okText: 'Confirmer',
             okButtonProps: {

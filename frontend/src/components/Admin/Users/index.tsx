@@ -86,7 +86,7 @@ const AdminUsers = () => {
 
     const deleteAccountModal = (pseudo: string) => {
         modal.confirm({
-            title: `Voulez-vous supprimer le compte de ${pseudo} ?`,
+            title: `Voulez-vous vraiment supprimer le compte de ${pseudo} ?`,
             icon: <ExclamationCircleFilled />,
             okText: 'Confirmer',
             okButtonProps: {

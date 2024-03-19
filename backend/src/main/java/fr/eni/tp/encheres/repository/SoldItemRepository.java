@@ -12,24 +12,24 @@ import java.util.UUID;
 @Repository
 public interface SoldItemRepository extends JpaRepository<SoldItem, UUID> {
 
-    @Query("SELECT s FROM SoldItem s, Auction a " +
+    @Query("SELECT s FROM SoldItem s " +
             "WHERE (:itemName = '' OR s.itemName LIKE '%' || :itemName || '%') " +
             "AND (:category = '' OR :category = s.category.label) " +
             "AND (('opened' IN :filters AND s.auctionStartDate <= CURRENT_DATE() AND s.auctionEndDate > CURRENT_DATE()) " +
-            "OR ('mine' IN :filters AND s = a.soldItem AND a.user.pseudo = :pseudo) " +
-            "OR ('won' IN :filters AND s.auctionEndDate <= CURRENT_DATE() AND s.sellPrice = a.auctionPrice AND s = a.soldItem AND a.user.pseudo = :pseudo)" +
+            "OR ('mine' IN :filters AND s IN (SELECT s1 FROM SoldItem s1, Auction a WHERE s1 = a.soldItem AND a.user.pseudo = :pseudo)) " +
+            "OR ('won' IN :filters AND s IN (SELECT s1 FROM SoldItem s1, Auction a WHERE s1.auctionEndDate <= CURRENT_DATE() AND s1.sellPrice = a.auctionPrice AND s1 = a.soldItem AND a.user.pseudo = :pseudo))" +
             "OR ('inProgress' IN :filters AND s.user.pseudo = :pseudo AND s.auctionStartDate <= CURRENT_DATE() AND s.auctionEndDate > CURRENT_DATE())" +
             "OR ('notStarted' IN :filters AND s.user.pseudo = :pseudo AND s.auctionStartDate > CURRENT_DATE())" +
-            "OR ('over' IN :filters AND s.user.pseudo = :pseudo AND s.auctionEndDate <= CURRENT_DATE()))")
+            "OR ('over' IN :filters AND s.user.pseudo = :pseudo AND s.auctionEndDate <= CURRENT_DATE()))" +
+            "ORDER BY s.auctionStartDate DESC")
     List<SoldItem> findSoldItemsByFilters(Pageable pageable, String itemName, String category, List<String> filters, String pseudo);
 
-    @Query("SELECT COUNT(s) FROM SoldItem s, Auction a" +
-            " " +
+    @Query("SELECT COUNT(s) FROM SoldItem s " +
             "WHERE (:itemName = '' OR s.itemName LIKE '%' || :itemName || '%') " +
             "AND (:category = '' OR :category = s.category.label) " +
             "AND (('opened' IN :filters AND s.auctionStartDate <= CURRENT_DATE() AND s.auctionEndDate > CURRENT_DATE()) " +
-            "OR ('mine' IN :filters AND s = a.soldItem AND a.user.pseudo = :pseudo) " +
-            "OR ('won' IN :filters AND s.auctionEndDate <= CURRENT_DATE() AND s.sellPrice = a.auctionPrice AND s = a.soldItem AND a.user.pseudo = :pseudo)" +
+            "OR ('mine' IN :filters AND s IN (SELECT s1 FROM SoldItem s1, Auction a WHERE s1 = a.soldItem AND a.user.pseudo = :pseudo)) " +
+            "OR ('won' IN :filters AND s IN (SELECT s1 FROM SoldItem s1, Auction a WHERE s1.auctionEndDate <= CURRENT_DATE() AND s1.sellPrice = a.auctionPrice AND s1 = a.soldItem AND a.user.pseudo = :pseudo))" +
             "OR ('inProgress' IN :filters AND s.user.pseudo = :pseudo AND s.auctionStartDate <= CURRENT_DATE() AND s.auctionEndDate > CURRENT_DATE())" +
             "OR ('notStarted' IN :filters AND s.user.pseudo = :pseudo AND s.auctionStartDate > CURRENT_DATE())" +
             "OR ('over' IN :filters AND s.user.pseudo = :pseudo AND s.auctionEndDate <= CURRENT_DATE()))")

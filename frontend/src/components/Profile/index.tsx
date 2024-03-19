@@ -39,7 +39,7 @@ const Profile = () => {
     };
 
     const deleteAccountModal: ModalFuncProps = {
-        title: 'Voulez-vous supprimer votre compte ?',
+        title: 'Voulez-vous vraiment supprimer votre compte ?',
         icon: <ExclamationCircleFilled />,
         okText: 'Confirmer',
         okButtonProps: {

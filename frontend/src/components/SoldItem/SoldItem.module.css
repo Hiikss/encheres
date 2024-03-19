@@ -1,4 +1,4 @@
-.profile {
+.soldItem {
     padding: 10px 40px 40px 40px;
     width: 540px;
     background: white;
@@ -14,16 +14,28 @@
 }
 
 .sellRow > div:first-child {
-    flex-basis: 130px;
     color: #374151;
+    font-weight: 600;
+    font-size: 15px;
 }
 
-.sellRow > div:last-child {
-    flex: 1;
+
+@media (min-width: 640px) {
+    .sellRow > div:first-child {
+        flex-basis: 150px;
+    }
+    .sellRow > div:last-child {
+        flex: 1;
+    }
 }
 
 @media (max-width: 640px) {
-    .profile {
+    .soldItem {
         width: 90%;
+        padding: 10px 30px 30px 30px;
+    }
+
+    .sellRow {
+        flex-direction: column;
     }
 }

@@ -7,7 +7,7 @@ import {
     Form,
     Input,
     InputNumber,
-    message,
+    message, Modal, ModalFuncProps,
     notification,
     Select,
     Upload,
@@ -15,7 +15,7 @@ import {
 import TextArea from 'antd/es/input/TextArea';
 import { Category } from '../../types/Category';
 import { getCategories } from '../../services/CategoryService';
-import { UploadOutlined } from '@ant-design/icons';
+import { ExclamationCircleFilled, UploadOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import styles from './SellForm.module.css';
 import { RequestSoldItem, ResponseSoldItem } from '../../types/SoldItem';
@@ -47,8 +47,9 @@ type FieldType = {
 };
 
 const SellForm = ({ soldItemProp }: { soldItemProp?: ResponseSoldItem }) => {
-    const [messageApi, contextHolder] = message.useMessage();
+    const [messageApi, messageContextHolder] = message.useMessage();
     const [categories, setCategories] = useState<Category[]>([]);
+    const [modal, modalContextHolder] = Modal.useModal();
     const auth = useAuth();
     const navigate = useNavigate();
 
@@ -90,6 +91,23 @@ const SellForm = ({ soldItemProp }: { soldItemProp?: ResponseSoldItem }) => {
         }
     };
 
+    const deleteSellModal: ModalFuncProps = {
+        title: 'Voulez-vous vraiment supprimer cette vente ?',
+        icon: <ExclamationCircleFilled />,
+        okText: 'Confirmer',
+        okButtonProps: {
+            danger: true,
+        },
+        onOk: onDeleteSell,
+        cancelText: 'Annuler',
+        content: (
+            <div style={{ fontSize: '16px', marginBottom: '20px' }}>
+                Attention, cette action est irréversible
+            </div>
+        ),
+    };
+
+
     const onSubmit = async (values: FieldType) => {
         const soldItem: RequestSoldItem = {
             itemName: values.itemName.trim(),
@@ -104,7 +122,7 @@ const SellForm = ({ soldItemProp }: { soldItemProp?: ResponseSoldItem }) => {
             pickUpCity: values.pickUpCity.trim(),
             pickUpDone: false,
         };
-        console.log(soldItem)
+
         if (soldItemProp) {
             await updateSoldItem(soldItemProp.id, soldItem)
                 .then((res) => {
@@ -143,7 +161,7 @@ const SellForm = ({ soldItemProp }: { soldItemProp?: ResponseSoldItem }) => {
 
     return (
         <div className={styles.sellForm}>
-            {contextHolder}
+            {messageContextHolder}
             <h3
                 style={{
                     textAlign: 'center',
@@ -226,7 +244,7 @@ const SellForm = ({ soldItemProp }: { soldItemProp?: ResponseSoldItem }) => {
                     </Upload>
                 </Form.Item>
                 <Form.Item label="Mise à prix">
-                    <Form.Item
+                    <Form.Item<FieldType>
                         name="startPrice"
                         initialValue={soldItemProp?.startPrice}
                         rules={[
@@ -237,7 +255,7 @@ const SellForm = ({ soldItemProp }: { soldItemProp?: ResponseSoldItem }) => {
                         ]}
                         noStyle
                     >
-                        <InputNumber min={1} max={10} placeholder="100" />
+                        <InputNumber min={1} placeholder="100" />
                     </Form.Item>
                     <span
                         className="ant-form-text"
@@ -335,7 +353,8 @@ const SellForm = ({ soldItemProp }: { soldItemProp?: ResponseSoldItem }) => {
                 {soldItemProp && (
                     <Button
                         size="large"
-                        onClick={onDeleteSell}
+                        onClick={async () =>
+                            await modal.confirm(deleteSellModal)}
                         block
                         style={{ marginTop: '10px' }}
                         danger
@@ -345,6 +364,7 @@ const SellForm = ({ soldItemProp }: { soldItemProp?: ResponseSoldItem }) => {
                 )}
                 </div>
             </Form>
+            {modalContextHolder}
         </div>
     );
 };
