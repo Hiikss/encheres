@@ -11,7 +11,6 @@ export type ResponseSoldItem = {
     pickUpCity: string;
     pickUpDone: boolean;
     category: string;
-    lastBidder: string;
     seller: string;
 };
 

@@ -1,9 +1,17 @@
 import axiosInstance from '../AxiosInstance';
-import { Auction } from '../../types/Auction';
+import { RequestAuction, ResponseAuction } from '../../types/Auction';
 
-export const createAuction = async (auction: Auction) => {
+export const getAuctions = async (soldItemId: string) => {
     return axiosInstance()
-        .post<Auction>(`/auctions`, auction)
+        .get<ResponseAuction[]>(`/auctions?soldItemId=${soldItemId}`,)
+        .then((res) => {
+            return res;
+        });
+};
+
+export const createAuction = async (auction: RequestAuction) => {
+    return axiosInstance()
+        .post<RequestAuction>(`/auctions`, auction)
         .then((res) => {
             return res;
         });

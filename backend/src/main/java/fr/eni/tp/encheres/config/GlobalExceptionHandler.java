@@ -1,6 +1,5 @@
 package fr.eni.tp.encheres.config;
 
-import com.auth0.jwt.exceptions.JWTVerificationException;
 import fr.eni.tp.encheres.dto.ErrorDto;
 import fr.eni.tp.encheres.exception.AuctionException;
 import fr.eni.tp.encheres.exception.CategoryException;
@@ -9,13 +8,11 @@ import fr.eni.tp.encheres.exception.UserException;
 import org.postgresql.util.PSQLException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,10 +64,10 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
     }
 
-//    @ExceptionHandler(PSQLException.class)
-//    public ResponseEntity<ErrorDto> handlePSQLException(PSQLException exception) {
-//        return ResponseEntity
-//                .status(HttpStatus.BAD_REQUEST)
-//                .body(ErrorDto.builder().message("Constraints violation").build());
-//    }
+    @ExceptionHandler(PSQLException.class)
+    public ResponseEntity<ErrorDto> handlePSQLException(PSQLException exception) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ErrorDto.builder().message("Constraints violation").build());
+    }
 }

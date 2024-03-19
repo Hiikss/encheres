@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class AuctionDto {
+public class RequestAuctionDto {
 
     @NotNull(message = "auction price can't be null")
     @Min(value = 1, message = "The start price must be greater than O")

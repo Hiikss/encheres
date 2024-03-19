@@ -7,14 +7,15 @@ import {
     Flex,
     Form,
     InputNumber,
+    List,
     notification,
     Typography,
 } from 'antd';
 import styles from './SoldItem.module.css';
 import { useAuth } from '../AuthProvider';
 import SellForm from '../SellForm';
-import { Auction } from '../../types/Auction';
-import { createAuction } from '../../services/AuctionService';
+import { RequestAuction, ResponseAuction } from '../../types/Auction';
+import { createAuction, getAuctions } from '../../services/AuctionService';
 
 type FieldType = {
     auctionPrice: number;
@@ -23,6 +24,8 @@ type FieldType = {
 const SoldItem = () => {
     const { soldItemId } = useParams();
     const [soldItem, setSoldItem] = useState<ResponseSoldItem>();
+    const [auctions, setAuctions] = useState<ResponseAuction[]>([]);
+    const [lastAuction, setLastAuction] = useState<ResponseAuction>();
     const [title, setTitle] = useState('Détail vente');
     const [refresh, setRefresh] = useState(0);
     const navigate = useNavigate();
@@ -53,6 +56,33 @@ const SoldItem = () => {
     }, [refresh]);
 
     useEffect(() => {
+        if (soldItemId) {
+            getAuctions(soldItemId)
+                .then((res) => {
+                    setAuctions(
+                        res.data.slice().sort((a, b) => b.price - a.price)
+                    );
+                })
+                .catch((err) => {
+                    notification.error({
+                        message: 'Une erreur est survenue',
+                        placement: 'top',
+                    });
+                });
+        }
+    }, [refresh]);
+
+    useEffect(() => {
+        if (auctions.length > 0) {
+            setLastAuction(
+                auctions.reduce((prev, current) =>
+                    prev.price > current.price ? prev : current
+                )
+            );
+        }
+    }, [auctions]);
+
+    useEffect(() => {
         if (soldItem?.auctionStartDate && soldItem.auctionEndDate) {
             if (
                 new Date(soldItem?.auctionStartDate) <= new Date() &&
@@ -60,11 +90,11 @@ const SoldItem = () => {
             ) {
                 setTitle('Vente en cours');
             } else if (new Date(soldItem?.auctionEndDate) <= new Date()) {
-                if (soldItem.lastBidder) {
-                    if (soldItem.lastBidder === auth.user.pseudo) {
+                if (lastAuction?.bidder) {
+                    if (lastAuction.bidder === auth.user.pseudo) {
                         setTitle('Vous avez remporté la vente');
                     } else {
-                        setTitle(soldItem.lastBidder + ' a remporté la vente');
+                        setTitle(lastAuction.bidder + ' a remporté la vente');
                     }
                 } else {
                     setTitle('Vente terminée');
@@ -73,7 +103,7 @@ const SoldItem = () => {
                 setTitle('Vente à venir');
             }
         }
-    }, [soldItem]);
+    }, [soldItem, lastAuction]);
 
     const onPickUp = async () => {
         if (soldItem) {
@@ -111,7 +141,7 @@ const SoldItem = () => {
 
     const onAuctionSubmit = async (values: FieldType) => {
         if (soldItem) {
-            const auction: Auction = {
+            const auction: RequestAuction = {
                 auctionPrice: values.auctionPrice,
                 soldItemId: soldItem.id,
             };
@@ -168,18 +198,18 @@ const SoldItem = () => {
                     <div className={styles.sellRow}>
                         <div>Meilleur offre :</div>
                         <div>
-                            {soldItem?.lastBidder ? (
+                            {lastAuction?.bidder ? (
                                 <span>
-                                    {soldItem.sellPrice} points par{' '}
+                                    {lastAuction.price} points par{' '}
                                     <Typography.Link
                                         style={{ lineHeight: 'unset' }}
                                         onClick={() =>
                                             navigate(
-                                                `/profile/${soldItem?.lastBidder}`
+                                                `/profile/${lastAuction?.bidder}`
                                             )
                                         }
                                     >
-                                        {soldItem?.lastBidder}
+                                        {lastAuction?.bidder}
                                     </Typography.Link>
                                 </span>
                             ) : (
@@ -265,7 +295,7 @@ const SoldItem = () => {
                         new Date(soldItem?.auctionEndDate) > new Date() &&
                         soldItem?.auctionStartDate &&
                         new Date(soldItem?.auctionStartDate) <= new Date() &&
-                        (auth.user.pseudo === soldItem.lastBidder ? (
+                        (auth.user.pseudo === lastAuction?.bidder ? (
                             <div
                                 style={{
                                     textAlign: 'center',
@@ -281,7 +311,6 @@ const SoldItem = () => {
                                 <Form.Item label="Ma proposition">
                                     <Form.Item<FieldType>
                                         name="auctionPrice"
-                                        initialValue={soldItem?.sellPrice + 1}
                                         rules={[
                                             {
                                                 required: true,
@@ -292,7 +321,11 @@ const SoldItem = () => {
                                         noStyle
                                     >
                                         <InputNumber
-                                            min={soldItem.sellPrice + 1}
+                                            min={
+                                                lastAuction?.price &&
+                                                lastAuction?.price + 1
+                                            }
+                                            max={auth.user.credit}
                                             placeholder="100"
                                         />
                                     </Form.Item>
@@ -319,6 +352,38 @@ const SoldItem = () => {
                                     </Button>
                                 </Form.Item>
                             </Form>
+                        ))}
+                    {auth.user.pseudo === soldItem?.seller &&
+                        (auctions.length > 0 ? (
+                            <>
+                                <div
+                                    style={{
+                                        fontSize: '15px',
+                                        fontWeight: '600',
+                                        marginTop: '10px',
+                                    }}
+                                >
+                                    Liste des enchères :
+                                </div>
+                                <List
+                                    dataSource={auctions}
+                                    renderItem={(auction) => (
+                                        <List.Item>
+                                            {auction.bidder} a enchéri{' '}
+                                            {auction.price} points le{' '}
+                                            {new Date(
+                                                auction.date
+                                            ).toLocaleDateString()}{' '}
+                                        </List.Item>
+                                    )}
+                                    style={{
+                                        overflowY: 'auto',
+                                        maxHeight: '300px',
+                                    }}
+                                />
+                            </>
+                        ) : (
+                            <div>Aucune enchère n'a été faite</div>
                         ))}
                 </div>
             )}

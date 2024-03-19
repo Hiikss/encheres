@@ -10,6 +10,7 @@ import fr.eni.tp.encheres.model.Auction;
 import fr.eni.tp.encheres.model.SoldItem;
 import fr.eni.tp.encheres.model.User;
 import fr.eni.tp.encheres.repository.AuctionRepository;
+import fr.eni.tp.encheres.repository.SoldItemRepository;
 import fr.eni.tp.encheres.repository.UserRepository;
 import fr.eni.tp.encheres.validation.PasswordValidator;
 import lombok.RequiredArgsConstructor;
@@ -24,8 +25,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.CharBuffer;
+import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static java.util.Comparator.comparingInt;
 
 @Service
 @RequiredArgsConstructor
@@ -43,6 +49,7 @@ public class UserServiceImpl implements UserService {
     private final PasswordValidator passwordValidator;
 
     private final AuctionRepository auctionRepository;
+    private final SoldItemRepository soldItemRepository;
 
     @Override
     public AuthenticatedUserDto login(CredentialsDto credentialsDto) {
@@ -150,9 +157,16 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void deleteUser(String pseudo, AuthenticatedUserDto authenticatedUser) {
         if (authenticatedUser.isAdmin() || authenticatedUser.getPseudo().equals(pseudo)) {
-
             User user = userRepository.findByPseudo(pseudo)
                     .orElseThrow(() -> new UserException(HttpStatus.FORBIDDEN, "Can't delete this user"));
+
+            // SoldItems
+            // Pour tous les solditems en cours, rendre l'argent au dernier enchérisseur s'il y en a un
+            deleteUserSoldItems(user);
+
+            // Auctions
+            // Pour toutes les auctions relatives à des solditems en cours, si l'auction est la dernière reprendre l'argent au vendeur
+            deleteUserAuctions(user);
 
             userRepository.deleteByPseudo(pseudo);
             return;
@@ -161,4 +175,40 @@ public class UserServiceImpl implements UserService {
         throw new UserException(HttpStatus.FORBIDDEN, "Can't delete this user");
     }
 
+    private void deleteUserSoldItems(User user) {
+        List<SoldItem> soldItems = user.getSoldItems();
+        for (SoldItem soldItem : soldItems) {
+            if ((soldItem.getAuctionStartDate().isBefore(LocalDate.now()) || soldItem.getAuctionStartDate().isEqual(LocalDate.now())) && soldItem.getAuctionEndDate().isAfter(LocalDate.now())) {
+                Auction lastAuction = soldItem.getAuctions().stream().max(comparingInt(Auction::getAuctionPrice)).orElse(null);
+                if (lastAuction != null) {
+                    User lastBidder = lastAuction.getUser();
+                    lastBidder.setCredit(lastBidder.getCredit() + lastAuction.getAuctionPrice());
+                    userRepository.save(lastBidder);
+                }
+            }
+            soldItemRepository.deleteById(soldItem.getSoldItemId());
+        }
+    }
+
+    private void deleteUserAuctions(User user) {
+        List<Auction> auctions = user.getAuctions();
+        for (Auction auction : auctions) {
+            if (auction.getSoldItem().getAuctionEndDate().isAfter(LocalDate.now())) {
+                List<Auction> soldItemsAuctions = auction.getSoldItem().getAuctions().stream()
+                        .sorted(Comparator.comparingInt(Auction::getAuctionPrice).reversed())
+                        .toList();
+                Auction lastAuction = soldItemsAuctions.get(0); // soldItemAuctions est forcément non vide car on a récupéré ces auctions à partir du solditem de l'auction
+                if (lastAuction.getUser().getUserId() == user.getUserId()) {
+                    SoldItem soldItem = auction.getSoldItem();
+                    if (soldItemsAuctions.size() > 1) {
+                        soldItem.setSellPrice(soldItemsAuctions.get(1).getAuctionPrice());
+                    } else {
+                        soldItem.setSellPrice(soldItem.getStartPrice());
+                    }
+                    soldItemRepository.save(soldItem);
+                }
+            }
+            auctionRepository.deleteById(auction.getAuctionId());
+        }
+    }
 }

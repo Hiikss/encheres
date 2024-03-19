@@ -9,8 +9,8 @@ export const register = (user: RequestUser) => {
     return axiosInstance().post('/auth/register', user)
 }
 
-export const getAuthUser = async () => {
-    return axiosInstance().get<AuthUser>('/auth').then(res => {
+export const renewAuthUser = async () => {
+    return axiosInstance().get<AuthUser>('/auth/renew').then(res => {
         return res;
     })
 }

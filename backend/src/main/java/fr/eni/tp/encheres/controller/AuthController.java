@@ -42,8 +42,8 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
 
-    @GetMapping
-    public ResponseEntity<AuthenticatedUserDto> register(Authentication authentication) {
+    @GetMapping("/renew")
+    public ResponseEntity<AuthenticatedUserDto> renew(Authentication authentication) {
         return ResponseEntity.ok().body((AuthenticatedUserDto) authentication.getPrincipal());
     }
 

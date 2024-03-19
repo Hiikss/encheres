@@ -1,7 +1,8 @@
 package fr.eni.tp.encheres.service;
 
-import fr.eni.tp.encheres.dto.AuctionDto;
+import fr.eni.tp.encheres.dto.RequestAuctionDto;
 import fr.eni.tp.encheres.dto.AuthenticatedUserDto;
+import fr.eni.tp.encheres.dto.ResponseAuctionDto;
 import fr.eni.tp.encheres.exception.AuctionException;
 import fr.eni.tp.encheres.exception.SoldItemException;
 import fr.eni.tp.encheres.exception.UserException;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 import static java.util.Comparator.comparingInt;
@@ -38,8 +40,13 @@ public class AuctionServiceImpl implements AuctionService {
     private final AuctionValidator auctionValidator;
 
     @Override
+    public List<ResponseAuctionDto> getSoldItemAuctions(UUID soldItemId) {
+        return auctionMapper.toAuctionDtos(auctionRepository.findAllBySoldItemSoldItemId(soldItemId));
+    }
+
+    @Override
     @Transactional
-    public void createAuction(AuctionDto requestAuction, AuthenticatedUserDto authenticatedUser) {
+    public void createAuction(RequestAuctionDto requestAuction, AuthenticatedUserDto authenticatedUser) {
         SoldItem soldItem;
 
         try {

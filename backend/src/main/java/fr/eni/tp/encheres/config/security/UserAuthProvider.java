@@ -28,7 +28,7 @@ public class UserAuthProvider {
 
     public String createToken(AuthenticatedUserDto user) {
         Date now = new Date();
-        Date validity = new Date(now.getTime() + 3_600_000);
+        Date validity = new Date(now.getTime() + 60_000);
 
         return JWT.create()
                 .withSubject(user.getPseudo())
@@ -47,7 +47,7 @@ public class UserAuthProvider {
         AuthenticatedUserDto user = userService.getAuthenticatedUser(decoded.getSubject());
 
         if (!user.isActive()) {
-            throw new UserException(HttpStatus.UNAUTHORIZED, "Inactive user");
+            throw new UserException(HttpStatus.FORBIDDEN, "Inactive user");
         }
 
         return new UsernamePasswordAuthenticationToken(user, null, Collections.emptyList());

@@ -17,7 +17,7 @@ public interface SoldItemRepository extends JpaRepository<SoldItem, UUID> {
             "AND (:category = '' OR :category = s.category.label) " +
             "AND (('opened' IN :filters AND s.auctionStartDate <= CURRENT_DATE() AND s.auctionEndDate > CURRENT_DATE()) " +
             "OR ('mine' IN :filters AND s IN (SELECT s1 FROM SoldItem s1, Auction a WHERE s1 = a.soldItem AND a.user.pseudo = :pseudo)) " +
-            "OR ('won' IN :filters AND s IN (SELECT s1 FROM SoldItem s1, Auction a WHERE s1.auctionEndDate <= CURRENT_DATE() AND s1.sellPrice = a.auctionPrice AND s1 = a.soldItem AND a.user.pseudo = :pseudo))" +
+            "OR ('won' IN :filters AND s IN (SELECT s1 FROM SoldItem s1, Auction a WHERE s1.auctionEndDate <= CURRENT_DATE() AND a.auctionPrice = (SELECT MAX(a1.auctionPrice) from Auction a1 WHERE s1 = a1.soldItem AND a1.user.pseudo = :pseudo)))" +
             "OR ('inProgress' IN :filters AND s.user.pseudo = :pseudo AND s.auctionStartDate <= CURRENT_DATE() AND s.auctionEndDate > CURRENT_DATE())" +
             "OR ('notStarted' IN :filters AND s.user.pseudo = :pseudo AND s.auctionStartDate > CURRENT_DATE())" +
             "OR ('over' IN :filters AND s.user.pseudo = :pseudo AND s.auctionEndDate <= CURRENT_DATE()))" +
@@ -29,7 +29,7 @@ public interface SoldItemRepository extends JpaRepository<SoldItem, UUID> {
             "AND (:category = '' OR :category = s.category.label) " +
             "AND (('opened' IN :filters AND s.auctionStartDate <= CURRENT_DATE() AND s.auctionEndDate > CURRENT_DATE()) " +
             "OR ('mine' IN :filters AND s IN (SELECT s1 FROM SoldItem s1, Auction a WHERE s1 = a.soldItem AND a.user.pseudo = :pseudo)) " +
-            "OR ('won' IN :filters AND s IN (SELECT s1 FROM SoldItem s1, Auction a WHERE s1.auctionEndDate <= CURRENT_DATE() AND s1.sellPrice = a.auctionPrice AND s1 = a.soldItem AND a.user.pseudo = :pseudo))" +
+            "OR ('won' IN :filters AND s IN (SELECT s1 FROM SoldItem s1, Auction a WHERE s1.auctionEndDate <= CURRENT_DATE() AND a.auctionPrice = (SELECT MAX(a1.auctionPrice) from Auction a1 WHERE s1 = a1.soldItem AND a1.user.pseudo = :pseudo)))" +
             "OR ('inProgress' IN :filters AND s.user.pseudo = :pseudo AND s.auctionStartDate <= CURRENT_DATE() AND s.auctionEndDate > CURRENT_DATE())" +
             "OR ('notStarted' IN :filters AND s.user.pseudo = :pseudo AND s.auctionStartDate > CURRENT_DATE())" +
             "OR ('over' IN :filters AND s.user.pseudo = :pseudo AND s.auctionEndDate <= CURRENT_DATE()))")

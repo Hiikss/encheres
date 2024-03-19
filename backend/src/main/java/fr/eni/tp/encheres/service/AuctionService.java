@@ -1,9 +1,15 @@
 package fr.eni.tp.encheres.service;
 
 import fr.eni.tp.encheres.dto.AuthenticatedUserDto;
-import fr.eni.tp.encheres.dto.AuctionDto;
+import fr.eni.tp.encheres.dto.RequestAuctionDto;
+import fr.eni.tp.encheres.dto.ResponseAuctionDto;
+
+import java.util.List;
+import java.util.UUID;
 
 public interface AuctionService {
 
-    void createAuction(AuctionDto requestAuction, AuthenticatedUserDto authenticatedUser);
+    List<ResponseAuctionDto> getSoldItemAuctions(UUID soldItemId);
+
+    void createAuction(RequestAuctionDto requestAuction, AuthenticatedUserDto authenticatedUser);
 }

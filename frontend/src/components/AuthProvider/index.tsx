@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { AuthUser } from '../../types/User';
-import { getAuthUser } from '../../services/UserService';
+import { renewAuthUser } from '../../services/UserService';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import { Flex, notification, Spin } from 'antd';
@@ -26,7 +26,7 @@ const AuthProvider = ({ children }: UserContextProviderType) => {
 
     useEffect(() => {
         if (getAuthToken() !== undefined) {
-            getAuthUser()
+            renewAuthUser()
                 .then((res) => {
                     setUser(res.data);
                 })
@@ -50,7 +50,7 @@ const AuthProvider = ({ children }: UserContextProviderType) => {
     }, []);
 
     const refreshUser = () => {
-        getAuthUser()
+        renewAuthUser()
             .then((res) => {
                 setUser(res.data);
             })
@@ -74,11 +74,7 @@ const AuthProvider = ({ children }: UserContextProviderType) => {
 
     if (loading) {
         return (
-            <Flex
-                justify="center"
-                align="center"
-                style={{ marginTop: '200px' }}
-            >
+            <Flex justify="center" align="center">
                 <Spin size="large" />
             </Flex>
         );

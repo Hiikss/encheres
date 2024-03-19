@@ -18,7 +18,6 @@ public interface SoldItemMapper {
     SoldItem toSoldItem(RequestSoldItemDto requestSoldItemDto);
 
     @Mapping(target = "category", source = "category.label")
-    @Mapping(target = "lastBidder", expression = "java(soldItem.getAuctions() != null && !soldItem.getAuctions().isEmpty() ? soldItem.getAuctions().stream().max(java.util.Comparator.comparingInt(fr.eni.tp.encheres.model.Auction::getAuctionPrice)).map(a -> a.getUser().getPseudo()).orElse(null) : null)")
     @Mapping(target = "seller", source = "user.pseudo")
     @Mapping(target = "id", source = "soldItemId")
     ResponseSoldItemDto toResponseSoldItemDto(SoldItem soldItem);
