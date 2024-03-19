@@ -31,3 +31,19 @@ export const createSoldItem = async (soldItem: RequestSoldItem) => {
             return res;
         });
 };
+
+export const updateSoldItem = async (id: string, soldItem: RequestSoldItem) => {
+    return axiosInstance()
+        .put<ResponseSoldItem>(`/solditems/${id}`, soldItem)
+        .then((res) => {
+            return res;
+        });
+};
+
+export const deleteSoldItem = async (id: string) => {
+    return axiosInstance()
+        .delete(`/solditems/${id}`)
+        .then((res) => {
+            return res;
+        });
+};

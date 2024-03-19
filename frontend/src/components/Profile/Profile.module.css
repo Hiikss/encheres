@@ -22,10 +22,11 @@
 }
 
 .profileRow div:first-child {
-    width: 100px;
+    flex-basis: 100px;
 }
 .profileRow div:last-child {
     color: #374151;
+    flex: 1;
 }
 
 @media (max-width: 640px) {

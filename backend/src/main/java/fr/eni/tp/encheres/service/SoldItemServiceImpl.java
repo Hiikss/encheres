@@ -98,15 +98,22 @@ public class SoldItemServiceImpl implements SoldItemService {
 
     @Override
     public ResponseSoldItemDto updateSell(UUID soldItemId, RequestSoldItemDto requestSoldItem, AuthenticatedUserDto authenticatedUser) {
+        LOGGER.info("[Service] : Update sold item");
+
         soldItemValidator.validateSoldItem(requestSoldItem);
 
         SoldItem soldItem = soldItemRepository.findById(soldItemId)
                 .orElseThrow(() -> new SoldItemException(HttpStatus.NOT_FOUND, "Sold item not found"));
 
-        if (soldItem.getUser().getPseudo().equals(authenticatedUser.getPseudo()) && soldItem.getAuctionStartDate().isBefore(LocalDate.now()) && soldItem.getAuctionStartDate().isEqual(LocalDate.now())) {
+        if (soldItem.getUser().getPseudo().equals(authenticatedUser.getPseudo()) && soldItem.getAuctionStartDate().isAfter(LocalDate.now())) {
             Category category = categoryRepository.findByLabel(requestSoldItem.getCategoryLabel())
                     .orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "Category not found"));
 
+            User user = soldItem.getUser();
+
+            soldItem = soldItemMapper.toSoldItem(requestSoldItem);
+            soldItem.setUser(user);
+            soldItem.setSoldItemId(soldItemId);
             soldItem.setCategory(category);
             SoldItem savedSoldItem = soldItemRepository.save(soldItem);
             return soldItemMapper.toResponseSoldItemDto(savedSoldItem);
@@ -120,8 +127,7 @@ public class SoldItemServiceImpl implements SoldItemService {
         SoldItem soldItem = soldItemRepository.findById(soldItemId)
                 .orElseThrow(() -> new SoldItemException(HttpStatus.NOT_FOUND, "Sold item not found"));
 
-        if (soldItem.getUser().getPseudo().equals(authenticatedUser.getPseudo()) && soldItem.getAuctionStartDate().isBefore(LocalDate.now()) && soldItem.getAuctionStartDate().isEqual(LocalDate.now())) {
-
+        if (soldItem.getUser().getPseudo().equals(authenticatedUser.getPseudo()) && soldItem.getAuctionStartDate().isAfter(LocalDate.now())) {
             soldItemRepository.deleteById(soldItemId);
         } else {
             throw new SoldItemException(HttpStatus.FORBIDDEN, "Can't delete this sell");

@@ -31,4 +31,13 @@
     .formRow > div {
         flex-basis: 50%;
     }
+
+    .buttons {
+        display: flex;
+        gap: 40px;
+    }
+
+    .buttons > * {
+        flex-basis: 50%;
+    }
 }

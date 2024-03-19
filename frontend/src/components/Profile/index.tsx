@@ -90,7 +90,7 @@ const Profile = () => {
                             fontSize: '22px',
                         }}
                     >
-                        S'inscrire
+                        Modifier le profil
                     </h3>
                     <hr style={{ color: '#6b7280', width: '110px' }} />
                     <UserForm type="modify" />
