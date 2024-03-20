@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { getAuthToken } from '../../components/AuthProvider'
+import { getAuthToken } from '../../components/AuthProvider';
 
 const axiosInstance = () => {
     const instance = axios.create({
@@ -15,6 +15,18 @@ const axiosInstance = () => {
             config.headers['Authorization'] = `Bearer ${token}`
             return config
         })
+
+        instance.interceptors.response.use(
+            response => response,
+            error => {
+                const status = error.response ? error.response.status : null;
+
+                if (status === 401) {
+                    // log out
+                }
+                return Promise.reject(error);
+            }
+        );
     }
     return instance
 }

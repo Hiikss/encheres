@@ -6,12 +6,12 @@ import {
     updateUser,
 } from '../../../services/UserService';
 import {
-    Button,
+    Button, Flex,
     Input,
     message,
     Modal,
     notification,
-    Space,
+    Space, Spin,
     Table,
 } from 'antd';
 import styles from '../Admin.module.css';
@@ -32,6 +32,7 @@ const AdminUsers = () => {
     const [totalCount, setTotalCount] = useState(0);
     const [search, setSearch] = useState('');
     const [refresh, setRefresh] = useState(0);
+    const [loading, setLoading] = useState(true);
 
     const updateActiveUser = async (user: ResponseUser, active: boolean) => {
         const userToUpdate: RequestUser = {
@@ -162,9 +163,15 @@ const AdminUsers = () => {
                     content:
                         'Une erreur est survenue lors de la récupération des utilisateurs',
                 });
-            });
+            }).finally(() => setLoading(false));;
     }, [page, size, search, refresh]);
 
+    if(loading) {
+        return (
+            <Flex justify="center" align="center" style={{marginTop:'200px'}}>
+                <Spin size="large" />
+            </Flex>)
+    }
     return (
         <div className={`${styles.page} ${styles.users}`}>
             {messageContextHolder}

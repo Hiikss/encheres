@@ -8,6 +8,7 @@ import {
     Modal,
     notification,
     Space,
+    Spin,
     Table,
 } from 'antd';
 import React, { useEffect, useState } from 'react';
@@ -30,6 +31,7 @@ const AdminCategories = () => {
     const [notificationApi, notificationContextHolder] =
         notification.useNotification();
     const [categories, setCategories] = useState<Category[]>([]);
+    const [loading, setLoading] = useState(true);
     const [refresh, setRefresh] = useState(0);
 
     const onCreateCategory = (category: Category) => {
@@ -52,7 +54,6 @@ const AdminCategories = () => {
     };
 
     const onUpdateCategory = async (label: string, category: Category) => {
-        console.log(label, category.label);
         await updateCategory(label, category)
             .then((res) => {
                 notificationApi.success({
@@ -161,15 +162,27 @@ const AdminCategories = () => {
                     type: 'error',
                     content: 'Une erreur est survenue',
                 });
-            });
+            })
+            .finally(() => setLoading(false));
     }, [refresh]);
 
+    if (loading) {
+        return (
+            <Flex
+                justify="center"
+                align="center"
+                style={{ marginTop: '200px' }}
+            >
+                <Spin size="large" />
+            </Flex>
+        );
+    }
     return (
         <div className={`${styles.page} ${styles.categories}`}>
             {messageContextHolder}
             {notificationContextHolder}
             <h2 style={{ textAlign: 'center' }}>Gestion des catégories</h2>
-            <Form onFinish={onCreateCategory} style={{marginTop:'40px'}}>
+            <Form onFinish={onCreateCategory} style={{ marginTop: '40px' }}>
                 <div className={styles.form}>
                     <Form.Item<Category>
                         name="label"

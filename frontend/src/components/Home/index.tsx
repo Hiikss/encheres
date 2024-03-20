@@ -12,6 +12,7 @@ import {
     Pagination,
     Radio,
     Select,
+    Spin,
 } from 'antd';
 import { useAuth, UserContextType } from '../AuthProvider';
 import { ResponseSoldItem } from '../../types/SoldItem';
@@ -43,6 +44,7 @@ const Home = () => {
     const [firstRadio, setFirstRadio] = useState(true);
     const [formSubmitted, setFormSubmitted] = useState(0);
     const [filterMenuOpen, setFilterMenuOpen] = useState(false);
+    const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
     const auth = useAuth();
 
@@ -74,7 +76,8 @@ const Home = () => {
                     type: 'error',
                     content: 'Une erreur est survenue',
                 });
-            });
+            })
+            .finally(() => setLoading(false));
     }, [formSubmitted, page, size]);
 
     const onFormSubmit = (values: FieldType) => {
@@ -130,54 +133,77 @@ const Home = () => {
                     </Flex>
                 </Button>
                 <div style={{ marginTop: '30px' }}>
-                    {soldItems.length > 0 ? (
-                        <>
-                            <div className={styles.cardList}>
-                                {soldItems.map((soldItem) => (
-                                    <Card
-                                        title={soldItem.itemName}
-                                        key={soldItem.id}
-                                        onClick={() =>
-                                            navigate(`/solditem/${soldItem.id}`)
-                                        }
-                                        bordered={false}
-                                        style={{ flex: 1, minWidth: '230px' }}
-                                        hoverable
-                                    >
-                                        <div>
-                                            <div>
-                                                Prix : {soldItem.sellPrice}
-                                            </div>
-                                            <div>
-                                                Fin de l'enchère :{' '}
-                                                {new Date(
-                                                    soldItem.auctionEndDate
-                                                ).toLocaleDateString()}
-                                            </div>
-                                            <div>
-                                                Vendeur : {soldItem.seller}
-                                            </div>
-                                        </div>
-                                    </Card>
-                                ))}
-                            </div>
-                            <Pagination
-                                current={page}
-                                pageSize={size}
-                                total={totalCount}
-                                onChange={(page, pageSize) => {
-                                    setPage(page);
-                                    setSize(pageSize);
-                                }}
-                                showSizeChanger
-                                style={{marginTop:'20px', marginBottom:'20px', textAlign:'end'}}
-                            />
-                        </>
+                    {loading ? (
+                        <Flex
+                            justify="center"
+                            align="center"
+                            style={{ marginTop: '200px' }}
+                        >
+                            <Spin size="large" />
+                        </Flex>
                     ) : (
-                        <Empty
-                            image={Empty.PRESENTED_IMAGE_DEFAULT}
-                            description="Aucun article trouvé"
-                        />
+                        <>
+                            {soldItems.length > 0 ? (
+                                <>
+                                    <div className={styles.cardList}>
+                                        {soldItems.map((soldItem) => (
+                                            <Card
+                                                title={soldItem.itemName}
+                                                key={soldItem.id}
+                                                onClick={() =>
+                                                    navigate(
+                                                        `/solditem/${soldItem.id}`
+                                                    )
+                                                }
+                                                bordered={false}
+                                                style={{
+                                                    flex: 1,
+                                                    minWidth: '230px',
+                                                }}
+                                                hoverable
+                                            >
+                                                <div>
+                                                    <div>
+                                                        Prix :{' '}
+                                                        {soldItem.sellPrice}
+                                                    </div>
+                                                    <div>
+                                                        Fin de l'enchère :{' '}
+                                                        {new Date(
+                                                            soldItem.auctionEndDate
+                                                        ).toLocaleDateString()}
+                                                    </div>
+                                                    <div>
+                                                        Vendeur :{' '}
+                                                        {soldItem.seller}
+                                                    </div>
+                                                </div>
+                                            </Card>
+                                        ))}
+                                    </div>
+                                    <Pagination
+                                        current={page}
+                                        pageSize={size}
+                                        total={totalCount}
+                                        onChange={(page, pageSize) => {
+                                            setPage(page);
+                                            setSize(pageSize);
+                                        }}
+                                        showSizeChanger
+                                        style={{
+                                            marginTop: '20px',
+                                            marginBottom: '20px',
+                                            textAlign: 'end',
+                                        }}
+                                    />
+                                </>
+                            ) : (
+                                <Empty
+                                    image={Empty.PRESENTED_IMAGE_DEFAULT}
+                                    description="Aucun article trouvé"
+                                />
+                            )}
+                        </>
                     )}
                 </div>
             </div>

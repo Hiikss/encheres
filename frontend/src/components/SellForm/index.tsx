@@ -7,7 +7,9 @@ import {
     Form,
     Input,
     InputNumber,
-    message, Modal, ModalFuncProps,
+    message,
+    Modal,
+    ModalFuncProps,
     notification,
     Select,
     Upload,
@@ -25,14 +27,6 @@ import {
     updateSoldItem,
 } from '../../services/SoldItemService';
 import { useNavigate } from 'react-router-dom';
-
-// const normFile = (e: any) => {
-//     console.log('Upload event:', e);
-//     if (Array.isArray(e)) {
-//         return e;
-//     }
-//     return e?.fileList;
-// };
 
 type FieldType = {
     itemName: string;
@@ -107,7 +101,6 @@ const SellForm = ({ soldItemProp }: { soldItemProp?: ResponseSoldItem }) => {
             </div>
         ),
     };
-
 
     const onSubmit = async (values: FieldType) => {
         const soldItem: RequestSoldItem = {
@@ -229,21 +222,16 @@ const SellForm = ({ soldItemProp }: { soldItemProp?: ResponseSoldItem }) => {
                     </Select>
                 </Form.Item>
                 <Form.Item<FieldType>
-                    name="image"
-                    label="Photo de l'article"
-                    // valuePropName="fileList"
-                    // getValueFromEvent={normFile}
-                    // extra="longgggggggggggggggggggggggggggggggggg"
+                    label="Lien d'image"
+                    name="imageUrl"
+                    rules={[
+                        {
+                            required: true,
+                            message: "Veuillez renseigner l'URL d'une image",
+                        },
+                    ]}
                 >
-                    <Upload
-                        // name="logo"
-                        // action="/upload.do"
-                        listType="picture"
-                    >
-                        <Button icon={<UploadOutlined />}>
-                            Click to upload
-                        </Button>
-                    </Upload>
+                    <Input placeholder="https://www.eni-ecole.fr/wp-content/uploads/2022/08/logo_eni.png" />
                 </Form.Item>
                 <Form.Item label="Mise à prix">
                     <Form.Item<FieldType>
@@ -341,29 +329,30 @@ const SellForm = ({ soldItemProp }: { soldItemProp?: ResponseSoldItem }) => {
                     <Input />
                 </Form.Item>
                 <div className={soldItemProp && styles.buttons}>
-                <Form.Item>
-                    <Button
-                        type="primary"
-                        htmlType="submit"
-                        size="large"
-                        block
-                        style={{ marginTop: '10px' }}
-                    >
-                        Enregistrer
-                    </Button>
-                </Form.Item>
-                {soldItemProp && (
-                    <Button
-                        size="large"
-                        onClick={async () =>
-                            await modal.confirm(deleteSellModal)}
-                        block
-                        style={{ marginTop: '10px' }}
-                        danger
-                    >
-                        Annuler la vente
-                    </Button>
-                )}
+                    <Form.Item>
+                        <Button
+                            type="primary"
+                            htmlType="submit"
+                            size="large"
+                            block
+                            style={{ marginTop: '10px' }}
+                        >
+                            Enregistrer
+                        </Button>
+                    </Form.Item>
+                    {soldItemProp && (
+                        <Button
+                            size="large"
+                            onClick={async () =>
+                                await modal.confirm(deleteSellModal)
+                            }
+                            block
+                            style={{ marginTop: '10px' }}
+                            danger
+                        >
+                            Annuler la vente
+                        </Button>
+                    )}
                 </div>
             </Form>
             {modalContextHolder}

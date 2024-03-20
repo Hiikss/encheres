@@ -51,7 +51,7 @@ const AuthProvider = ({ children }: UserContextProviderType) => {
                     placement: 'top',
                 });
             }
-        }, 5000);
+        }, 300000);
     };
 
     // this resets the timer if it exists.

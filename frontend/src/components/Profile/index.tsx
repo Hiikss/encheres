@@ -1,4 +1,4 @@
-import { Button, Flex, Modal, ModalFuncProps, notification } from 'antd';
+import { Button, Flex, Modal, ModalFuncProps, notification, Spin } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { ResponseUser } from '../../types/User';
 import { deleteUser, getUser } from '../../services/UserService';
@@ -13,28 +13,31 @@ const Profile = () => {
     const [user, setUser] = useState<ResponseUser>();
     const [modify, setModify] = useState(false);
     const [modal, contextHolder] = Modal.useModal();
+    const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
     const auth = useAuth();
 
     const onModalOk = async () => {
         if (auth.user.pseudo) {
-            await deleteUser(auth.user.pseudo).then((res) => {
-                notification.success({
-                    message: 'Votre compte a bien été supprimé',
-                    description: "Vous avez été redirigé vers l'accueil",
-                    duration: 2,
-                    placement: 'top',
+            await deleteUser(auth.user.pseudo)
+                .then((res) => {
+                    notification.success({
+                        message: 'Votre compte a bien été supprimé',
+                        description: "Vous avez été redirigé vers l'accueil",
+                        duration: 2,
+                        placement: 'top',
+                    });
+                    auth.setUser(null);
+                    setAuthToken(null);
+                    navigate('/');
+                })
+                .catch((err) => {
+                    notification.error({
+                        message: 'Une erreur est survenue',
+                        duration: 2,
+                        placement: 'top',
+                    });
                 });
-                auth.setUser(null);
-                setAuthToken(null);
-                navigate('/');
-            }).catch((err) => {
-                notification.error({
-                    message: 'Une erreur est survenue',
-                    duration: 2,
-                    placement: 'top',
-                });
-            });
         }
     };
 
@@ -68,9 +71,21 @@ const Profile = () => {
             })
             .catch((err) => {
                 navigate('*');
-            });
+            })
+            .finally(() => setLoading(false));
     }, [pseudo, auth.user]);
 
+    if (loading) {
+        return (
+            <Flex
+                justify="center"
+                align="center"
+                style={{ marginTop: '200px' }}
+            >
+                <Spin size="large" />
+            </Flex>
+        );
+    }
     return (
         <Flex justify="center">
             {modify ? (
