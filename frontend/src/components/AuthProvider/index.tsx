@@ -43,7 +43,7 @@ const AuthProvider = ({ children }: UserContextProviderType) => {
                 window.removeEventListener(item, resetTimer);
             });
 
-            if(user) {
+            if (user) {
                 logOut();
                 notification.error({
                     message: 'Vous avez été déconnecté pour inactivité',
@@ -63,7 +63,7 @@ const AuthProvider = ({ children }: UserContextProviderType) => {
     // each time any of the event is triggered, i.e on mouse move, click, scroll, keypress etc, the timer to logout user after 5 min of inactivity resets.
     // However, if none of the event is triggered within 5 min, that is app is inactive, the app automatically logs out.
     useEffect(() => {
-        if(user) {
+        if (user) {
             const eventListener = () => {
                 resetTimer();
                 handleLogoutTimer();
@@ -83,27 +83,11 @@ const AuthProvider = ({ children }: UserContextProviderType) => {
 
     useEffect(() => {
         if (getAuthToken() !== undefined) {
-            renewAuthUser()
-                .then((res) => {
-                    setUser(res.data);
-                })
-                .catch((err) => {
-                    setAuthToken(null);
-                    setUser(null);
-                    notification.error({
-                        message: 'Une erreur est survenue',
-                        description: 'Vous avez été déconnecté',
-                        duration: 2,
-                        placement: 'top',
-                    });
-                    navigate('/');
-                })
-                .finally(() => {
-                    setLoading(false);
-                });
-        } else {
-            setLoading(false);
+            renewAuthUser().then((res) => {
+                setUser(res.data);
+            });
         }
+        setLoading(false);
     }, []);
 
     const refreshUser = () => {
@@ -139,7 +123,13 @@ const AuthProvider = ({ children }: UserContextProviderType) => {
 
     return (
         <AuthContext.Provider
-            value={{ user, setUser, loading, logOut, refreshUser }}
+            value={{
+                user,
+                setUser,
+                loading,
+                logOut,
+                refreshUser,
+            }}
         >
             {children}
         </AuthContext.Provider>

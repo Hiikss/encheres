@@ -6,6 +6,7 @@ import { BrowserRouter } from 'react-router-dom'
 import App from './components/App'
 import { ConfigProvider } from 'antd'
 import AuthProvider from './components/AuthProvider'
+import ResponseInterceptor from './components/ResponseInterceptor';
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
@@ -24,6 +25,7 @@ root.render(
                 }}
             >
                 <AuthProvider>
+                    <ResponseInterceptor />
                     <App />
                 </AuthProvider>
             </ConfigProvider>

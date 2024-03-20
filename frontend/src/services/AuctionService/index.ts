@@ -2,7 +2,7 @@ import axiosInstance from '../AxiosInstance';
 import { RequestAuction, ResponseAuction } from '../../types/Auction';
 
 export const getAuctions = async (soldItemId: string) => {
-    return axiosInstance()
+    return axiosInstance
         .get<ResponseAuction[]>(`/auctions?soldItemId=${soldItemId}`,)
         .then((res) => {
             return res;
@@ -10,7 +10,7 @@ export const getAuctions = async (soldItemId: string) => {
 };
 
 export const createAuction = async (auction: RequestAuction) => {
-    return axiosInstance()
+    return axiosInstance
         .post<RequestAuction>(`/auctions`, auction)
         .then((res) => {
             return res;

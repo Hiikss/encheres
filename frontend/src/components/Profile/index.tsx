@@ -1,7 +1,7 @@
 import { Button, Flex, Modal, ModalFuncProps, notification, Spin } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { ResponseUser } from '../../types/User';
-import { deleteUser, getUser } from '../../services/UserService';
+import { RequestUser, ResponseUser } from '../../types/User';
+import { deleteUser, getUser, updateUser } from '../../services/UserService';
 import { useNavigate, useParams } from 'react-router-dom';
 import { setAuthToken, useAuth } from '../AuthProvider';
 import styles from './Profile.module.css';
@@ -18,8 +18,21 @@ const Profile = () => {
     const auth = useAuth();
 
     const onModalOk = async () => {
-        if (auth.user.pseudo) {
-            await deleteUser(auth.user.pseudo)
+        if (auth.user) {
+            const userToDisable: RequestUser = {
+                pseudo: auth.user.pseudo,
+                lastname: auth.user.lastname,
+                firstname: auth.user.firstname,
+                email: auth.user.email,
+                phoneNumber: auth.user.phoneNumber,
+                street: auth.user.street,
+                postalCode: auth.user.postalCode,
+                city: auth.user.city,
+                password: '',
+                credit: auth.user.credit,
+                active: false,
+            };
+            await updateUser(auth.user.pseudo, userToDisable)
                 .then((res) => {
                     notification.success({
                         message: 'Votre compte a bien été supprimé',

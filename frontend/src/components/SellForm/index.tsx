@@ -226,6 +226,7 @@ const SellForm = ({ soldItemProp }: { soldItemProp?: ResponseSoldItem }) => {
                     name="imageUrl"
                     rules={[
                         {
+                            pattern: /(https?:\/\/.*\.(?:png|jpg))/,
                             required: true,
                             message: "Veuillez renseigner l'URL d'une image",
                         },

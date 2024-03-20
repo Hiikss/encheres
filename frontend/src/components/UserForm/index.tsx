@@ -125,10 +125,8 @@ const UserForm = ({ type }: { type: 'register' | 'modify' }) => {
                             content: `${err.response.data.message.toLowerCase().includes('pseudo') ? 'Ce pseudo' : 'Cet email'} est déjà utilisé`,
                         });
                     } else {
-                        setAuthToken(null);
                         notification.error({
                             message: 'Une erreur est survenue',
-                            description: 'Vous avez été déconnecté',
                             duration: 2,
                             placement: 'top',
                         });
