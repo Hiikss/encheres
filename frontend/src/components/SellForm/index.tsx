@@ -38,6 +38,7 @@ type FieldType = {
     itemName: string;
     description: string;
     categoryLabel: string;
+    imageUrl: string;
     startPrice: number;
     dates: any;
     pickUpStreet: string;
@@ -112,6 +113,7 @@ const SellForm = ({ soldItemProp }: { soldItemProp?: ResponseSoldItem }) => {
         const soldItem: RequestSoldItem = {
             itemName: values.itemName.trim(),
             description: values.description.trim(),
+            imageUrl: values.imageUrl.trim(),
             categoryLabel: values.categoryLabel,
             startPrice: values.startPrice,
             sellPrice: values.startPrice,

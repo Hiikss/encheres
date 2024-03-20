@@ -2,6 +2,7 @@ export type ResponseSoldItem = {
     id: string;
     itemName: string;
     description: string;
+    imageUrl: string;
     auctionStartDate: Date;
     auctionEndDate: Date;
     startPrice: number;
@@ -17,6 +18,7 @@ export type ResponseSoldItem = {
 export type RequestSoldItem = {
     itemName: string;
     description: string;
+    imageUrl: string;
     auctionStartDate: Date;
     auctionEndDate: Date;
     startPrice: number;

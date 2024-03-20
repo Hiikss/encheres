@@ -23,6 +23,9 @@ public class RequestSoldItemDto {
     @NotBlank(message = "Description name can't be null")
     private String description;
 
+    @NotBlank(message = "Image can't be null")
+    private String imageUrl;
+
     @NotNull
     private LocalDate auctionStartDate;
 

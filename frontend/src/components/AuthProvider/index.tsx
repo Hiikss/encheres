@@ -16,6 +16,14 @@ export type UserContextType = {
 type UserContextProviderType = {
     children: React.ReactNode;
 };
+const events: string[] = [
+    'load',
+    'mousemove',
+    'mousedown',
+    'click',
+    'scroll',
+    'keypress',
+];
 
 export const AuthContext = createContext({} as UserContextType);
 
@@ -23,6 +31,55 @@ const AuthProvider = ({ children }: UserContextProviderType) => {
     const [user, setUser] = useState<AuthUser | null>(null);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
+    let timer: NodeJS.Timer;
+
+    // this function sets the timer that logs out the user after 5 min
+    const handleLogoutTimer = () => {
+        timer = setTimeout(() => {
+            // clears any pending timer.
+            resetTimer();
+            // Listener clean up. Removes the existing event listener from the window
+            Object.values(events).forEach((item) => {
+                window.removeEventListener(item, resetTimer);
+            });
+
+            if(user) {
+                logOut();
+                notification.error({
+                    message: 'Vous avez été déconnecté pour inactivité',
+                    duration: 0,
+                    placement: 'top',
+                });
+            }
+        }, 5000);
+    };
+
+    // this resets the timer if it exists.
+    const resetTimer = () => {
+        if (timer) clearTimeout(timer);
+    };
+
+    // when component mounts, it adds an event listeners to the window
+    // each time any of the event is triggered, i.e on mouse move, click, scroll, keypress etc, the timer to logout user after 5 min of inactivity resets.
+    // However, if none of the event is triggered within 5 min, that is app is inactive, the app automatically logs out.
+    useEffect(() => {
+        if(user) {
+            const eventListener = () => {
+                resetTimer();
+                handleLogoutTimer();
+            };
+
+            events.forEach((item) => {
+                window.addEventListener(item, eventListener);
+            });
+
+            return () => {
+                events.forEach((item) => {
+                    window.removeEventListener(item, eventListener);
+                });
+            };
+        }
+    }, [user]);
 
     useEffect(() => {
         if (getAuthToken() !== undefined) {

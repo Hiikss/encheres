@@ -108,8 +108,9 @@ const SoldItem = () => {
     const onPickUp = async () => {
         if (soldItem) {
             const requestSoldItem: RequestSoldItem = {
-                itemName: soldItem?.itemName,
+                itemName: soldItem.itemName,
                 description: soldItem.description,
+                imageUrl: soldItem.imageUrl,
                 auctionStartDate: soldItem.auctionStartDate,
                 auctionEndDate: soldItem.auctionEndDate,
                 startPrice: soldItem.startPrice,

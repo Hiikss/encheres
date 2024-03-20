@@ -29,6 +29,9 @@ public class SoldItem {
     @Column(nullable = false, columnDefinition = "text")
     private String description;
 
+    @Column(nullable = false, columnDefinition = "text")
+    private String imageUrl;
+
     @Column(nullable = false)
     private LocalDate auctionStartDate;
 
