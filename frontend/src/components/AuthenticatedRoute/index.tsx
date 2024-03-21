@@ -14,7 +14,7 @@ const AuthenticatedRoute = () => {
                 placement: 'top',
             });
         }
-    }, []);
+    }, [auth.user]);
 
     return auth.user ? <Outlet /> : <Navigate to="/login" />;
 };

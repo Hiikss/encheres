@@ -54,7 +54,7 @@ public class SecurityConfig {
                 .addFilterBefore(new JwtAuthFilter(userAuthProvider), BasicAuthenticationFilter.class)
                 .sessionManagement(customizer -> customizer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(requests ->
-                        requests.requestMatchers(HttpMethod.POST, "/auth/login", "/auth/register").permitAll()
+                        requests.requestMatchers(HttpMethod.POST, "/auth/login", "/auth/register", "/auth/refresh").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/solditems", "/categories").permitAll()
                                 .anyRequest().authenticated()
                 );

@@ -1,7 +1,7 @@
 import { Button, Form, Input, message, notification, Typography } from 'antd';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { setAuthToken, useAuth } from '../AuthProvider';
+import { setAuthToken, setRefreshToken, useAuth } from '../AuthProvider';
 import { RequestUser, ResponseUser } from '../../types/User';
 import { register, updateUser } from '../../services/UserService';
 import styles from './UserForm.module.css';
@@ -44,7 +44,8 @@ const UserForm = ({ type }: { type: 'register' | 'modify' }) => {
         if (type === 'register') {
             await register(user)
                 .then((res) => {
-                    setAuthToken(res.data.token);
+                    setAuthToken(res.data.token, res.data.pseudo);
+                    setRefreshToken(res.data.refreshToken)
                     auth.setUser({
                         pseudo: res.data.pseudo,
                         lastname: res.data.lastname,
@@ -67,6 +68,7 @@ const UserForm = ({ type }: { type: 'register' | 'modify' }) => {
                 })
                 .catch((err) => {
                     setAuthToken(null);
+                    setRefreshToken(null);
                     if (
                         err.response.status === 400 &&
                         (err.response.data.message

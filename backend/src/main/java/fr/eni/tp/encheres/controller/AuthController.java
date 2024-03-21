@@ -2,6 +2,7 @@ package fr.eni.tp.encheres.controller;
 
 import fr.eni.tp.encheres.config.security.UserAuthProvider;
 import fr.eni.tp.encheres.dto.CredentialsDto;
+import fr.eni.tp.encheres.dto.RequestRefreshTokenDto;
 import fr.eni.tp.encheres.dto.RequestUserDto;
 import fr.eni.tp.encheres.dto.AuthenticatedUserDto;
 import fr.eni.tp.encheres.service.UserService;
@@ -32,6 +33,7 @@ public class AuthController {
 
         AuthenticatedUserDto user = userService.login(credentialsDto);
         user.setToken(userAuthProvider.createToken(user));
+        user.setRefreshToken(userAuthProvider.createRefreshToken(user).getToken());
         return ResponseEntity.ok(user);
     }
 
@@ -39,12 +41,16 @@ public class AuthController {
     public ResponseEntity<AuthenticatedUserDto> register(@Valid @RequestBody RequestUserDto requestUserDto) {
         AuthenticatedUserDto user = userService.register(requestUserDto);
         user.setToken(userAuthProvider.createToken(user));
+        user.setRefreshToken(userAuthProvider.createRefreshToken(user).getToken());
         return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
 
-    @GetMapping("/renew")
-    public ResponseEntity<AuthenticatedUserDto> renew(Authentication authentication) {
-        return ResponseEntity.ok().body((AuthenticatedUserDto) authentication.getPrincipal());
+    @PostMapping("/refresh")
+    public ResponseEntity<AuthenticatedUserDto> renew(@RequestBody RequestRefreshTokenDto refreshToken) {
+        AuthenticatedUserDto user = userService.getAuthenticatedUser(refreshToken.getPseudo());
+        user.setRefreshToken(userAuthProvider.verifyRefreshToken(refreshToken.getToken(), user).getToken());
+        user.setToken(userAuthProvider.createToken(user));
+        return ResponseEntity.ok().body(user);
     }
 
 }

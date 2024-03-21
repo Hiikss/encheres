@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Credentials } from '../../types/User';
 import { login } from '../../services/UserService';
 import { useNavigate } from 'react-router-dom';
-import { setAuthToken, useAuth } from '../AuthProvider';
+import { setAuthToken, setRefreshToken, useAuth } from '../AuthProvider';
 import {
     Button,
     Checkbox,
@@ -54,7 +54,8 @@ const Login = () => {
                     Cookies.remove('remember_me');
                 }
 
-                setAuthToken(res.data.token);
+                setAuthToken(res.data.token, res.data.pseudo);
+                setRefreshToken(res.data.refreshToken);
                 auth.setUser({
                     pseudo: res.data.pseudo,
                     lastname: res.data.lastname,
@@ -76,6 +77,7 @@ const Login = () => {
             })
             .catch((err) => {
                 setAuthToken(null);
+                setRefreshToken(null);
                 if (err.response.status === 400 || err.response.status === 404) {
                     messageApi.open({
                         type: 'error',

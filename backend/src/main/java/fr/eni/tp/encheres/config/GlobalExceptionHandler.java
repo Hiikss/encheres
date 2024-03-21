@@ -1,10 +1,7 @@
 package fr.eni.tp.encheres.config;
 
 import fr.eni.tp.encheres.dto.ErrorDto;
-import fr.eni.tp.encheres.exception.AuctionException;
-import fr.eni.tp.encheres.exception.CategoryException;
-import fr.eni.tp.encheres.exception.SoldItemException;
-import fr.eni.tp.encheres.exception.UserException;
+import fr.eni.tp.encheres.exception.*;
 import org.postgresql.util.PSQLException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -47,6 +44,14 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AuctionException.class)
     @ResponseBody
     public ResponseEntity<ErrorDto> handleAuctionException(AuctionException exception) {
+        return ResponseEntity
+                .status(exception.getStatus())
+                .body(ErrorDto.builder().message(exception.getMessage()).build());
+    }
+
+    @ExceptionHandler(JwtException.class)
+    @ResponseBody
+    public ResponseEntity<ErrorDto> handleUserException(JwtException exception) {
         return ResponseEntity
                 .status(exception.getStatus())
                 .body(ErrorDto.builder().message(exception.getMessage()).build());

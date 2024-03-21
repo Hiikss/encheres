@@ -25,4 +25,5 @@ public class AuthenticatedUserDto {
     private boolean admin;
     private boolean active;
     private String token;
+    private String refreshToken;
 }

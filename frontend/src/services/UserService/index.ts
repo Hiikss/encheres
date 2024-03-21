@@ -1,5 +1,6 @@
 import axiosInstance from "../AxiosInstance";
 import { RequestUser, Credentials, AuthUser, ResponseUser } from '../../types/User';
+import { RefreshTokenRequest } from '../../types/RefreshToken';
 
 export const login = (credentials: Credentials) => {
     return axiosInstance.post('/auth/login', credentials);
@@ -9,8 +10,8 @@ export const register = (user: RequestUser) => {
     return axiosInstance.post('/auth/register', user)
 }
 
-export const renewAuthUser = async () => {
-    return axiosInstance.get<AuthUser>('/auth/renew').then(res => {
+export const refreshAuthUser = async (token: RefreshTokenRequest) => {
+    return axiosInstance.post('/auth/refresh', token).then(res => {
         return res;
     })
 }

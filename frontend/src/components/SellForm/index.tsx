@@ -224,6 +224,7 @@ const SellForm = ({ soldItemProp }: { soldItemProp?: ResponseSoldItem }) => {
                 <Form.Item<FieldType>
                     label="Lien d'image"
                     name="imageUrl"
+                    initialValue={soldItemProp?.imageUrl}
                     rules={[
                         {
                             pattern: /(https?:\/\/.*\.(?:png|jpg))/,

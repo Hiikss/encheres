@@ -39,6 +39,10 @@
     display: grid;
 }
 
+.card {
+    display: flex;
+}
+
 @media (min-width: 1280px) {
     .cardList {
         grid-template-columns: repeat(3, 1fr) !important;

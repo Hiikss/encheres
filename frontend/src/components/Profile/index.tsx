@@ -40,9 +40,7 @@ const Profile = () => {
                         duration: 2,
                         placement: 'top',
                     });
-                    auth.setUser(null);
-                    setAuthToken(null);
-                    navigate('/');
+                    auth.logOut();
                 })
                 .catch((err) => {
                     notification.error({
