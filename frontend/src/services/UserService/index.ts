@@ -23,7 +23,7 @@ export const getUsers = async (page: number, size: number, searchFilter: string)
     })
 }
 
-export const getUser = async (pseudo: string) => {
+export const getUser = async (pseudo: any) => {
     return axiosInstance.get<ResponseUser>(`/users/${pseudo}`).then(res => {
         return res;
     })

@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { RequestUser, ResponseUser } from '../../types/User';
 import { deleteUser, getUser, updateUser } from '../../services/UserService';
 import { useNavigate, useParams } from 'react-router-dom';
-import { setAuthToken, useAuth } from '../AuthProvider';
+import { getPseudo, setAuthToken, useAuth } from '../AuthProvider';
 import styles from './Profile.module.css';
 import UserForm from '../UserForm';
 import { ExclamationCircleFilled, LeftOutlined } from '@ant-design/icons';
@@ -76,7 +76,7 @@ const Profile = () => {
     }, []);
 
     useEffect(() => {
-        getUser(pseudo ?? auth.user.pseudo)
+        getUser(pseudo ?? getPseudo())
             .then((res) => {
                 setUser(res.data);
             })
@@ -84,7 +84,7 @@ const Profile = () => {
                 navigate('*');
             })
             .finally(() => setLoading(false));
-    }, [pseudo, auth.user]);
+    }, [pseudo]);
 
     if (loading) {
         return (

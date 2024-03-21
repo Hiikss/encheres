@@ -75,6 +75,7 @@ const AuthProvider = ({ children }: UserContextProviderType) => {
 
             return () => {
                 events.forEach((item) => {
+                    resetTimer();
                     window.removeEventListener(item, eventListener);
                 });
             };
@@ -119,8 +120,8 @@ const AuthProvider = ({ children }: UserContextProviderType) => {
                         placement: 'top',
                     });
                 });
-            setLoading(false);
         }
+        setLoading(false);
     };
 
     const logOut = () => {
