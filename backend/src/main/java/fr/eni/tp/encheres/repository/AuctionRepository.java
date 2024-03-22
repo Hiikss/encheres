@@ -10,5 +10,5 @@ import java.util.UUID;
 @Repository
 public interface AuctionRepository extends JpaRepository<Auction, UUID> {
 
-    List<Auction> findAllBySoldItemSoldItemId(UUID soldItemId);
+    List<Auction> findAllBySoldItemSoldItemIdOrderByAuctionPriceDesc(UUID soldItemId);
 }

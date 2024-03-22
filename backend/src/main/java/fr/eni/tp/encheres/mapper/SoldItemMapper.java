@@ -1,7 +1,7 @@
 package fr.eni.tp.encheres.mapper;
 
-import fr.eni.tp.encheres.dto.ResponseSoldItemDto;
-import fr.eni.tp.encheres.dto.RequestSoldItemDto;
+import fr.eni.tp.encheres.dto.SoldItemResponseDto;
+import fr.eni.tp.encheres.dto.SoldItemRequestDto;
 import fr.eni.tp.encheres.model.SoldItem;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -15,12 +15,12 @@ public interface SoldItemMapper {
     @Mapping(target = "user", ignore = true)
     @Mapping(target = "auctions", ignore = true)
     @Mapping(target = "category", ignore = true)
-    SoldItem toSoldItem(RequestSoldItemDto requestSoldItemDto);
+    SoldItem toSoldItem(SoldItemRequestDto soldItemRequestDto);
 
     @Mapping(target = "category", source = "category.label")
     @Mapping(target = "seller", source = "user.pseudo")
     @Mapping(target = "id", source = "soldItemId")
-    ResponseSoldItemDto toResponseSoldItemDto(SoldItem soldItem);
+    SoldItemResponseDto toResponseSoldItemDto(SoldItem soldItem);
 
-    List<ResponseSoldItemDto> toResponseSoldItemDtoList(List<SoldItem> soldItems);
+    List<SoldItemResponseDto> toResponseSoldItemDtoList(List<SoldItem> soldItems);
 }

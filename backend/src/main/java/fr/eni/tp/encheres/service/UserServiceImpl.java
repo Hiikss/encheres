@@ -1,9 +1,6 @@
 package fr.eni.tp.encheres.service;
 
-import fr.eni.tp.encheres.dto.AuthenticatedUserDto;
-import fr.eni.tp.encheres.dto.CredentialsDto;
-import fr.eni.tp.encheres.dto.RequestUserDto;
-import fr.eni.tp.encheres.dto.ResponseUserDto;
+import fr.eni.tp.encheres.dto.*;
 import fr.eni.tp.encheres.exception.UserException;
 import fr.eni.tp.encheres.mapper.UserMapper;
 import fr.eni.tp.encheres.model.Auction;
@@ -12,7 +9,6 @@ import fr.eni.tp.encheres.model.User;
 import fr.eni.tp.encheres.repository.AuctionRepository;
 import fr.eni.tp.encheres.repository.SoldItemRepository;
 import fr.eni.tp.encheres.repository.UserRepository;
-import fr.eni.tp.encheres.validation.PasswordValidator;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,8 +40,6 @@ public class UserServiceImpl implements UserService {
 
     private final UserMapper userMapper;
 
-    private final PasswordValidator passwordValidator;
-
     private final AuctionRepository auctionRepository;
     private final SoldItemRepository soldItemRepository;
 
@@ -64,24 +58,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public AuthenticatedUserDto register(RequestUserDto requestUserDto) {
-        Optional<User> oUser = userRepository.findByPseudo(requestUserDto.getPseudo());
+    public AuthenticatedUserDto register(UserRequestDto userRequestDto) {
+        Optional<User> oUser = userRepository.findByPseudo(userRequestDto.getPseudo());
 
         if (oUser.isPresent()) {
             throw new UserException(HttpStatus.BAD_REQUEST, "Pseudo already exists");
         }
 
-        oUser = userRepository.findByEmail(requestUserDto.getEmail());
+        oUser = userRepository.findByEmail(userRequestDto.getEmail());
 
         if (oUser.isPresent()) {
             throw new UserException(HttpStatus.BAD_REQUEST, "Email already exists");
         }
 
-        passwordValidator.validatePassword(requestUserDto.getPassword());
+        User user = userMapper.toUser(userRequestDto);
 
-        User user = userMapper.toUser(requestUserDto);
-
-        user.setPassword(passwordEncoder.encode(CharBuffer.wrap(requestUserDto.getPassword())));
+        user.setPassword(passwordEncoder.encode(CharBuffer.wrap(userRequestDto.getPassword())));
         user.setCredit(100);
         user.setAdmin(false);
         user.setActive(true);
@@ -99,7 +91,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<ResponseUserDto> getUsers(int page, int size, String searchFilter) {
+    public List<UserResponseDto> getUsers(int page, int size, String searchFilter) {
         Pageable pageable = PageRequest.of(page - 1, Math.min(size, 100));
         List<User> users = userRepository.findUsersByFilters(pageable, searchFilter);
         return userMapper.toResponseUserDtoList(users);
@@ -111,14 +103,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseUserDto getUser(String pseudo) {
+    public UserResponseDto getUserResponse(String pseudo) {
         User user = userRepository.findByPseudo(pseudo)
                 .orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, USER_NOT_FOUND));
         return userMapper.toUserDto(user);
     }
 
     @Override
-    public ResponseUserDto updateUser(String pseudo, RequestUserDto userDto, AuthenticatedUserDto authenticatedUser) {
+    public UserResponseDto updateUser(String pseudo, UserRequestDto userDto, AuthenticatedUserDto authenticatedUser) {
         if (authenticatedUser.getPseudo().equals(pseudo) || authenticatedUser.isAdmin()) {
             User userToUpdate = userRepository.findByPseudo(pseudo)
                     .orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, USER_NOT_FOUND));
@@ -135,13 +127,7 @@ public class UserServiceImpl implements UserService {
 
             User updatedUser = userMapper.toUser(userDto);
             updatedUser.setUserId(userToUpdate.getUserId());
-            if (authenticatedUser.isAdmin() && userDto.getPassword().length == 0) {
-                updatedUser.setPassword(userToUpdate.getPassword());
-            } else {
-                passwordValidator.validatePassword(userDto.getPassword());
-                updatedUser.setPassword(passwordEncoder.encode(CharBuffer.wrap(userDto.getPassword())));
-
-            }
+            updatedUser.setPassword(passwordEncoder.encode(CharBuffer.wrap(userDto.getPassword())));
 
             User savedUser = userRepository.save(updatedUser);
 
@@ -160,17 +146,29 @@ public class UserServiceImpl implements UserService {
 
             // SoldItems
             // Pour tous les solditems en cours, rendre l'argent au dernier enchérisseur s'il y en a un
-            deleteUserSoldItems(user);
+//            deleteUserSoldItems(user);
 
             // Auctions
             // Pour toutes les auctions relatives à des solditems en cours, si l'auction est la dernière reprendre l'argent au vendeur
-            deleteUserAuctions(user);
+//            deleteUserAuctions(user);
 
             userRepository.deleteByPseudo(pseudo);
             return;
         }
 
         throw new UserException(HttpStatus.FORBIDDEN, "Can't delete this user");
+    }
+
+    @Override
+    public void partialUpdateUser(PartialUserRequestDto partialUser) {
+        User user = userRepository.findByPseudo(partialUser.getPseudo())
+                .orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, USER_NOT_FOUND));
+
+//        deleteUserSoldItems(user);
+
+//        deleteUserAuctions(user);
+        user.setActive(partialUser.getActive());
+        userRepository.save(user);
     }
 
     private void deleteUserSoldItems(User user) {
@@ -200,8 +198,10 @@ public class UserServiceImpl implements UserService {
                     SoldItem soldItem = auction.getSoldItem();
                     if (soldItemsAuctions.size() > 1) {
                         soldItem.setSellPrice(soldItemsAuctions.get(1).getAuctionPrice());
+                        // TODO
                     } else {
                         soldItem.setSellPrice(soldItem.getStartPrice());
+                        // TODO
                     }
                     soldItemRepository.save(soldItem);
                 }

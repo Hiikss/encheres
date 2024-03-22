@@ -1,6 +1,6 @@
 package fr.eni.tp.encheres.validation;
 
-import fr.eni.tp.encheres.dto.RequestAuctionDto;
+import fr.eni.tp.encheres.dto.AuctionRequestDto;
 import fr.eni.tp.encheres.exception.AuctionException;
 import fr.eni.tp.encheres.model.SoldItem;
 import fr.eni.tp.encheres.model.User;
@@ -14,7 +14,7 @@ public class AuctionValidatorImpl implements AuctionValidator {
 
 
     @Override
-    public void validateAuction(RequestAuctionDto requestAuction, SoldItem soldItem, User user) {
+    public void validateAuction(AuctionRequestDto requestAuction, SoldItem soldItem, User user) {
         if (soldItem.getAuctionStartDate().isAfter(LocalDate.now()) && soldItem.getAuctionEndDate().isEqual(LocalDate.now()) && soldItem.getAuctionEndDate().isBefore(LocalDate.now())) {
             throw new AuctionException(HttpStatus.BAD_REQUEST, "Can't bid an over sell");
         }

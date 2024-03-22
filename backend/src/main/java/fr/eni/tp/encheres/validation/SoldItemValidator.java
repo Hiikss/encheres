@@ -1,8 +1,8 @@
 package fr.eni.tp.encheres.validation;
 
-import fr.eni.tp.encheres.dto.RequestSoldItemDto;
+import fr.eni.tp.encheres.dto.SoldItemRequestDto;
 
 public interface SoldItemValidator {
 
-    void validateSoldItem(RequestSoldItemDto soldItem);
+    void validateSoldItem(SoldItemRequestDto soldItem);
 }

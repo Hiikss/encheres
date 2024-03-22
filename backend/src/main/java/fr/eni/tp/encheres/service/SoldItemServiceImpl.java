@@ -1,8 +1,8 @@
 package fr.eni.tp.encheres.service;
 
 import fr.eni.tp.encheres.dto.AuthenticatedUserDto;
-import fr.eni.tp.encheres.dto.ResponseSoldItemDto;
-import fr.eni.tp.encheres.dto.RequestSoldItemDto;
+import fr.eni.tp.encheres.dto.SoldItemResponseDto;
+import fr.eni.tp.encheres.dto.SoldItemRequestDto;
 import fr.eni.tp.encheres.exception.SoldItemException;
 import fr.eni.tp.encheres.exception.UserException;
 import fr.eni.tp.encheres.mapper.SoldItemMapper;
@@ -42,7 +42,7 @@ public class SoldItemServiceImpl implements SoldItemService {
     private final CategoryRepository categoryRepository;
 
     @Override
-    public List<ResponseSoldItemDto> getSoldItems(int page, int size, String itemName, String category, List<String> filters, AuthenticatedUserDto authenticatedUser) {
+    public List<SoldItemResponseDto> getSoldItems(int page, int size, String itemName, String category, List<String> filters, AuthenticatedUserDto authenticatedUser) {
         LOGGER.info("[Service] : Get sold items");
 
         String userPseudo = "";
@@ -68,7 +68,7 @@ public class SoldItemServiceImpl implements SoldItemService {
     }
 
     @Override
-    public ResponseSoldItemDto getSoldItem(UUID soldItemId) {
+    public SoldItemResponseDto getSoldItem(UUID soldItemId) {
         LOGGER.info("[Service] : Get sold item");
 
         SoldItem soldItem = soldItemRepository.findById(soldItemId)
@@ -77,7 +77,7 @@ public class SoldItemServiceImpl implements SoldItemService {
     }
 
     @Override
-    public ResponseSoldItemDto createSell(RequestSoldItemDto requestSoldItem, AuthenticatedUserDto authenticatedUser) {
+    public SoldItemResponseDto createSell(SoldItemRequestDto requestSoldItem, AuthenticatedUserDto authenticatedUser) {
         LOGGER.info("[Service] : Create sold item");
 
         soldItemValidator.validateSoldItem(requestSoldItem);
@@ -97,7 +97,7 @@ public class SoldItemServiceImpl implements SoldItemService {
     }
 
     @Override
-    public ResponseSoldItemDto updateSell(UUID soldItemId, RequestSoldItemDto requestSoldItem, AuthenticatedUserDto authenticatedUser) {
+    public SoldItemResponseDto updateSell(UUID soldItemId, SoldItemRequestDto requestSoldItem, AuthenticatedUserDto authenticatedUser) {
         LOGGER.info("[Service] : Update sold item");
 
         if (Boolean.FALSE.equals(requestSoldItem.getPickUpDone())) {

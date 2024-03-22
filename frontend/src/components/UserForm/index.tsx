@@ -150,7 +150,7 @@ const UserForm = ({ type }: { type: 'register' | 'modify' }) => {
                         initialValue={auth.user?.pseudo}
                         rules={[
                             {
-                                pattern: /^[a-zA-Z0-9]{4,}/,
+                                pattern: /^[a-zA-Z0-9]{4,}$/,
                                 required: true,
                                 message:
                                     'Le pseudo doit avoir minimum 4 caractères et doit contenir uniquement des caractères alphanumériques',

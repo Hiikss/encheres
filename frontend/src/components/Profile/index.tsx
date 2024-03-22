@@ -1,12 +1,13 @@
 import { Button, Flex, Modal, ModalFuncProps, notification, Spin } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { RequestUser, ResponseUser } from '../../types/User';
-import { deleteUser, getUser, updateUser } from '../../services/UserService';
-import { useNavigate, useParams } from 'react-router-dom';
-import { getPseudo, setAuthToken, useAuth } from '../AuthProvider';
+import { PartialUserRequest, ResponseUser } from '../../types/User';
+import { getUser, updatePartiallyUser } from '../../services/UserService';
+import { useParams } from 'react-router-dom';
+import { getPseudo, useAuth } from '../AuthProvider';
 import styles from './Profile.module.css';
 import UserForm from '../UserForm';
 import { ExclamationCircleFilled, LeftOutlined } from '@ant-design/icons';
+import NotFound from '../NotFound';
 
 const Profile = () => {
     const { pseudo } = useParams();
@@ -14,28 +15,19 @@ const Profile = () => {
     const [modify, setModify] = useState(false);
     const [modal, contextHolder] = Modal.useModal();
     const [loading, setLoading] = useState(true);
-    const navigate = useNavigate();
+    const [error, setError] = useState(false);
     const auth = useAuth();
 
     const onModalOk = async () => {
         if (auth.user) {
-            const userToDisable: RequestUser = {
+            const userToDisable: PartialUserRequest = {
                 pseudo: auth.user.pseudo,
-                lastname: auth.user.lastname,
-                firstname: auth.user.firstname,
-                email: auth.user.email,
-                phoneNumber: auth.user.phoneNumber,
-                street: auth.user.street,
-                postalCode: auth.user.postalCode,
-                city: auth.user.city,
-                password: '',
-                credit: auth.user.credit,
                 active: false,
             };
-            await updateUser(auth.user.pseudo, userToDisable)
+            await updatePartiallyUser(userToDisable)
                 .then((res) => {
                     notification.success({
-                        message: 'Votre compte a bien été supprimé',
+                        message: 'Votre compte a bien été désactivé',
                         description: "Vous avez été redirigé vers l'accueil",
                         duration: 2,
                         placement: 'top',
@@ -53,7 +45,7 @@ const Profile = () => {
     };
 
     const deleteAccountModal: ModalFuncProps = {
-        title: 'Voulez-vous vraiment supprimer votre compte ?',
+        title: 'Voulez-vous vraiment désactiver votre compte ?',
         icon: <ExclamationCircleFilled />,
         okText: 'Confirmer',
         okButtonProps: {
@@ -63,7 +55,7 @@ const Profile = () => {
         cancelText: 'Annuler',
         content: (
             <div style={{ fontSize: '16px', marginBottom: '20px' }}>
-                Attention, cette action est irréversible
+                Cela supprimera vos ventes et vos enchères
             </div>
         ),
     };
@@ -81,7 +73,7 @@ const Profile = () => {
                 setUser(res.data);
             })
             .catch((err) => {
-                navigate('*');
+                setError(true);
             })
             .finally(() => setLoading(false));
     }, [pseudo]);
@@ -96,6 +88,8 @@ const Profile = () => {
                 <Spin size="large" />
             </Flex>
         );
+    } else if (!user?.active || error) {
+        return <NotFound />;
     }
     return (
         <Flex justify="center">
@@ -129,7 +123,7 @@ const Profile = () => {
                         block
                         danger
                     >
-                        Supprimer le compte
+                        Désactiver le compte
                     </Button>
                     {contextHolder}
                 </div>

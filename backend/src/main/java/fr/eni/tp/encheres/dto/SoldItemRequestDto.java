@@ -15,7 +15,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class RequestSoldItemDto {
+public class SoldItemRequestDto {
 
     @NotBlank(message = "Item name can't be null")
     private String itemName;

@@ -1,5 +1,5 @@
 import axiosInstance from "../AxiosInstance";
-import { RequestUser, Credentials, AuthUser, ResponseUser } from '../../types/User';
+import { RequestUser, Credentials, AuthUser, ResponseUser, PartialUserRequest } from '../../types/User';
 import { RefreshTokenRequest } from '../../types/RefreshToken';
 
 export const login = (credentials: Credentials) => {
@@ -37,6 +37,12 @@ export const updateUser = async (pseudo: string, user: RequestUser) => {
 
 export const deleteUser = async (pseudo: string) => {
     return axiosInstance.delete(`/users/${pseudo}`).then(res => {
+        return res;
+    })
+}
+
+export const updatePartiallyUser = async (partialUser: PartialUserRequest) => {
+    return axiosInstance.patch(`/users`, partialUser).then(res => {
         return res;
     })
 }

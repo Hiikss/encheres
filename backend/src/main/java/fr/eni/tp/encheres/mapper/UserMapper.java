@@ -1,8 +1,8 @@
 package fr.eni.tp.encheres.mapper;
 
-import fr.eni.tp.encheres.dto.RequestUserDto;
+import fr.eni.tp.encheres.dto.UserRequestDto;
 import fr.eni.tp.encheres.dto.AuthenticatedUserDto;
-import fr.eni.tp.encheres.dto.ResponseUserDto;
+import fr.eni.tp.encheres.dto.UserResponseDto;
 import fr.eni.tp.encheres.model.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -20,9 +20,9 @@ public interface UserMapper {
     @Mapping(target = "admin", ignore = true)
     @Mapping(target = "soldItems", ignore = true)
     @Mapping(target = "auctions", ignore = true)
-    User toUser(RequestUserDto requestUserDto);
+    User toUser(UserRequestDto userRequestDto);
 
-    ResponseUserDto toUserDto(User user);
+    UserResponseDto toUserDto(User user);
 
-    List<ResponseUserDto> toResponseUserDtoList(List<User> uers);
+    List<UserResponseDto> toResponseUserDtoList(List<User> uers);
 }

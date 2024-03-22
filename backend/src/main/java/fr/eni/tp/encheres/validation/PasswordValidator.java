@@ -1,14 +1,14 @@
 package fr.eni.tp.encheres.validation;
 
-import jakarta.validation.Constraint;
-import jakarta.validation.Payload;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
+import org.springframework.stereotype.Component;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+@Component
+public class PasswordValidator implements ConstraintValidator<Password, char[]> {
 
-public interface PasswordValidator {
-
-    void validatePassword(char[] password);
+    @Override
+    public boolean isValid(char[] chars, ConstraintValidatorContext constraintValidatorContext) {
+        return chars != null && String.valueOf(chars).matches("^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[#?!@$%^&*-])(?=\\S+$).{8,}$");
+    }
 }

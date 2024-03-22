@@ -1,8 +1,9 @@
 package fr.eni.tp.encheres.controller;
 
 import fr.eni.tp.encheres.dto.AuthenticatedUserDto;
-import fr.eni.tp.encheres.dto.RequestUserDto;
-import fr.eni.tp.encheres.dto.ResponseUserDto;
+import fr.eni.tp.encheres.dto.PartialUserRequestDto;
+import fr.eni.tp.encheres.dto.UserRequestDto;
+import fr.eni.tp.encheres.dto.UserResponseDto;
 import fr.eni.tp.encheres.exception.UserException;
 import fr.eni.tp.encheres.service.UserService;
 import jakarta.validation.Valid;
@@ -25,7 +26,7 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping
-    public ResponseEntity<List<ResponseUserDto>> getUsers(@RequestParam(defaultValue = "1") int page,
+    public ResponseEntity<List<UserResponseDto>> getUsers(@RequestParam(defaultValue = "1") int page,
                                                           @RequestParam(defaultValue = "10") int size,
                                                           @RequestParam(defaultValue = "") String searchFilter,
                                                           Authentication authentication) {
@@ -39,12 +40,12 @@ public class UserController {
     }
 
     @GetMapping("/{pseudo}")
-    public ResponseEntity<ResponseUserDto> getUser(@PathVariable String pseudo) {
-        return ResponseEntity.ok().body(userService.getUser(pseudo));
+    public ResponseEntity<UserResponseDto> getUser(@PathVariable String pseudo) {
+        return ResponseEntity.ok().body(userService.getUserResponse(pseudo));
     }
 
     @PutMapping("/{pseudo}")
-    public ResponseEntity<ResponseUserDto> updateUser(@PathVariable String pseudo, @Valid @RequestBody RequestUserDto user, Authentication authentication) {
+    public ResponseEntity<UserResponseDto> updateUser(@PathVariable String pseudo, @Valid @RequestBody UserRequestDto user, Authentication authentication) {
         return ResponseEntity.ok().body(userService.updateUser(pseudo, user, (AuthenticatedUserDto) authentication.getPrincipal()));
     }
 
@@ -53,5 +54,12 @@ public class UserController {
 
         userService.deleteUser(pseudo, (AuthenticatedUserDto) authentication.getPrincipal());
         return ResponseEntity.ok().body("User deleted");
+    }
+
+    @PatchMapping
+    @ResponseStatus(HttpStatus.OK)
+    public void updatePartiallyUser(@RequestBody PartialUserRequestDto partialUser) {
+
+        userService.partialUpdateUser(partialUser);
     }
 }

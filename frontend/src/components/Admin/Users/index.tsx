@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { RequestUser, ResponseUser } from '../../../types/User';
+import { PartialUserRequest, RequestUser, ResponseUser } from '../../../types/User';
 import {
     deleteUser,
-    getUsers,
+    getUsers, updatePartiallyUser,
     updateUser,
 } from '../../../services/UserService';
 import {
@@ -35,20 +35,11 @@ const AdminUsers = () => {
     const [loading, setLoading] = useState(true);
 
     const updateActiveUser = async (user: ResponseUser, active: boolean) => {
-        const userToUpdate: RequestUser = {
+        const userToUpdate: PartialUserRequest = {
             pseudo: user.pseudo,
-            lastname: user.lastname,
-            firstname: user.firstname,
-            email: user.email,
-            phoneNumber: user.phoneNumber,
-            street: user.street,
-            postalCode: user.postalCode,
-            city: user.city,
-            password: '',
-            credit: user.credit,
             active: active,
         };
-        await updateUser(user.pseudo, userToUpdate)
+        await updatePartiallyUser(userToUpdate)
             .then((res) => {
                 notificationApi.success({
                     message: `L'utilisateur ${user.pseudo} a bien été ${active ? 'activé' : 'désactivé'}`,

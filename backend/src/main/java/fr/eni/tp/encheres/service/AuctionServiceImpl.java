@@ -1,8 +1,8 @@
 package fr.eni.tp.encheres.service;
 
-import fr.eni.tp.encheres.dto.RequestAuctionDto;
+import fr.eni.tp.encheres.dto.AuctionRequestDto;
 import fr.eni.tp.encheres.dto.AuthenticatedUserDto;
-import fr.eni.tp.encheres.dto.ResponseAuctionDto;
+import fr.eni.tp.encheres.dto.AuctionResponseDto;
 import fr.eni.tp.encheres.exception.AuctionException;
 import fr.eni.tp.encheres.exception.SoldItemException;
 import fr.eni.tp.encheres.exception.UserException;
@@ -40,13 +40,13 @@ public class AuctionServiceImpl implements AuctionService {
     private final AuctionValidator auctionValidator;
 
     @Override
-    public List<ResponseAuctionDto> getSoldItemAuctions(UUID soldItemId) {
-        return auctionMapper.toAuctionDtos(auctionRepository.findAllBySoldItemSoldItemId(soldItemId));
+    public List<AuctionResponseDto> getSoldItemAuctions(UUID soldItemId) {
+        return auctionMapper.toAuctionDtos(auctionRepository.findAllBySoldItemSoldItemIdOrderByAuctionPriceDesc(soldItemId));
     }
 
     @Override
     @Transactional
-    public void createAuction(RequestAuctionDto requestAuction, AuthenticatedUserDto authenticatedUser) {
+    public void createAuction(AuctionRequestDto requestAuction, AuthenticatedUserDto authenticatedUser) {
         SoldItem soldItem;
 
         try {

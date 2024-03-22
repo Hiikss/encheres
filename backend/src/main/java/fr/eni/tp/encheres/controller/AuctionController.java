@@ -1,8 +1,8 @@
 package fr.eni.tp.encheres.controller;
 
 import fr.eni.tp.encheres.dto.AuthenticatedUserDto;
-import fr.eni.tp.encheres.dto.RequestAuctionDto;
-import fr.eni.tp.encheres.dto.ResponseAuctionDto;
+import fr.eni.tp.encheres.dto.AuctionRequestDto;
+import fr.eni.tp.encheres.dto.AuctionResponseDto;
 import fr.eni.tp.encheres.service.AuctionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,12 +23,12 @@ public class AuctionController {
     private final AuctionService auctionService;
 
     @GetMapping
-    public ResponseEntity<List<ResponseAuctionDto>> getSoldItemAuctions(@RequestParam UUID soldItemId)  {
+    public ResponseEntity<List<AuctionResponseDto>> getSoldItemAuctions(@RequestParam UUID soldItemId)  {
         return ResponseEntity.ok().body(auctionService.getSoldItemAuctions(soldItemId));
     }
 
     @PostMapping
-    public void createAuction(@Valid @RequestBody RequestAuctionDto requestAuction, Authentication authentication) {
+    public void createAuction(@Valid @RequestBody AuctionRequestDto requestAuction, Authentication authentication) {
         auctionService.createAuction(requestAuction, (AuthenticatedUserDto) authentication.getPrincipal());
     }
 }

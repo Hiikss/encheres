@@ -10,6 +10,7 @@ import {
     InputNumber,
     List,
     notification,
+    Spin,
     Typography,
 } from 'antd';
 import styles from './SoldItem.module.css';
@@ -17,6 +18,7 @@ import { useAuth } from '../AuthProvider';
 import SellForm from '../SellForm';
 import { RequestAuction, ResponseAuction } from '../../types/Auction';
 import { createAuction, getAuctions } from '../../services/AuctionService';
+import NotFound from '../NotFound';
 
 type FieldType = {
     auctionPrice: number;
@@ -29,6 +31,8 @@ const SoldItem = () => {
     const [lastAuction, setLastAuction] = useState<ResponseAuction>();
     const [title, setTitle] = useState('Détail vente');
     const [refresh, setRefresh] = useState(0);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(false);
     const navigate = useNavigate();
     const auth = useAuth();
 
@@ -42,19 +46,12 @@ const SoldItem = () => {
                 .then((res) => {
                     setSoldItem(res.data);
                 })
-                .catch((err) => {
-                    if (err.response.status === 404) {
-                        navigate('/*');
-                    } else {
-                        notification.error({
-                            message: 'Une erreur est survenue',
-                            placement: 'top',
-                        });
-                        navigate('/');
-                    }
-                });
+                .catch(() => {
+                    setError(true);
+                })
+                .finally(() => setLoading(false));
         }
-    }, [refresh]);
+    }, [soldItemId, refresh]);
 
     useEffect(() => {
         if (soldItemId) {
@@ -64,14 +61,14 @@ const SoldItem = () => {
                         res.data.slice().sort((a, b) => b.price - a.price)
                     );
                 })
-                .catch((err) => {
+                .catch(() => {
                     notification.error({
                         message: 'Une erreur est survenue',
                         placement: 'top',
                     });
                 });
         }
-    }, [refresh]);
+    }, [soldItemId, refresh]);
 
     useEffect(() => {
         if (auctions.length > 0) {
@@ -123,14 +120,14 @@ const SoldItem = () => {
                 categoryLabel: soldItem.category,
             };
             await updateSoldItem(soldItem?.id, requestSoldItem)
-                .then((res) => {
+                .then(() => {
                     notification.success({
                         message: "Vous avez notifié le retrait de l'article",
                         duration: 2,
                         placement: 'top',
                     });
                 })
-                .catch((err) => {
+                .catch(() => {
                     notification.error({
                         message: 'Une erreur est survenue',
                         duration: 2,
@@ -149,14 +146,14 @@ const SoldItem = () => {
             };
 
             await createAuction(auction)
-                .then((res) => {
+                .then(() => {
                     notification.success({
                         message: 'Vous avez enchéri',
                         duration: 2,
                         placement: 'top',
                     });
                 })
-                .catch((err) => {
+                .catch(() => {
                     notification.error({
                         message: 'Une erreur est survenue',
                         duration: 2,
@@ -168,6 +165,19 @@ const SoldItem = () => {
         }
     };
 
+    if (loading) {
+        return (
+            <Flex
+                justify="center"
+                align="center"
+                style={{ marginTop: '200px' }}
+            >
+                <Spin size="large" />
+            </Flex>
+        );
+    } else if (error) {
+        return <NotFound />;
+    }
     return (
         <Flex justify="center">
             {auth.user.pseudo === soldItem?.seller &&
@@ -320,6 +330,11 @@ const SoldItem = () => {
                                 <Form.Item label="Ma proposition">
                                     <Form.Item<FieldType>
                                         name="auctionPrice"
+                                        initialValue={
+                                            lastAuction
+                                                ? lastAuction?.price + 1
+                                                : soldItem.sellPrice + 1
+                                        }
                                         rules={[
                                             {
                                                 required: true,
@@ -331,8 +346,9 @@ const SoldItem = () => {
                                     >
                                         <InputNumber
                                             min={
-                                                lastAuction?.price &&
-                                                lastAuction?.price + 1
+                                                lastAuction
+                                                    ? lastAuction?.price + 1
+                                                    : soldItem.sellPrice + 1
                                             }
                                             max={auth.user.credit}
                                             placeholder="100"

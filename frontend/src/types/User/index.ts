@@ -25,6 +25,11 @@ export type RequestUser = {
     active: boolean;
 };
 
+export type PartialUserRequest = {
+    pseudo: string;
+    active: boolean;
+};
+
 export type Credentials = {
     login: string;
     password: string;

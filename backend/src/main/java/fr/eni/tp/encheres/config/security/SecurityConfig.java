@@ -36,6 +36,7 @@ public class SecurityConfig {
                 HttpMethod.POST.name(),
                 HttpMethod.PUT.name(),
                 HttpMethod.DELETE.name(),
+                HttpMethod.PATCH.name(),
                 HttpMethod.OPTIONS.name()));
         configuration.setAllowedHeaders(Arrays.asList(
                 HttpHeaders.AUTHORIZATION,

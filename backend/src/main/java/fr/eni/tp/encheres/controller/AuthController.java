@@ -2,8 +2,8 @@ package fr.eni.tp.encheres.controller;
 
 import fr.eni.tp.encheres.config.security.UserAuthProvider;
 import fr.eni.tp.encheres.dto.CredentialsDto;
-import fr.eni.tp.encheres.dto.RequestRefreshTokenDto;
-import fr.eni.tp.encheres.dto.RequestUserDto;
+import fr.eni.tp.encheres.dto.RefreshTokenRequestDto;
+import fr.eni.tp.encheres.dto.UserRequestDto;
 import fr.eni.tp.encheres.dto.AuthenticatedUserDto;
 import fr.eni.tp.encheres.service.UserService;
 import jakarta.validation.Valid;
@@ -12,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,15 +37,15 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<AuthenticatedUserDto> register(@Valid @RequestBody RequestUserDto requestUserDto) {
-        AuthenticatedUserDto user = userService.register(requestUserDto);
+    public ResponseEntity<AuthenticatedUserDto> register(@Valid @RequestBody UserRequestDto userRequestDto) {
+        AuthenticatedUserDto user = userService.register(userRequestDto);
         user.setToken(userAuthProvider.createToken(user));
         user.setRefreshToken(userAuthProvider.createRefreshToken(user).getToken());
         return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<AuthenticatedUserDto> renew(@RequestBody RequestRefreshTokenDto refreshToken) {
+    public ResponseEntity<AuthenticatedUserDto> renew(@RequestBody RefreshTokenRequestDto refreshToken) {
         AuthenticatedUserDto user = userService.getAuthenticatedUser(refreshToken.getPseudo());
         user.setRefreshToken(userAuthProvider.verifyRefreshToken(refreshToken.getToken(), user).getToken());
         user.setToken(userAuthProvider.createToken(user));

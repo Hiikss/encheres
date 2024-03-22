@@ -1,8 +1,8 @@
 package fr.eni.tp.encheres.controller;
 
 import fr.eni.tp.encheres.dto.AuthenticatedUserDto;
-import fr.eni.tp.encheres.dto.ResponseSoldItemDto;
-import fr.eni.tp.encheres.dto.RequestSoldItemDto;
+import fr.eni.tp.encheres.dto.SoldItemResponseDto;
+import fr.eni.tp.encheres.dto.SoldItemRequestDto;
 import fr.eni.tp.encheres.service.SoldItemService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -29,14 +29,14 @@ public class SoldItemController {
     private final SoldItemService soldItemService;
 
     @GetMapping("/{soldItemId}")
-    public ResponseEntity<ResponseSoldItemDto> getSoldItem(@PathVariable UUID soldItemId) {
+    public ResponseEntity<SoldItemResponseDto> getSoldItem(@PathVariable UUID soldItemId) {
         LOGGER.info("[Controller] : Get sold item");
 
         return ResponseEntity.ok().body(soldItemService.getSoldItem(soldItemId));
     }
 
     @GetMapping
-    public ResponseEntity<List<ResponseSoldItemDto>> getSoldItems(@RequestParam(defaultValue = "1") int page,
+    public ResponseEntity<List<SoldItemResponseDto>> getSoldItems(@RequestParam(defaultValue = "1") int page,
                                                                   @RequestParam(defaultValue = "10") int size,
                                                                   @RequestParam(defaultValue = "") String itemName,
                                                                   @RequestParam(defaultValue = "") String category,
@@ -57,14 +57,14 @@ public class SoldItemController {
     }
 
     @PostMapping
-    public ResponseEntity<ResponseSoldItemDto> createSell(@Valid @RequestBody RequestSoldItemDto soldItem, Authentication authentication) {
+    public ResponseEntity<SoldItemResponseDto> createSell(@Valid @RequestBody SoldItemRequestDto soldItem, Authentication authentication) {
         LOGGER.info("[Controller] : Create sold item");
 
         return ResponseEntity.status(HttpStatus.CREATED).body(soldItemService.createSell(soldItem, (AuthenticatedUserDto) authentication.getPrincipal()));
     }
 
     @PutMapping("/{soldItemId}")
-    public ResponseEntity<ResponseSoldItemDto> updateSell(@PathVariable UUID soldItemId, @Valid @RequestBody RequestSoldItemDto soldItem, Authentication authentication) {
+    public ResponseEntity<SoldItemResponseDto> updateSell(@PathVariable UUID soldItemId, @Valid @RequestBody SoldItemRequestDto soldItem, Authentication authentication) {
         LOGGER.info("[Controller] : Update sold item");
 
         return ResponseEntity.ok().body(soldItemService.updateSell(soldItemId, soldItem, (AuthenticatedUserDto) authentication.getPrincipal()));
