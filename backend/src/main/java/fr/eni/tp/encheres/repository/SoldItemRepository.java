@@ -13,7 +13,7 @@ import java.util.UUID;
 public interface SoldItemRepository extends JpaRepository<SoldItem, UUID> {
 
     @Query("SELECT s FROM SoldItem s " +
-            "WHERE (:itemName = '' OR s.itemName LIKE '%' || :itemName || '%') " +
+            "WHERE (:itemName = '' OR LOWER(s.itemName) LIKE '%' || LOWER(:itemName) || '%') " +
             "AND (:category = '' OR :category = s.category.label) " +
             "AND (('opened' IN :filters AND s.auctionStartDate <= CURRENT_DATE() AND s.auctionEndDate > CURRENT_DATE()) " +
             "OR ('mine' IN :filters AND s IN (SELECT s1 FROM SoldItem s1, Auction a WHERE s1 = a.soldItem AND a.user.pseudo = :pseudo)) " +
@@ -25,7 +25,7 @@ public interface SoldItemRepository extends JpaRepository<SoldItem, UUID> {
     List<SoldItem> findSoldItemsByFilters(Pageable pageable, String itemName, String category, List<String> filters, String pseudo);
 
     @Query("SELECT COUNT(s) FROM SoldItem s " +
-            "WHERE (:itemName = '' OR s.itemName LIKE '%' || :itemName || '%') " +
+            "WHERE (:itemName = '' OR LOWER(s.itemName) LIKE '%' || LOWER(:itemName) || '%') " +
             "AND (:category = '' OR :category = s.category.label) " +
             "AND (('opened' IN :filters AND s.auctionStartDate <= CURRENT_DATE() AND s.auctionEndDate > CURRENT_DATE()) " +
             "OR ('mine' IN :filters AND s IN (SELECT s1 FROM SoldItem s1, Auction a WHERE s1 = a.soldItem AND a.user.pseudo = :pseudo)) " +
