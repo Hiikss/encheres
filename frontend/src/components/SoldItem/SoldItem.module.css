@@ -1,0 +1,41 @@
+.soldItem {
+    padding: 10px 40px 40px 40px;
+    width: 540px;
+    background: white;
+    box-shadow: rgba(149, 157, 165, 0.2) 0 8px 24px;
+    border-radius: 10px;
+    margin-top: 50px;
+    margin-bottom: 20px;
+}
+
+.sellRow {
+    display: flex;
+    margin-top: 10px;
+}
+
+.sellRow > div:first-child {
+    color: #374151;
+    font-weight: 600;
+    font-size: 15px;
+}
+
+
+@media (min-width: 640px) {
+    .sellRow > div:first-child {
+        flex-basis: 150px;
+    }
+    .sellRow > div:last-child {
+        flex: 1;
+    }
+}
+
+@media (max-width: 640px) {
+    .soldItem {
+        width: 90%;
+        padding: 10px 30px 30px 30px;
+    }
+
+    .sellRow {
+        flex-direction: column;
+    }
+}

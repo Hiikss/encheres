@@ -1,0 +1,18 @@
+.userForm form {
+    margin-top: 30px !important;
+}
+
+.userForm label {
+    color: #374151 !important;
+}
+
+@media (min-width: 640px) {
+    .formRow {
+        display: flex;
+        gap: 30px;
+    }
+
+    .formRow > div {
+        flex-basis: 50%;
+    }
+}
